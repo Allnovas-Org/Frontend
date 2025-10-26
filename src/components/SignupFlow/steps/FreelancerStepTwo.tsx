@@ -38,7 +38,7 @@ const FreelancerStepTwo: React.FC<FreelancerStepTwoProps> = ({
 
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Welcome! How would you like to join?
         </h1>
       </div>
