@@ -62,7 +62,7 @@ const FreelancerStepFive: React.FC<FreelancerStepFiveProps> = ({
 
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-gray-900">
           Create a Secure Password
         </h1>
       </div>
