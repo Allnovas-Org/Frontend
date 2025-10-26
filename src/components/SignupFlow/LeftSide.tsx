@@ -4,6 +4,7 @@ import FreelancerStepTwo from "./steps/FreelancerStepTwo";
 import FreelancerStepThree from "./steps/FreelancerStepThree";
 import FreelancerStepFour from "./steps/FreelancerStepFour";
 import FreelancerStepFive from "./steps/FreelancerStepFive";
+import FreelancerStepSix from "./steps/FreelancerStepSix";
 
 interface LeftSideProps {
   currentStep: number;
@@ -44,6 +45,10 @@ const LeftSide: React.FC<LeftSideProps> = ({
 
       {currentStep === 5 && userType === "freelancer" && (
         <FreelancerStepFive onNext={onNext} onBack={onBack} />
+      )}
+
+      {currentStep === 6 && userType === "freelancer" && (
+        <FreelancerStepSix onNext={onNext} onBack={onBack} />
       )}
 
       {/* Add more steps as needed */}
