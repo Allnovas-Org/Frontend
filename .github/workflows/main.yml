@@ -26,7 +26,7 @@ jobs:
         run: npm run build
 
       - name: Package build
-        run: tar -czf nextjs-app.tar.gz .next public package.json package-lock.json next.config.js
+        run: tar -czf nextjs-app.tar.gz src .gitignore README.md eslint.config.js index.html package-lock.json package.json vite.config.js
 
       - name: Upload build to VPS
         uses: appleboy/scp-action@v0.1.7
