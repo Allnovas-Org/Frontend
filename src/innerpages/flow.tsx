@@ -1,4 +1,5 @@
 import React from "react";
+import qst from "../assets/question.png"
 
 const ElevateWorkflow = () => {
   const benefits = [
@@ -27,7 +28,7 @@ const ElevateWorkflow = () => {
           <div className="relative group">
             <div className="rounded-3xl overflow-hidden shadow-2xl transform transition-transform duration-500 group-hover:scale-105">
               <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=600&fit=crop"
+                src={qst}
                 alt="Question mark with stones"
                 className="w-full h-[500px] object-cover"
               />
@@ -69,9 +70,7 @@ const ElevateWorkflow = () => {
             </div>
 
             {/* CTA Button */}
-            <button className="mt-10 bg-[#F05658] hover:bg-[#c16456] text-white font-semibold px-8 py-3 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#F05658] shadow-lg hover:shadow-xl">
-              Get Started Today
-            </button>
+            
           </div>
         </div>
       </div>
