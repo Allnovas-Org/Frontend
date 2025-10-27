@@ -29,7 +29,7 @@ jobs:
         run: tar -czf nextjs-app.tar.gz src .gitignore README.md eslint.config.js index.html package-lock.json package.json vite.config.js
 
       - name: Upload build to VPS
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
@@ -38,7 +38,7 @@ jobs:
           target: "~/app/nextjs-app.tar.gz"
 
       - name: Deploy on VPS
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
