@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Logo from "../assets/AllNova black 2 (1).png";
 import SignupModal from "./SignupFlow/SignupModal";
+import SignInModal from "./SignInFlow/SignInModal";
 
 const Navbar = () => {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 
   return (
     <>
@@ -64,12 +66,12 @@ const Navbar = () => {
           {/* Right Section */}
           <ul className="flex items-center space-x-6">
             <li>
-              <NavLink
-                to="/signin"
+              <button
+                onClick={() => setIsSignInModalOpen(true)}
                 className="text-[#F05658] hover:text-[#F05640] transition-colors duration-200"
               >
                 Sign In
-              </NavLink>
+              </button>
             </li>
             <li className="hidden lg:flex">
               <button
@@ -89,6 +91,12 @@ const Navbar = () => {
       <SignupModal
         isOpen={isSignupModalOpen}
         onClose={() => setIsSignupModalOpen(false)}
+      />
+
+      {/* SignIn Modal */}
+      <SignInModal
+        isOpen={isSignInModalOpen}
+        onClose={() => setIsSignInModalOpen(false)}
       />
     </>
   );
