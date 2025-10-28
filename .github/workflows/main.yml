@@ -24,7 +24,7 @@ jobs:
 
       # 3️⃣ Install dependencies and build
       - name: Install dependencies
-        run: npm ci & npm install
+        run: npm ci 
 
       - name: Build Vite app
         run: npm run build
