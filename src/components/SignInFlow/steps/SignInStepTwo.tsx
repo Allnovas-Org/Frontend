@@ -145,7 +145,7 @@ const SignInStepTwo: React.FC<SignInStepTwoProps> = ({
             <button
               type="button"
               onClick={handleJoin}
-              className="text-purple-600 font-semibold hover:text-purple-700 transition-colors"
+              className="text-purple-600 cursor-pointer font-semibold hover:text-purple-700 transition-colors"
             >
               Join
             </button>
