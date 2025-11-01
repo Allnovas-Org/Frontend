@@ -4,6 +4,7 @@ import './index.css'
 
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/home.tsx'
+import { About } from './pages/about.tsx'
 function App() {
 
 
@@ -13,6 +14,7 @@ function App() {
 
       <Routes>
         <Route path='/' element={<Home/>}/>
+        <Route path='/about' element={<About/>}/>
         
       </Routes>
 

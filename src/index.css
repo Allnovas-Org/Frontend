@@ -1,2 +1,11 @@
 
 @import "tailwindcss";
+h1{
+color: var(--typography-heading-1-h-1, #0F0F0F);
+text-align: center;
+/* WEB/Display/Small/SemiBold */
+
+font-size: 48px;
+font-style: normal;
+font-weight: 600;
+line-height: 120%; /* 57.6px */}
