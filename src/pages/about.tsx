@@ -1,4 +1,8 @@
 import React from 'react';
+import Atcore from '../innerpages/about/atcore';
+import TeamSection from '../innerpages/about/teamSection';
+import ReviewsSection from '../innerpages/about/review';
+import AllNovaFooter from '../components/footer';
 
 
 // Hero Section Component
@@ -14,10 +18,10 @@ export const About = () => {
   const duplicatedCompanies = [...companies, ...companies];
   return (
     <>
-    <section className="bg-gray-50 py-20 px-4 lg:mt-8 sm:mt-4">
+    <section className="bg-white py-20 px-4 lg:mt-8 sm:mt-4">
       <div className="max-w-4xl mx-auto text-center">
         <p className="text-[#6A0DAD] font-medium mb-2">About Us</p>
-        <h1 className="text-4xl md:text-4xl font-bold text-gray-900 mb-6">
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
           Built on Collaboration, Driven by Passion
         </h1>
         <p className="text-gray-600 text-lg mb-8 max-w-3xl mx-auto">
@@ -69,6 +73,14 @@ export const About = () => {
         }
       `}</style>
     </section>
+
+
+
+    
+    <Atcore/>
+    <TeamSection/>
+    <ReviewsSection/>
+    <AllNovaFooter/>
 </>
 
   );
