@@ -1,5 +1,9 @@
 
 @import "tailwindcss";
+
+*{
+    font-family: Inter, sans-serif;
+}
 h1{
 color: var(--typography-heading-1-h-1, #0F0F0F);
 text-align: center;
