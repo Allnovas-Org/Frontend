@@ -1,9 +1,14 @@
-
 @import "tailwindcss";
 
-*{
+body{
     font-family: Inter, sans-serif;
 }
+@media (max-width: 640px) {
+  .mobile-font {
+    font-family: 'Mali', cursive;
+  }
+}
+
 h1{
 color: var(--typography-heading-1-h-1, #0F0F0F);
 text-align: center;
