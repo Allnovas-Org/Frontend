@@ -58,7 +58,7 @@ export default function AllNovaSections() {
   const resources = [
     {
       icon: (
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 14l9-5-9-5-9 5 9 5z" />
           <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
           <path d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
@@ -70,7 +70,7 @@ export default function AllNovaSections() {
     },
     {
       icon: (
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
         </svg>
       ),
@@ -80,7 +80,7 @@ export default function AllNovaSections() {
     },
     {
       icon: (
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       ),
@@ -90,7 +90,7 @@ export default function AllNovaSections() {
     },
     {
       icon: (
-        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
@@ -208,7 +208,7 @@ export default function AllNovaSections() {
 
                   {/* Content */}
                   <div className="flex-1 transform group-hover:translate-x-2 transition-transform duration-300">
-                    <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-2 group-hover:text-[#F05658] transition-colors duration-300">
+                    <h3 className="md:text-lg font-bold text-gray-900 mb-2 group-hover:text-[#F05658] transition-colors duration-300">
                       {resource.title}
                     </h3>
                     <p className="text-sm md:text-base text-gray-600 leading-relaxed">
@@ -228,17 +228,17 @@ export default function AllNovaSections() {
               }`}
               style={{ transitionDelay: '800ms' }}
             >
-              <button className="group relative px-6 py-3 bg-[#F05658] text-white rounded-xl text-sm md:text-base font-semibold overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+              <button className="group relative px-6 py-3 bg-[#F05658] text-white rounded-xl text-sm font-semibold overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   Explore Free Resources
-                  <svg className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                   </svg>
                 </span>
                 <div className="absolute inset-0 bg-linear-to-r from-[#c84446] to-[#F05658] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
               </button>
               
-              <button className="px-6 py-3 bg-white text-[#F05658] border-2 border-[#F05658] rounded-xl text-sm md:text-base font-semibold hover:bg-[#F05658] hover:text-white transition-all duration-300 hover:-translate-y-1 shadow-md hover:shadow-lg">
+              <button className="px-6 py-3 bg-white text-[#F05658] border-2 border-[#F05658] rounded-xl text-sm font-semibold hover:bg-[#F05658] hover:text-white transition-all duration-300 hover:-translate-y-1 shadow-md hover:shadow-lg cursor-pointer">
                 Register for free Resources
               </button>
             </div>
