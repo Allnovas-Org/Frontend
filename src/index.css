@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 body{
-    font-family: Inter, sans-serif;
+    font-family: 'Inter', sans-serif;
+}
+.mali-font{
+  font-family: 'Mali', cursive;
 }
 @media (max-width: 640px) {
   .mobile-font {
