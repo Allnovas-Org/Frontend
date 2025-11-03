@@ -121,15 +121,15 @@ const Function = () => {
                     ? 'p-8 text-center justify-start pt-16' 
                     : 'md:p-6 md:text-center p-8 text-center justify-between'
                 }`}>
-                  {/* Top Section - Icon */}
-                  <div className={`text-white/80 transition-all duration-700 mx-auto ${
-                    isExpanded ? 'mb-4' : 'mb-6'
-                  }`}>
+                  {/* Icon - Always at top */}
+                  <div className="text-white/80 transition-all duration-700 mx-auto">
                     {feature.icon}
                   </div>
 
-                  {/* Bottom Section */}
-                  <div className="transition-all duration-700 text-center">
+                  {/* Title and Content - Position changes based on expanded state */}
+                  <div className={`transition-all duration-700 text-center ${
+                    isExpanded ? 'mt-4' : ''
+                  }`}>
                     <h3 className={`font-bold text-white transition-all duration-700 mali-font ${
                       isExpanded ? 'text-3xl md:text-4xl mb-2' : 'text-2xl md:text-2xl mb-0'
                     }`}>
@@ -142,17 +142,15 @@ const Function = () => {
                         ? 'md:max-h-40 md:opacity-100 max-h-40 opacity-100' 
                         : 'md:max-h-0 md:opacity-0 max-h-40 opacity-100'
                     }`}>
-                      <p className="text-white/90 text-base mb-3 leading-relaxed">
+                      <p className="text-white/90 text-base mb-0 leading-relaxed">
                         {feature.description}
                       </p>
                     </div>
+                  </div>
 
-                    {/* Get Started Button - Show on mobile always, on desktop only when expanded */}
-                    <div className={`overflow-hidden transition-all duration-700 ${
-                      isExpanded 
-                        ? 'md:max-h-20 md:opacity-100 max-h-20 opacity-100' 
-                        : 'md:max-h-0 md:opacity-0 max-h-20 opacity-100'
-                    }`}>
+                  {/* Button - Only visible when expanded, stays at bottom */}
+                  {isExpanded && (
+                    <div className="mt-auto transition-all duration-700 text-center">
                       <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${
                         index === 0 ? 'bg-blue-800/70 hover:bg-blue-700' :
                         index === 1 ? 'bg-purple-800/70 hover:bg-purple-700' :
@@ -164,6 +162,22 @@ const Function = () => {
                         </svg>
                       </button>
                     </div>
+                  )}
+
+                  {/* Button for mobile - always visible */}
+                  <div className={`md:hidden mt-auto transition-all duration-700 text-center overflow-hidden ${
+                    isExpanded ? 'max-h-0 opacity-0' : 'max-h-20 opacity-100'
+                  }`}>
+                    <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${
+                      index === 0 ? 'bg-blue-800/70 hover:bg-blue-700' :
+                      index === 1 ? 'bg-purple-800/70 hover:bg-purple-700' :
+                      'bg-green-800/70 hover:bg-green-700'
+                    }`}>
+                      Get Started
+                      <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </button>
                   </div>
 
                   {/* Hover Effect Overlay */}
