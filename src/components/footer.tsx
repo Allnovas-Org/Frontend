@@ -196,7 +196,7 @@ export default function AllNovaFooter() {
 
             {/* Copyright */}
             <div className="text-sm text-gray-500">
-              © 2024 Allnova. All rights reserved.
+              © 2025 Allnova. All rights reserved.
             </div>
           </div>
         </div>

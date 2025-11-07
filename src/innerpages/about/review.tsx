@@ -154,7 +154,7 @@ const ReviewsSection = () => {
             <button
               onClick={handlePrevious}
               disabled={currentIndex === 0}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 ${
                 currentIndex === 0
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md"
@@ -190,7 +190,7 @@ const ReviewsSection = () => {
                   }}
                   className={`h-2 rounded-full transition-all duration-300 ${
                     index === currentIndex
-                      ? "w-8 bg-purple-600"
+                      ? "w-8 bg-gray-600"
                       : "w-2 bg-gray-300 hover:bg-gray-400"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
@@ -201,7 +201,7 @@ const ReviewsSection = () => {
             <button
               onClick={handleNext}
               disabled={currentIndex === maxIndex}
-              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+              className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 ${
                 currentIndex === maxIndex
                   ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:shadow-md"

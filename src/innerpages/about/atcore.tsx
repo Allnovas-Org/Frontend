@@ -156,8 +156,8 @@ const Atcore = () => {
 
           {/* Center Image */}
           <div className="flex justify-center">
-            <div className="relative">
-              <div className="w-64 h-64 md:w-90 md:h-90 rounded-xl overflow-hidden ">
+            <div className="relative lg:mt-25 sm:mt-0 ">
+              <div className="w-64 h-70 md:w-90 md:h-90 rounded-xl overflow-hidden ">
                 <img
                   src={img}
                   alt="Professional woman smiling"
@@ -165,7 +165,7 @@ const Atcore = () => {
                 />
               </div>
               {/* Decorative Circle */}
-              <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-blue-100 rounded-full -z-10" />
+              <div className="absolute -bottom-1 -right-1 w-32 h-29 bg-gray-100 rounded-full  -z-10" />
             </div>
           </div>
 

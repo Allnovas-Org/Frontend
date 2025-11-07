@@ -2,6 +2,8 @@ import React from 'react';
 import Atcore from '../innerpages/about/atcore';
 import TeamSection from '../innerpages/about/teamSection';
 import ReviewsSection from '../innerpages/about/review';
+
+
 import AllNovaFooter from '../components/footer';
 
 
@@ -18,7 +20,7 @@ export const About = () => {
   const duplicatedCompanies = [...companies, ...companies];
   return (
     <>
-    <section className="bg-white py-20 px-4 lg:mt-8 sm:mt-4">
+    <section className="bg-white py-20 px-4 lg:mt-22 sm:mt-12">
       <div className="max-w-4xl mx-auto text-center">
         <p className="text-[#6A0DAD] font-medium mb-2">About Us</p>
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -27,12 +29,12 @@ export const About = () => {
         <p className="text-gray-600 text-lg mb-8 max-w-3xl mx-auto">
           We're more than a platform, we're a partner. Every project, every connection, every success story starts with people who care about doing meaningful work together.
         </p>
-        <div className="flex justify-center items-center space-x-4">
-          <button className="border border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-3 rounded-full flex items-center">
+        <div className="flex justify-center items-center space-x-4 ">
+          <button className="border border-gray-300 hover:border-gray-400 text-gray-700 px-5 py-2 font-semibold  rounded-xl flex items-center">
             Sign In
             <span className="ml-2">→</span>
           </button>
-          <button className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full">
+          <button className="bg-[#F05658] hover:bg-red-600 text-white px-8 py-3 rounded-xl">
             Let's Build Together
           </button>
         </div>

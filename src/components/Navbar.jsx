@@ -37,7 +37,7 @@ const Navbar = () => {
         <nav className="flex justify-between items-center px-6 lg:px-12 py-3">
           {/* Logo */}
           <div className="flex items-center">
-            <img src={Logo} alt="AllNova Logo" className="h-12 w-auto" />
+            <img src={Logo} alt="AllNova Logo" className="h-10 w-auto" />
           </div>
 
           {/* Center Nav Links - Desktop */}
