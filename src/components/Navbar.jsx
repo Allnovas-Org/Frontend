@@ -35,7 +35,7 @@ const Navbar = () => {
     <>
       <div className="fixed top-0 left-0 w-full bg-white backdrop-blur-md z-50 2xl:px-[200px]">
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex justify-between items-center px-6 lg:px-12 py-3">
+        <nav className="hidden lg:flex justify-between items-center px-6 lg:px-19 py-3">
           {/* Logo */}
           <div className="flex items-center">
             <img src={Logo} alt="AllNova Logo" className="h-10 w-auto" />
