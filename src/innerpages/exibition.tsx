@@ -4,126 +4,116 @@ export default function TemplateCommunity() {
   const templates = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800&h=1000&fit=crop',
       title: 'Art Exhibit',
       featured: true
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=600&h=400&fit=crop',
       title: 'Movie Streaming'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
       title: 'Portfolio Grid'
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
       title: 'Product Showcase'
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1522542550221-31fd19575a2d?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop',
       title: 'Creative Gallery'
     }
   ];
 
-  const CurvedArrow = () => (
-    <svg 
-      width="60" 
-      height="80" 
-      viewBox="0 0 60 80" 
-      fill="none" 
-      className="absolute top-8 right-12 hidden lg:block"
-    >
-      <path 
-        d="M10 10 Q 40 30, 50 60" 
-        stroke="#FF6B6B" 
-        strokeWidth="2.5" 
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path 
-        d="M50 60 L 45 52 M50 60 L 58 58" 
-        stroke="#FF6B6B" 
-        strokeWidth="2.5" 
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-
-  const HeartArrow = () => (
-    <svg 
-      width="80" 
-      height="60" 
-      viewBox="0 0 80 60" 
-      fill="none" 
-      className="absolute -top-2 right-24 hidden lg:block"
-    >
-      <path 
-        d="M5 25 Q 20 10, 35 25 Q 50 10, 65 25" 
-        stroke="#FF6B6B" 
-        strokeWidth="2" 
-        fill="none"
-        strokeLinecap="round"
-      />
-      <circle cx="20" cy="22" r="3" fill="#FF6B6B" />
-      <path 
-        d="M65 25 L 60 20 M65 25 L 60 30" 
-        stroke="#FF6B6B" 
-        strokeWidth="2" 
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-
   return (
     <div className="w-full">
       {/* Templates Section */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-teal-900 py-20 px-5">
+      <div className="bg-linear-to-br from-[#1a1a1a] via-[#2d3436] to-[#1e3a3a] py-16 md:py-20 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 relative">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+          <div className="text-center mb-10 md:mb-14 relative">
+            <h2 className="mobile-font text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 px-4 relative inline-block">
               Build Templates. Download Free. Grow Together
+              <img 
+              src="/images/arrow.svg"
+              alt="Arrow"
+              className="absolute -top-8 -right-4 md:-top-12 md:-right-8 w-10 h-12 md:w-12 md:h-16"
+              />
             </h2>
             <p className="text-gray-300 text-sm md:text-base">
               Upload your designs or download free resources.
             </p>
-            <CurvedArrow />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {/* Featured Large Template */}
-            <div className="md:col-span-1 lg:col-span-1 md:row-span-2">
-              <div className="bg-gradient-to-br from-teal-600 to-teal-800 rounded-2xl overflow-hidden h-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+          {/* Desktop and Mobile Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 mb-8 max-w-6xl mx-auto">
+            {/* Featured Large Template - Left Side */}
+            <div className="h-64 md:h-[450px]">
+              <div className="bg-linear-to-br from-[#b8dfe0] via-[#9dd1d3] to-[#7fb5b5] rounded-2xl md:rounded-3xl h-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:-translate-y-1 cursor-pointer pt-8 pl-8 md:pt-10 md:pl-10">
                 <img 
                   src={templates[0].image}
                   alt={templates[0].title}
-                  className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
+                  className="w-full h-full object-cover rounded-lg shadow-lg"
                 />
               </div>
             </div>
 
-            {/* Grid Templates */}
-            {templates.slice(1).map((template) => (
-              <div key={template.id} className="group">
-                <div className="bg-gray-700 rounded-2xl overflow-hidden h-48 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+            {/* Grid Templates - Right Side (2x2) */}
+            <div className="grid grid-cols-2 gap-4 md:gap-5 h-64 md:h-[450px]">
+              {/* Template 2 - Purple/Dark Blue Background */}
+              <div className="group h-full">
+                <div className="bg-linear-to-br from-[#5a4e7f] via-[#4a4068] to-[#3d355a] rounded-xl md:rounded-2xl h-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer pt-6 pl-6 md:pt-8 md:pl-8">
                   <img 
-                    src={template.image}
-                    alt={template.title}
-                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                    src={templates[1].image}
+                    alt={templates[1].title}
+                    className="w-full h-full object-cover rounded-lg shadow-md"
                   />
                 </div>
               </div>
-            ))}
+
+              {/* Template 3 - Teal/Cyan Background */}
+              <div className="group h-full">
+                <div className="bg-linear-to-br from-[#5a7a7d] via-[#4a6568] to-[#3d5558] rounded-xl md:rounded-2xl h-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer pt-6 pl-6 md:pt-8 md:pl-8">
+                  <img 
+                    src={templates[2].image}
+                    alt={templates[2].title}
+                    className="w-full h-full object-cover rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+
+              {/* Template 4 - Gray Background */}
+              <div className="group h-full">
+                <div className="bg-linear-to-br from-[#6b7278] via-[#5a6065] to-[#4a5055] rounded-xl md:rounded-2xl h-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer pt-6 pl-6 md:pt-8 md:pl-8">
+                  <img 
+                    src={templates[3].image}
+                    alt={templates[3].title}
+                    className="w-full h-full object-cover rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+
+              {/* Template 5 - Dark Gray Background */}
+              <div className="group h-full">
+                <div className="bg-linear-to-br from-[#5a5f64] via-[#4d5256] to-[#424649] rounded-xl md:rounded-2xl h-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer pt-6 pl-6 md:pt-8 md:pl-8">
+                  <img 
+                    src={templates[4].image}
+                    alt={templates[4].title}
+                    className="w-full h-full object-cover rounded-lg shadow-md"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="text-center">
-            <button className="text-white text-sm font-medium hover:text-teal-300 transition-colors inline-flex items-center gap-2">
+            <button className="text-white text-sm md:text-base font-medium hover:text-teal-300 transition-colors inline-flex items-center gap-2 group">
               <span>Browse Template</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="transition-transform group-hover:translate-x-1">
                 <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
@@ -132,71 +122,275 @@ export default function TemplateCommunity() {
       </div>
 
       {/* Community Section */}
-      <div className="bg-white py-20 px-5 relative overflow-hidden">
+      <div className="bg-linear-to-br from-gray-50 to-white py-16 md:py-20 lg:py-24 px-8 md:px-12 relative overflow-hidden">
         {/* Background Decorative Text */}
-        <div className="absolute top-32 right-0 text-[200px] font-bold text-gray-50 select-none pointer-events-none">
-          CR
+        <div className="absolute top-16 md:top-24 lg:top-32 -right-8 md:right-0 text-[100px] md:text-[180px] lg:text-[240px] font-bold text-gray-100 select-none pointer-events-none opacity-40 tracking-tighter">
+          WE
         </div>
 
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-20 items-center">
             {/* Left Content */}
-            <div className="relative z-10">
-              <span className="text-red-500 text-sm font-semibold uppercase tracking-wide mb-3 block">
+            <div className="relative z-10 animate-fade-in-up">
+              <span className="text-purple-600 text-xs md:text-sm font-bold tracking-wider mb-4 block animate-slide-in-left">
                 Tribe
               </span>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                Unlock Your Full Potential Using Our Community
+              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-gray-900 mb-5 md:mb-6 leading-tight relative inline-block animate-fade-in">
+                Unlock Your Full Potential Using&nbsp;
+                <img 
+                src="/images/love.svg"
+                alt="Arrow"
+                className="absolute -top-8 right-2 md:-top-6 md:right-20 w-10 h-12 md:w-16 md:h-16"
+                />
+                <span className="relative inline-block">
+                 Our Community
+                </span> 
               </h2>
-              <p className="text-gray-600 text-base leading-relaxed mb-8">
+              <p className="text-gray-600 text-sm md:text-base lg:text-lg leading-relaxed mb-7 md:mb-9 max-w-xl animate-fade-in-up animation-delay-200">
                 Where talents connect, collaborate and grow together. Find your space to learn, connect and grow
               </p>
 
-              <button className="bg-red-500 text-white px-8 py-3.5 rounded-lg font-medium hover:bg-red-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 mb-10">
+              <button className="bg-linear-to-r from-red-500 to-red-600 text-white px-7 md:px-9 py-3.5 md:py-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/30 hover:-translate-y-1 mb-10 md:mb-12 text-sm md:text-base transform hover:scale-105 animate-fade-in-up animation-delay-300 cursor-pointer">
                 Join Community
               </button>
 
-              <div className="flex items-center gap-8">
-                <div className="flex items-center gap-3">
-                  <div className="flex -space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-white"></div>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-white"></div>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 border-2 border-white"></div>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 border-2 border-white"></div>
+              <div className="flex items-center gap-8 md:gap-10 flex-wrap animate-fade-in-up animation-delay-400">
+                <div className="flex items-center gap-4">
+                  <div className="flex -space-x-3 animate-bounce-slow">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-3 border-white shadow-lg transform transition-transform hover:scale-110 hover:z-10 overflow-hidden">
+                      <img 
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
+                        alt="User 1"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-3 border-white shadow-lg transform transition-transform hover:scale-110 hover:z-10 overflow-hidden">
+                      <img 
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
+                        alt="User 2"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-3 border-white shadow-lg transform transition-transform hover:scale-110 hover:z-10 overflow-hidden">
+                      <img 
+                        src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
+                        alt="User 3"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border-3 border-white shadow-lg transform transition-transform hover:scale-110 hover:z-10 overflow-hidden">
+                      <img 
+                        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
+                        alt="User 4"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <div className="text-xl font-bold text-gray-900">---14+</div>
-                    <div className="text-xs text-gray-500">Active users</div>
+                    <div className="text-xl md:text-2xl font-bold text-gray-900">---M+</div>
+                    <div className="text-xs md:text-sm text-gray-500">Active users</div>
                   </div>
                 </div>
 
-                <div className="h-12 w-px bg-gray-200"></div>
+                <div className="h-12 md:h-14 w-px bg-gray-300"></div>
 
                 <div>
-                  <div className="text-xl font-bold text-gray-900">-----</div>
-                  <div className="text-xs text-gray-500">Experts</div>
+                  <div className="text-xl md:text-2xl font-bold text-gray-900">---+</div>
+                  <div className="text-xs md:text-sm text-gray-500">Experts</div>
                 </div>
               </div>
-
-              <HeartArrow />
             </div>
 
             {/* Right Image */}
-            <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl">
-                <img 
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=600&fit=crop"
-                  alt="Community collaboration"
-                  className="w-full h-auto object-cover"
-                />
+            <div className="relative animate-fade-in-right animation-delay-200">
+              {/* Star Pattern Behind Image - Top Right */}
+              <div className="absolute -top-8 -right-8 md:-top-12 md:-right-12 w-32 h-32 md:w-48 md:h-48 z-0">
+                {/* Large Star */}
+                <svg viewBox="0 0 100 100" className="w-full h-full animate-spin-slow opacity-60">
+                  <polygon points="50,5 61,35 92,35 67,54 78,85 50,66 22,85 33,54 8,35 39,35" fill="#E0E7FF" />
+                </svg>
+                
+                {/* Small Stars */}
+                <svg viewBox="0 0 100 100" className="absolute top-0 left-0 w-16 h-16 md:w-20 md:h-20 animate-twinkle">
+                  <polygon points="50,10 55,30 75,30 60,42 65,62 50,50 35,62 40,42 25,30 45,30" fill="#C7D2FE" />
+                </svg>
+                
+                <svg viewBox="0 0 100 100" className="absolute bottom-4 right-4 w-12 h-12 md:w-16 md:h-16 animate-twinkle animation-delay-500">
+                  <polygon points="50,15 53,28 67,28 56,36 59,49 50,42 41,49 44,36 33,28 47,28" fill="#DDD6FE" />
+                </svg>
               </div>
-              {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-orange-400 rounded-full opacity-20 blur-2xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-blue-400 rounded-full opacity-20 blur-2xl"></div>
+              
+              <div className="relative rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] group z-10">
+                <img 
+                  src="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=900&h=700&fit=crop"
+                  alt="Community collaboration"
+                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                {/* Overlay gradient on hover */}
+                <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </div>
+              
+              {/* Animated Decorative Elements */}
+              <div className="absolute -top-6 -right-6 w-24 h-24 md:w-32 md:h-32 bg-linear-to-br from-orange-400 to-orange-500 rounded-full opacity-20 blur-3xl animate-pulse-slow"></div>
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 md:w-40 md:h-40 bg-linear-to-br from-blue-400 to-blue-500 rounded-full opacity-20 blur-3xl animate-pulse-slow animation-delay-500"></div>
+              
+              {/* Floating particles effect */}
+              <div className="absolute top-10 right-10 w-3 h-3 bg-purple-400 rounded-full animate-float"></div>
+              <div className="absolute bottom-20 left-10 w-2 h-2 bg-pink-400 rounded-full animate-float animation-delay-300"></div>
+              <div className="absolute top-1/2 right-5 w-2.5 h-2.5 bg-blue-400 rounded-full animate-float animation-delay-700"></div>
             </div>
           </div>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fade-in-right {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slide-in-left {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+        
+        @keyframes pulse-slow {
+          0%, 100% {
+            opacity: 0.2;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.3;
+            transform: scale(1.1);
+          }
+        }
+        
+        @keyframes bounce-slow {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-5px);
+          }
+        }
+        
+        @keyframes spin-slow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        
+        @keyframes twinkle {
+          0%, 100% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scale(1.2);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fade-in-up 0.8s ease-out forwards;
+        }
+        
+        .animate-fade-in-right {
+          animation: fade-in-right 0.8s ease-out forwards;
+        }
+        
+        .animate-slide-in-left {
+          animation: slide-in-left 0.6s ease-out forwards;
+        }
+        
+        .animate-fade-in {
+          animation: fade-in 1s ease-out forwards;
+        }
+        
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+        
+        .animate-bounce-slow {
+          animation: bounce-slow 2s ease-in-out infinite;
+        }
+        
+        .animate-spin-slow {
+          animation: spin-slow 20s linear infinite;
+        }
+        
+        .animate-twinkle {
+          animation: twinkle 3s ease-in-out infinite;
+        }
+        
+        .animation-delay-200 {
+          animation-delay: 0.2s;
+        }
+        
+        .animation-delay-300 {
+          animation-delay: 0.3s;
+        }
+        
+        .animation-delay-400 {
+          animation-delay: 0.4s;
+        }
+        
+        .animation-delay-500 {
+          animation-delay: 0.5s;
+        }
+        
+        .animation-delay-700 {
+          animation-delay: 0.7s;
+        }
+      `}</style>
     </div>
   );
 }

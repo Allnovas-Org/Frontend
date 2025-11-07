@@ -33,15 +33,16 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full bg-white  backdrop-blur-md z-50 2xl:px-[200px]">
-        <nav className="flex justify-between items-center px-6 lg:px-12 py-3">
+      <div className="fixed top-0 left-0 w-full bg-white backdrop-blur-md z-50 2xl:px-[200px]">
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex justify-between items-center px-6 lg:px-12 py-3">
           {/* Logo */}
           <div className="flex items-center">
             <img src={Logo} alt="AllNova Logo" className="h-10 w-auto" />
           </div>
 
-          {/* Center Nav Links - Desktop */}
-          <div className="hidden lg:flex">
+          {/* Center Nav Links */}
+          <div className="flex">
             <ul className="flex space-x-10 items-center text-semibold">
               <li>
                 <NavLink to="/freelancers" className={navLinkClass}>
@@ -54,13 +55,8 @@ const Navbar = () => {
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/pro" className={navLinkClass}>
-                  Go Pro
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/offshore" className={navLinkClass}>
-                  Offshore Services
+                <NavLink to="/resources" className={navLinkClass}>
+                  Resources
                 </NavLink>
               </li>
               <li>
@@ -68,32 +64,40 @@ const Navbar = () => {
                   About Us
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/offshore" className={navLinkClass}>
+                  Offshore Services
+                </NavLink>
+              </li>
             </ul>
           </div>
 
-          {/* Right Section - Desktop */}
-          <div className="hidden lg:flex items-center space-x-6">
+          {/* Right Section */}
+          <div className="flex items-center space-x-6">
             <button
               onClick={() => setIsSignInModalOpen(true)}
-              className="text-[#F05658] hover:text-[#F05640] transition-colors duration-200"
+              className="text-[#F05658] hover:text-[#F05640] transition-colors duration-200 font-medium"
             >
               Sign In
             </button>
             <button
               onClick={() => setIsSignupModalOpen(true)}
-              className="bg-[#F05658] hover:bg-[#c16456] rounded-2xl px-5 text-white py-1 
+              className="bg-[#F05658] hover:bg-[#c16456] rounded-full px-6 text-white py-2 
                        transition-colors duration-200 focus:outline-none focus:ring-2 
                        focus:ring-offset-2 focus:ring-[#F05658]"
             >
               Join
             </button>
           </div>
+        </nav>
 
-          {/* Mobile Menu Button */}
+        {/* Mobile Navigation */}
+        <nav className="lg:hidden flex justify-between items-center px-4 py-3 bg-[#F056581A]">
+          {/* Mobile Menu Button - LEFT */}
           <button
             onClick={toggleMobileMenu}
-            className="lg:hidden flex flex-col justify-center items-center w-10 h-10 
-                     focus:outline-none group"
+            className="flex flex-col justify-center items-center w-10 h-10 
+                     focus:outline-none group z-50"
             aria-label="Toggle menu"
           >
             <span
@@ -112,9 +116,22 @@ const Navbar = () => {
               }`}
             ></span>
           </button>
+
+          {/* Logo - CENTER */}
+          <div className="absolute left-1/2 transform -translate-x-1/2">
+            <img src={Logo} alt="AllNova Logo" className="h-10 w-auto" />
+          </div>
+
+          {/* Join Button - RIGHT */}
+          <h3
+            onClick={() => setIsSignupModalOpen(true)}
+            className="text-[#F05658] hover:text-[#c16456] text-lg font-bold cursor-pointer"
+          >
+            Join
+          </h3>
         </nav>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu Dropdown */}
         <div
           className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
             isMobileMenuOpen ? "max-h-screen" : "max-h-0"
@@ -142,20 +159,11 @@ const Navbar = () => {
               </li>
               <li>
                 <NavLink
-                  to="/pro"
+                  to="/resources"
                   className={mobileNavLinkClass}
                   onClick={closeMobileMenu}
                 >
-                  Go Pro
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/offshore"
-                  className={mobileNavLinkClass}
-                  onClick={closeMobileMenu}
-                >
-                  Offshore Services
+                  Resources
                 </NavLink>
               </li>
               <li>
@@ -167,10 +175,19 @@ const Navbar = () => {
                   About Us
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/offshore"
+                  className={mobileNavLinkClass}
+                  onClick={closeMobileMenu}
+                >
+                  Offshore Services
+                </NavLink>
+              </li>
             </ul>
 
-            {/* Mobile Auth Buttons */}
-            <div className="mt-6 space-y-3 border-t border-gray-200 pt-4">
+            {/* Mobile Sign In Button */}
+            <div className="mt-6 border-t border-gray-200 pt-4">
               <button
                 onClick={() => {
                   setIsSignInModalOpen(true);
@@ -180,18 +197,6 @@ const Navbar = () => {
                          transition-colors duration-200 font-medium"
               >
                 Sign In
-              </button>
-              <button
-                onClick={() => {
-                  setIsSignupModalOpen(true);
-                  closeMobileMenu();
-                }}
-                className="w-full bg-[#F05658] hover:bg-[#c16456] rounded-2xl 
-                         text-white py-2 transition-colors duration-200 
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 
-                         focus:ring-[#F05658]"
-              >
-                Join
               </button>
             </div>
           </div>
