@@ -34,7 +34,7 @@ export default function TemplateCommunity() {
   return (
     <div className="w-full">
       {/* Templates Section */}
-      <div className="bg-linear-to-br from-[#111111] via-[#1E1D1A] to-[#1C3843] py-16 md:py-20 px-4 md:px-6">
+      <div className="bg-linear-to-br from-[#111111] via-[#1E1D1A] to-[#1C3843] py-16 md:py-20 px-4 md:px-5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 md:mb-14 relative">
             <h2 className="mobile-font text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 px-4 relative inline-block">
@@ -122,7 +122,7 @@ export default function TemplateCommunity() {
       </div>
 
       {/* Community Section */}
-      <div className="bg-linear-to-br from-gray-50 to-white py-16 md:py-20 lg:py-24 px-8 md:px-12 relative overflow-hidden">
+      <div className="bg-white py-16 md:py-20 lg:py-24 px-8 md:px-12 relative overflow-hidden">
       
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-20 items-center">
