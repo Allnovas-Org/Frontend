@@ -1,68 +1,72 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React from 'react';
 
 const SpecializedNiches = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState(0);
+  const [currentTranslate, setCurrentTranslate] = useState(0);
+  const [prevTranslate, setPrevTranslate] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const niches = [
     {
       title: 'UI/UX Designer',
-      image: 'https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?w=400&h=300&fit=crop',
+      image: '/images/niche-1.png',
       bgColor: 'bg-blue-900',
     },
     {
       title: 'Web Development',
-      image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?w=400&h=300&fit=crop',
+      image: '/images/niche-2.png',
       bgColor: 'bg-purple-900',
     },
     {
       title: 'Mobile App Development',
-      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop',
+      image: '/images/niche-3.png',
       bgColor: 'bg-indigo-600',
     },
     {
       title: 'Graphics Design',
-      image: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=400&h=300&fit=crop',
+      image: '/images/niche-4.png',
       bgColor: 'bg-pink-500',
     },
     {
       title: 'Video Editing & Animation',
-      image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop',
+      image: '/images/niche-5.png',
       bgColor: 'bg-red-600',
     },
     {
       title: 'Illustration & Digital Art',
-      image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=300&fit=crop',
+      image: '/images/niche-6.png',
       bgColor: 'bg-orange-600',
     },
     {
       title: 'Programming & Tech',
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop',
+      image: '/images/niche-7.png',
       bgColor: 'bg-teal-700',
     },
     {
       title: 'Social Media Design & Mgt',
-      image: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=400&h=300&fit=crop',
+      image: '/images/niche-8.png',
       bgColor: 'bg-cyan-600',
     },
     {
       title: 'Presentation Design',
-      image: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&h=300&fit=crop',
+      image: '/images/niche-9.png',
       bgColor: 'bg-violet-600',
     },
   ];
 
-  // Responsive: 4 on desktop, 2 on mobile
-  const [itemsPerView, setItemsPerView] = useState(4);
+  const [itemsPerView, setItemsPerView] = useState(5);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setItemsPerView(2);
       } else {
-        setItemsPerView(4);
+        setItemsPerView(5);
       }
     };
 
@@ -76,7 +80,7 @@ const SpecializedNiches = () => {
   const nextSlide = () => {
     setCurrentIndex((prev) => {
       if (prev >= maxIndex) {
-        return 0; // Loop back to start
+        return 0;
       }
       return prev + 1;
     });
@@ -85,20 +89,62 @@ const SpecializedNiches = () => {
   const prevSlide = () => {
     setCurrentIndex((prev) => {
       if (prev <= 0) {
-        return maxIndex; // Loop to end
+        return maxIndex;
       }
       return prev - 1;
     });
   };
 
+  // Drag handlers
+  const getPositionX = (event: React.MouseEvent | React.TouchEvent) => {
+    return 'touches' in event ? event.touches[0].clientX : event.clientX;
+  };
+
+  const handleDragStart = (event: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true);
+    setStartPos(getPositionX(event));
+    if (sliderRef.current) {
+      sliderRef.current.style.cursor = 'grabbing';
+    }
+  };
+
+  const handleDragMove = (event: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    const currentPosition = getPositionX(event);
+    const diff = currentPosition - startPos;
+    setCurrentTranslate(prevTranslate + diff);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+    if (sliderRef.current) {
+      sliderRef.current.style.cursor = 'grab';
+    }
+
+    const movedBy = currentTranslate - prevTranslate;
+    const threshold = 100; // Minimum drag distance to trigger slide change
+
+    if (movedBy < -threshold && currentIndex < maxIndex) {
+      setCurrentIndex(currentIndex + 1);
+    } else if (movedBy > threshold && currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+
+    setCurrentTranslate(0);
+    setPrevTranslate(0);
+  };
+
   // Auto-play functionality
   useEffect(() => {
+    if (isDragging) return; // Don't auto-play while dragging
+    
     const interval = setInterval(() => {
       nextSlide();
-    }, 4000); // Change slide every 4 seconds
+    }, 4000);
 
     return () => clearInterval(interval);
-  }, [currentIndex, maxIndex]);
+  }, [currentIndex, maxIndex, isDragging]);
 
   return (
     <section className="py-20 px-4 bg-linear-to-b from-gray-50 to-white relative overflow-hidden">
@@ -109,91 +155,78 @@ const SpecializedNiches = () => {
       <div className="max-w-7xl mx-auto 2xl:px-[200px] relative z-10">
         {/* Header */}
         <div className="text-center mb-16 relative">
-          {/* Subtitle */}
-          <p className="text-purple-600 font-semibold text-sm uppercase tracking-wider mb-4">
+          <p className="text-purple-600 font-semibold text-sm tracking-wider mb-4">
             Specialized Niches
           </p>
 
-          {/* Main Title with Crown Decoration */}
           <div className="relative inline-block">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Your vision, <span className="text-[#F05658]">Our niche</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Your vision, Our niche
             </h2>
             
-            {/* Crown/Sparkle Decoration - positioned to the right */}
-            <div className="absolute -top-4 -right-16 md:-right-20">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 100 100"
-                className="w-12 h-12 md:w-16 md:h-16 text-[#F05658] animate-pulse"
-                fill="currentColor"
-              >
-                {/* Crown/burst design */}
-                <circle cx="85" cy="15" r="4" className="animate-bounce" style={{ animationDelay: '0s', animationDuration: '2s' }} />
-                <circle cx="75" cy="5" r="3" className="animate-bounce" style={{ animationDelay: '0.3s', animationDuration: '2s' }} />
-                <circle cx="90" cy="8" r="3" className="animate-bounce" style={{ animationDelay: '0.6s', animationDuration: '2s' }} />
-                
-                {/* Main burst lines */}
-                <line x1="50" y1="50" x2="70" y2="20" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="80" y2="35" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="85" y2="50" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="80" y2="65" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                <line x1="50" y1="50" x2="70" y2="80" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-              </svg>
+            <div className="absolute -top-8 -right-5">
+              <img src="/images/misc-06.svg" alt="Crown Decoration" className="w-10 h-10 md:w-12 md:h-12 animate-bounce-slow" />
             </div>
           </div>
 
-          {/* Description */}
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             We connect clients with high-end freelancers across these categories
           </p>
         </div>
 
-        {/* Carousel */}
+        {/* Carousel with Drag Support */}
         <div className="relative px-4 md:px-12">
-          <div className="overflow-hidden rounded-2xl">
+          <div 
+            className="overflow-hidden"
+            ref={sliderRef}
+          >
             <div
-              className="flex transition-transform duration-700 ease-in-out gap-5 md:gap-6"
+              className="flex transition-transform duration-700 ease-out gap-4 md:gap-5 select-none"
               style={{ 
-                transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` 
+                transform: `translateX(calc(-${currentIndex * (100 / itemsPerView)}% + ${isDragging ? currentTranslate : 0}px))`,
+                cursor: isDragging ? 'grabbing' : 'grab',
+                transition: isDragging ? 'none' : 'transform 0.7s ease-out'
               }}
+              onMouseDown={handleDragStart}
+              onMouseMove={handleDragMove}
+              onMouseUp={handleDragEnd}
+              onMouseLeave={handleDragEnd}
+              onTouchStart={handleDragStart}
+              onTouchMove={handleDragMove}
+              onTouchEnd={handleDragEnd}
             >
               {niches.map((niche, index) => (
                 <div 
                   key={index} 
                   className={`shrink-0 ${
-                    itemsPerView === 2 ? 'w-[calc(50%-10px)]' : 'w-[calc(25%-18px)]'
+                    itemsPerView === 2 ? 'w-[calc(50%-8px)]' : 'w-[calc(20%-16px)]'
                   }`}
-                  onMouseEnter={() => setHoveredCard(index)}
+                  onMouseEnter={() => !isDragging && setHoveredCard(index)}
                   onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className={`bg-white rounded-3xl overflow-hidden shadow-md hover:shadow-2xl cursor-pointer transform transition-all duration-500 h-full flex flex-col ${
-                    hoveredCard === index ? 'scale-[1.05] -translate-y-3' : ''
+                  {/* Card with border */}
+                  <div className={`bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer transform transition-all duration-500 h-full flex flex-col border border-gray-200 ${
+                    hoveredCard === index ? 'scale-[1.03] -translate-y-2' : ''
                   }`}>
-                    {/* Image Container - Fixed Height */}
-                    <div className="relative h-56 md:h-72 overflow-hidden shrink-0">
+                    {/* Image Container - Rounded top only */}
+                    <div className="relative h-48 md:h-56 overflow-hidden shrink-0">
                       <img
                         src={niche.image}
                         alt={niche.title}
-                        className={`w-full h-full object-cover transition-transform duration-700 ${
-                          hoveredCard === index ? 'scale-110 brightness-110' : ''
+                        className={`w-full h-full object-cover transition-transform duration-700 rounded-t-2xl p-1 ${
+                          hoveredCard === index ? 'scale-110' : ''
                         }`}
+                        draggable="false"
                       />
-                      {/* Gradient Overlay - More subtle */}
-                      <div className={`absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent transition-opacity duration-500 ${
-                        hoveredCard === index ? 'opacity-60' : 'opacity-40'
-                      }`}></div>
-                      
-                      {/* Colored accent on hover */}
-                      <div className={`absolute inset-0 ${niche.bgColor} opacity-0 transition-opacity duration-500 ${
-                        hoveredCard === index ? 'opacity-20' : ''
-                      }`}></div>
                     </div>
 
-                    {/* Title - Fixed Height */}
-                    <div className="p-5 md:p-6 text-center bg-white grow flex items-center justify-center">
-                      <h3 className={`text-sm md:text-lg font-bold text-gray-900 transition-all duration-300 leading-snug ${
-                        hoveredCard === index ? 'text-[#F05658]' : ''
+                    {/* Thin Divider Line */}
+                    <div className="h-px bg-linear-to-r from-transparent via-gray-300 to-transparent"></div>
+
+                    {/* Title Section */}
+                    <div className="p-4 text-center bg-white grow flex items-center justify-center">
+                      <h3 className={`text-xs md:text-sm font-semibold text-gray-800 hover:text-[#F05658] transition-all duration-300 leading-snug ${
+                        hoveredCard === index ? 'text-[#F05658] scale-105' : ''
                       }`}>
                         {niche.title}
                       </h3>

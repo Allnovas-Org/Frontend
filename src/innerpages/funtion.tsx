@@ -22,8 +22,14 @@ const Function = () => {
           <path d="M12 8.5v7M8.5 12h7" />
         </svg>
       ),
-      bgColor: "from-blue-900 to-blue-700",
+      // Sharp transition - 45deg from bottom-left when collapsed
+      bgColorCollapsed: "from-blue-950 from-40% via-blue-800 via-50% to-blue-600 to-60%",
+      // Sharp transition - 180deg from bottom when expanded
+      bgColorExpanded: "from-blue-950 from-50% via-blue-800 via-60% to-blue-600 to-70%",
+      gradientDirectionCollapsed: "bg-gradient-to-tr", // bottom-left to top-right (45deg)
+      gradientDirectionExpanded: "bg-gradient-to-t", // bottom to top (180deg)
       description: "Work from anywhere, build your career. Your style, your terms.",
+      buttonColor: "bg-blue-800/50 hover:bg-blue-700/60",
     },
     {
       title: "Functionality",
@@ -40,8 +46,14 @@ const Function = () => {
           <circle cx="12" cy="12" r="11" />
         </svg>
       ),
-      bgColor: "from-purple-900 to-purple-600",
+      // Sharp transition - 45deg from top-left when collapsed
+      bgColorCollapsed: "from-purple-950 from-40% via-purple-800 via-50% to-purple-600 to-60%",
+      // Sharp transition - 180deg from bottom when expanded (already expanded by default)
+      bgColorExpanded: "from-purple-950 from-50% via-purple-800 via-60% to-purple-600 to-70%",
+      gradientDirectionCollapsed: "bg-gradient-to-br", // top-left to bottom-right (45deg)
+      gradientDirectionExpanded: "bg-gradient-to-t", // bottom to top (180deg)
       description: "Connect, create and earn with tools that make freelancing seamless.",
+      buttonColor: "bg-purple-800/50 hover:bg-purple-700/60",
     },
     {
       title: "Security",
@@ -57,8 +69,14 @@ const Function = () => {
           <path d="M9 12l2 2 4-4" />
         </svg>
       ),
-      bgColor: "from-green-900 to-green-700",
+      // Sharp transition - 45deg from top-left when collapsed
+      bgColorCollapsed: "from-green-950 from-40% via-green-800 via-50% to-green-600 to-60%",
+      // Sharp transition - 180deg from bottom when expanded
+      bgColorExpanded: "from-green-950 from-50% via-green-800 via-60% to-green-600 to-70%",
+      gradientDirectionCollapsed: "bg-gradient-to-br", // top-left to bottom-right (45deg)
+      gradientDirectionExpanded: "bg-gradient-to-t", // bottom to top (180deg)
       description: "Transparent systems and reduced service fees that protect your hustle.",
+      buttonColor: "bg-green-800/50 hover:bg-green-700/60",
     },
   ];
 
@@ -67,13 +85,13 @@ const Function = () => {
       <div className="max-w-7xl mx-auto 2xl:px-[200px]">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <p className="text-purple-600 font-semibold text-sm uppercase tracking-wider mb-4">
+          <p className="text-purple-600 font-semibold text-sm tracking-wider mb-4">
             Our Mission
           </p>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4 leading-tight">
             Building A Trusted Ecosystem Where
             <br />
-            <span className="text-[#F05658]">Talents Thrive And Opportunities Grow</span>
+            Talents Thrive And Opportunities Grow
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             Secured payments, verified talents and transparent projects
@@ -85,15 +103,8 @@ const Function = () => {
           {features.map((feature, index) => {
             const isExpanded = hoveredIndex === index;
             
-            // Corner styles based on position
-            let cornerClass = 'rounded-3xl';
-            if (index === 0) {
-              cornerClass = 'rounded-tl-none rounded-bl-3xl rounded-br-none rounded-tr-3xl'; // Left card
-            } else if (index === 1) {
-              cornerClass = 'rounded-tl-none rounded-bl-3xl rounded-br-none rounded-tr-3xl'; 
-            } else if (index === 2) {
-              cornerClass = 'rounded-tl-none rounded-bl-3xl rounded-br-none rounded-tr-3xl'; // Right card
-            }
+            // Corner styles - all cards have same style
+            const cornerClass = 'rounded-tl-none rounded-bl-3xl rounded-br-none rounded-tr-3xl';
             
             return (
               <div
@@ -108,12 +119,16 @@ const Function = () => {
                   flex-1
                 `}
               >
-                {/* Background Gradient */}
-                <div className={`absolute inset-0 bg-linear-to-br ${feature.bgColor} opacity-100`}></div>
+                {/* Background Gradient - Sharp transition line that shifts on hover */}
+                <div className={`absolute inset-0 transition-all duration-700 ${
+                  isExpanded 
+                    ? `${feature.gradientDirectionExpanded} ${feature.bgColorExpanded}`
+                    : `${feature.gradientDirectionCollapsed} ${feature.bgColorCollapsed}`
+                }`}></div>
                 
-                {/* Decorative Circles */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                {/* Decorative Circles for subtle glow */}
+                <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/5 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white/5 rounded-full blur-3xl"></div>
 
                 {/* Content */}
                 <div className={`relative z-10 flex flex-col transition-all duration-700 h-[400px] ${
@@ -122,7 +137,7 @@ const Function = () => {
                     : 'md:p-6 md:text-center p-8 text-center justify-between'
                 }`}>
                   {/* Icon - Always at top */}
-                  <div className="text-white/80 transition-all duration-700 mx-auto">
+                  <div className="text-white/90 transition-all duration-700 mx-auto">
                     {feature.icon}
                   </div>
 
@@ -142,7 +157,7 @@ const Function = () => {
                         ? 'md:max-h-40 md:opacity-100 max-h-40 opacity-100' 
                         : 'md:max-h-0 md:opacity-0 max-h-40 opacity-100'
                     }`}>
-                      <p className="text-white/90 text-base mb-0 leading-relaxed">
+                      <p className="text-white/90 text-base mb-0 leading-relaxed mt-4">
                         {feature.description}
                       </p>
                     </div>
@@ -151,11 +166,7 @@ const Function = () => {
                   {/* Button - Only visible when expanded, stays at bottom */}
                   {isExpanded && (
                     <div className="mt-auto transition-all duration-700 text-center">
-                      <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${
-                        index === 0 ? 'bg-blue-800/70 hover:bg-blue-700' :
-                        index === 1 ? 'bg-purple-800/70 hover:bg-purple-700' :
-                        'bg-green-800/70 hover:bg-green-700'
-                      }`}>
+                      <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${feature.buttonColor}`}>
                         Get Started
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -168,11 +179,7 @@ const Function = () => {
                   <div className={`md:hidden mt-auto transition-all duration-700 text-center overflow-hidden ${
                     isExpanded ? 'max-h-0 opacity-0' : 'max-h-20 opacity-100'
                   }`}>
-                    <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${
-                      index === 0 ? 'bg-blue-800/70 hover:bg-blue-700' :
-                      index === 1 ? 'bg-purple-800/70 hover:bg-purple-700' :
-                      'bg-green-800/70 hover:bg-green-700'
-                    }`}>
+                    <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${feature.buttonColor}`}>
                       Get Started
                       <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -181,7 +188,7 @@ const Function = () => {
                   </div>
 
                   {/* Hover Effect Overlay */}
-                  <div className={`absolute inset-0 bg-white/0 transition-all duration-700 ${
+                  <div className={`absolute inset-0 bg-white/0 transition-all duration-700 pointer-events-none ${
                     isExpanded ? 'bg-white/5' : ''
                   }`}></div>
                 </div>

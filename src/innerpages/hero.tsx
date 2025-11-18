@@ -62,8 +62,8 @@ const HeroSection = () => {
   const currentRightTestimonial = testimonials.right[currentTestimonialIndex];
 
   return (
-      <div className="bg-linear-to-br from-purple-50 via-white to-red-50 pt-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 xl:px-24 py-16 lg:py-20">
+      <div className="bg-white pt-24 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 xl:px-24 py-16 lg:py-18">
         {/* Floating Testimonial Cards */}
         <div className="relative">
           {/* Left Testimonial - Image on TOP LEFT outside box */}
@@ -118,7 +118,7 @@ const HeroSection = () => {
           <div className="text-center max-w-4xl mx-auto relative z-10">
             {/* Badge */}
             <div className="inline-block mb-6">
-              <span className="bg-purple-100 text-purple-700 px-5 py-2 rounded-full text-sm font-medium">
+              <span className="text-[#6A0DAD] px-5 py-2 text-sm font-medium">
                 Designed for modern collaboration
               </span>
             </div>
@@ -137,7 +137,7 @@ const HeroSection = () => {
             <h1 className="mobile-font text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               <span className="text-gray-900">Co-Creating Your Vision,</span>
               <br />
-              <span className="bg-linear-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
+              <span className="text-[#F05658]">
                 One Step at a Time
               </span>
             </h1>
@@ -155,9 +155,9 @@ const HeroSection = () => {
                   placeholder="What are you looking for?"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-6 py-4 pr-14 rounded-full border-2 border-gray-200 focus:border-red-500 focus:outline-none text-base lg:text-lg transition-all shadow-md group-hover:shadow-lg"
+                  className="w-full px-6 py-4 pr-14 rounded-full border-2 border-gray-200 focus:outline-none text-base lg:text-lg transition-all shadow-md group-hover:shadow-lg"
                 />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white p-2.5 rounded-full transition-all transform hover:scale-105">
+                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#F05658] text-white p-2.5 rounded-full transition-all transform hover:scale-105 cursor-pointer">
                   <Search size={20} />
                 </button>
               </div>
@@ -169,7 +169,7 @@ const HeroSection = () => {
               {popularSearches.map((search, index) => (
                 <button
                   key={index}
-                  className="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full text-xs lg:text-sm font-medium transition-all hover:border-red-400 hover:text-red-500 hover:shadow-sm"
+                  className="bg-gray-100 border border-[#F3F4F6] text-gray-700 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full text-xs lg:text-sm font-medium transition-all hover:text-[#F05658] hover:shadow-sm cursor-pointer"
                 >
                   {search}
                 </button>
