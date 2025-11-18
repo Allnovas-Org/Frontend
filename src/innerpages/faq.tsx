@@ -120,8 +120,8 @@ export default function ArticlesFAQ() {
               
             </div>
             
-            <p className="text-gray-600 text-sm md:text-base max-w-2xl mx-auto mt-6">
-              These are the commonly asked questions on Allnovas. Still have some questions? <a href="#" className="text-red-500 hover:text-red-600 font-medium">Email us</a>
+            <p className="text-gray-600 text-sm md:text-base mx-auto mt-6">
+              These are the commonly asked questions on Allnovas. Still have some questions? <a href="#" className="text-[#F05658] hover:text-[#f04446] font-medium">Email us</a>
             </p>
           </div>
 
@@ -136,7 +136,7 @@ export default function ArticlesFAQ() {
                 }}
                 className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
                   activeTab === tab
-                    ? 'bg-red-500 text-white shadow-md'
+                    ? 'bg-[#F05658] text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
               >
