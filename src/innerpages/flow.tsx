@@ -64,15 +64,15 @@ const ElevateWorkflow = () => {
                   : 'opacity-0 translate-y-20 scale-95'
               }`}
             >
-              {/* Main Image Container with Floating Animation */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl animate-float">
+              {/* Main Image Container with Floating Animation - Landscape Orientation */}
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl animate-float">
                 <img
                   src={qst}
                   alt="Question mark with stones"
-                  className="w-full h-[450px] md:h-[500px] object-cover transform hover:scale-105 transition-transform duration-700"
+                  className="w-full h-[300px] md:h-[350px] object-cover transform hover:scale-105 transition-transform duration-700"
                 />
                 {/* Subtle overlay gradient */}
-                <div className="absolute inset-0 bg-linear-to-br from-gray-900/10 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-900/10 to-transparent"></div>
               </div>
 
               {/* Decorative animated circles */}
@@ -89,13 +89,13 @@ const ElevateWorkflow = () => {
           <div>
             {/* Title - Fade in from right */}
             <h2 
-              className={`text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight transform transition-all duration-1000 ${
+              className={`text-3xl md:text-4xl font-semibold text-gray-900 mb-4 leading-tight transform transition-all duration-1000 ${
                 isVisible 
                   ? 'opacity-100 translate-x-0' 
                   : 'opacity-0 translate-x-10'
               }`}
             >
-              Elevate Your Workflow with <span className="text-[#F05658]">Allnovas.</span>
+              Elevate Your Workflow with Allnovas.
             </h2>
 
             {/* Subtitle - Fade in from right with delay */}
@@ -110,11 +110,11 @@ const ElevateWorkflow = () => {
             </p>
 
             {/* Benefits List - Staggered drop-in animation */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               {benefits.map((benefit, index) => (
                 <div
                   key={index}
-                  className={`flex items-start space-x-4 group transform transition-all duration-700 ${
+                  className={`flex items-start space-x-4 transform transition-all duration-700 ${
                     isVisible 
                       ? 'opacity-100 translate-y-0' 
                       : 'opacity-0 -translate-y-10'
@@ -123,18 +123,16 @@ const ElevateWorkflow = () => {
                     transitionDelay: `${(index + 1) * 200}ms`,
                   }}
                 >
-                  {/* Animated Icon Badge */}
-                  <div className="shrink-0 relative">
-                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-[#F05658] to-[#c84446] text-white flex items-center justify-center font-bold text-base shadow-lg group-hover:shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                  {/* Icon Badge with Gradient */}
+                  <div className="shrink-0">
+                    <div className="w-6 h-6 mt-1 rounded-full bg-linear-to-b from-[#5e1e2a] via-[#C73E42] to-[#E55A5D] text-white flex items-center justify-center font-bold text-base shadow-md">
                       {benefit.icon}
                     </div>
-                    {/* Pulsing ring effect */}
-                    <div className="absolute inset-0 rounded-full bg-[#F05658] opacity-0 group-hover:opacity-20 group-hover:scale-150 transition-all duration-500"></div>
                   </div>
 
                   {/* Content */}
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#F05658] transition-colors duration-300">
+                    <h3 className="font-semibold text-gray-900 mb-2">
                       {benefit.title}
                     </h3>
                     <p className="text-gray-600 leading-relaxed">

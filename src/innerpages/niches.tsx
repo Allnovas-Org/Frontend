@@ -147,7 +147,7 @@ const SpecializedNiches = () => {
   }, [currentIndex, maxIndex, isDragging]);
 
   return (
-    <section className="py-20 px-4 bg-linear-to-b from-gray-50 to-white relative overflow-hidden">
+    <section className="py-20 px-4 bg-white relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-20 left-10 w-72 h-72 bg-purple-100 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
