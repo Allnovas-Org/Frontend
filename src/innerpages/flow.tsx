@@ -48,12 +48,12 @@ const ElevateWorkflow = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-20 px-4 bg-white relative overflow-hidden">
+    <section ref={sectionRef} className="py-20 px-5 bg-white relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute top-10 right-10 w-72 h-72 bg-purple-200 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
       
-      <div className="max-w-7xl mx-auto 2xl:px-[200px] relative z-10">
+      <div className="max-w-6xl mx-auto 2xl:px-[200px] relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left Side - Image with Bounce Animation */}
           <div className="relative">

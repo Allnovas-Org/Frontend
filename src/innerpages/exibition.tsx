@@ -1,31 +1,32 @@
+import { ArrowRight } from 'lucide-react';
 import React from 'react';
 
 export default function TemplateCommunity() {
   const templates = [
     {
       id: 1,
-      image: 'https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800&h=1000&fit=crop',
+      image: '/images/template-1.png',
       title: 'Art Exhibit',
       featured: true
     },
     {
       id: 2,
-      image: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=600&h=400&fit=crop',
+      image: '/images/template-2.png',
       title: 'Movie Streaming'
     },
     {
       id: 3,
-      image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=400&fit=crop',
+      image: '/images/template-3.png',
       title: 'Portfolio Grid'
     },
     {
       id: 4,
-      image: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=400&fit=crop',
+      image: '/images/template-4.png',
       title: 'Product Showcase'
     },
     {
       id: 5,
-      image: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&h=400&fit=crop',
+      image: '/images/template-5.png',
       title: 'Creative Gallery'
     }
   ];
@@ -33,15 +34,15 @@ export default function TemplateCommunity() {
   return (
     <div className="w-full">
       {/* Templates Section */}
-      <div className="bg-linear-to-br from-[#1a1a1a] via-[#2d3436] to-[#1e3a3a] py-16 md:py-20 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="bg-linear-to-br from-[#111111] via-[#1E1D1A] to-[#1C3843] py-16 md:py-20 px-4 md:px-6">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 md:mb-14 relative">
             <h2 className="mobile-font text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 px-4 relative inline-block">
               Build Templates. Download Free. Grow Together
               <img 
               src="/images/arrow.svg"
               alt="Arrow"
-              className="absolute -top-8 -right-4 md:-top-12 md:-right-8 w-10 h-12 md:w-12 md:h-16"
+              className="absolute top-12 -right-4 md:top-6 md:-right-4 w-10 h-12 md:w-12 md:h-16"
               />
             </h2>
             <p className="text-gray-300 text-sm md:text-base">
@@ -111,11 +112,10 @@ export default function TemplateCommunity() {
           </div>
 
           <div className="text-center">
-            <button className="text-white text-sm md:text-base font-medium hover:text-teal-300 transition-colors inline-flex items-center gap-2 group">
-              <span>Browse Template</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="transition-transform group-hover:translate-x-1">
-                <path d="M7 4L13 10L7 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+             <button className="group pt-4 text-white mx-auto font-semibold shadow-lg cursor-pointer flex items-center justify-center gap-2 relative overflow-hidden">
+              <ArrowRight className="w-4 h-4 transition-all duration-500 ease-in-out group-hover:opacity-0 group-hover:-translate-x-8" />
+              Browse Templates
+              <ArrowRight className="w-4 h-4 opacity-0 -translate-x-8 transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:translate-x-0" />
             </button>
           </div>
         </div>
@@ -123,24 +123,20 @@ export default function TemplateCommunity() {
 
       {/* Community Section */}
       <div className="bg-linear-to-br from-gray-50 to-white py-16 md:py-20 lg:py-24 px-8 md:px-12 relative overflow-hidden">
-        {/* Background Decorative Text */}
-        <div className="absolute top-16 md:top-24 lg:top-32 -right-8 md:right-0 text-[100px] md:text-[180px] lg:text-[240px] font-bold text-gray-100 select-none pointer-events-none opacity-40 tracking-tighter">
-          WE
-        </div>
-
-        <div className="max-w-7xl mx-auto">
+      
+        <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 lg:gap-20 items-center">
             {/* Left Content */}
             <div className="relative z-10 animate-fade-in-up">
               <span className="text-purple-600 text-xs md:text-sm font-bold tracking-wider mb-4 block animate-slide-in-left">
                 Tribe
               </span>
-              <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-6xl font-bold text-gray-900 mb-5 md:mb-6 leading-tight relative inline-block animate-fade-in">
+              <h2 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-gray-900 mb-5 md:mb-6 leading-tight relative inline-block animate-fade-in">
                 Unlock Your Full Potential Using&nbsp;
                 <img 
                 src="/images/love.svg"
                 alt="Arrow"
-                className="absolute -top-8 right-2 md:-top-6 md:right-20 w-10 h-12 md:w-16 md:h-16"
+                className="absolute -top-10 right-2 md:-top-8 md:right-20 w-12 h-12 md:w-16 md:h-16"
                 />
                 <span className="relative inline-block">
                  Our Community
@@ -150,7 +146,7 @@ export default function TemplateCommunity() {
                 Where talents connect, collaborate and grow together. Find your space to learn, connect and grow
               </p>
 
-              <button className="bg-linear-to-r from-red-500 to-red-600 text-white px-7 md:px-9 py-3.5 md:py-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/30 hover:-translate-y-1 mb-10 md:mb-12 text-sm md:text-base transform hover:scale-105 animate-fade-in-up animation-delay-300 cursor-pointer">
+              <button className="bg-[#F05658] text-white px-7 md:px-9 py-3.5 md:py-4 rounded-xl font-semibold transition-all duration-300 hover:bg-gray-200 hover:text-[#F05658] mb-6 cursor-pointer">
                 Join Community
               </button>
 
@@ -222,7 +218,7 @@ export default function TemplateCommunity() {
               
               <div className="relative rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] group z-10">
                 <img 
-                  src="https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?w=900&h=700&fit=crop"
+                  src="/images/community.png"
                   alt="Community collaboration"
                   className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-110"
                 />
