@@ -1,23 +1,30 @@
 @import "tailwindcss";
 
-body{
-    font-family: 'Inter', sans-serif;
+@theme {
+	--color-primary: #f05658;
+	--font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+	--color-pinkish: #630071;
 }
-.mali-font{
-  font-family: 'Mali', cursive;
+
+body {
+	font-family: "Inter", sans-serif;
+}
+.mali-font {
+	font-family: "Mali", cursive;
 }
 @media (max-width: 640px) {
-  .mobile-font {
-    font-family: 'Mali', cursive;
-  }
+	.mobile-font {
+		font-family: "Mali", cursive;
+	}
 }
 
-h1{
-color: var(--typography-heading-1-h-1, #0F0F0F);
-text-align: center;
-/* WEB/Display/Small/SemiBold */
+h1 {
+	color: var(--typography-heading-1-h-1, #0f0f0f);
+	text-align: center;
+	/* WEB/Display/Small/SemiBold */
 
-font-size: 48px;
-font-style: normal;
-font-weight: 600;
-line-height: 120%; /* 57.6px */}
+	font-size: 48px;
+	font-style: normal;
+	font-weight: 600;
+	line-height: 120%; /* 57.6px */
+}
