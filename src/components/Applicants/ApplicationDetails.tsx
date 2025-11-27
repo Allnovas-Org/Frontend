@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { InfoBadge } from "../Applicants/help";
+import { Job } from "../../types";
 
 interface JobDetails {
   position: string;
@@ -13,7 +14,7 @@ interface JobDetails {
   skills: string[];
 }
 
-const job: JobDetails = {
+const job = {
   position: "Frontend Developer",
   company: "Company Name",
   experience: "2+ years",

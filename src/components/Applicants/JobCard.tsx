@@ -1,25 +1,26 @@
 import React, { useState } from "react";
 import { HeartIcon, TimeIcon } from "../../assets/applicants/customIcons";
 import Badge from "./Badge";
+import { Job } from "../../types";
 
 interface BadgeType {
   type: string;
   value: string;
 }
 
-export interface Job {
-  id: string;
-  position: string;
-  company: string;
-  logo: string;
-  applicants: number;
-  badges: BadgeType[];
-  description: string;
-  price: string;
-  posted: string;
-  postedDate: number;
-  hearted?: boolean;
-}
+// export interface Job {
+//   id: string;
+//   position: string;
+//   company: string;
+//   logo: string;
+//   applicants: number;
+//   badges: BadgeType[];
+//   description: string;
+//   price: string;
+//   posted: string;
+//   postedDate: number;
+//   hearted?: boolean;
+// }
 
 interface JobCardProps {
   job: Job;

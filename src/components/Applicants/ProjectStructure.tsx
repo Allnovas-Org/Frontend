@@ -1,10 +1,8 @@
 import React, { ChangeEvent } from "react";
 import { useFormik } from "formik";
 import { SectionTitle } from "../Applicants/help";
-// import attachIcon from "../assets/link.svg";
-// import removeIcon from "../assets/archive.svg";
-// import priceTag from "../assets/pricetag.png";
 import { FormContext } from "../../store/FormContext";
+import { Plus } from "lucide-react";
 
 const selectHowOptions = [
   {
@@ -26,6 +24,11 @@ const ProjectStructure: React.FC = () => {
     unifiedPayment: false,
   };
   const formRows = formik.values.formRows;
+  // Calculate total amount from formRows
+  const totalAmount = formRows.reduce((sum: number, row: any) => {
+    const val = parseFloat(row.amount);
+    return sum + (isNaN(val) ? 0 : val);
+  }, 0);
   const setduration = (how: typeof duration) =>
     formik.setFieldValue("duration", how);
   const setFormRows = (rows: typeof formRows) =>
@@ -132,7 +135,7 @@ const ProjectStructure: React.FC = () => {
                     background: "none",
                   }}
                 />
-                <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none'>
+                {/* <span className='absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none'>
                   <svg
                     width='16'
                     height='16'
@@ -148,7 +151,7 @@ const ProjectStructure: React.FC = () => {
                       strokeLinejoin='round'
                     />
                   </svg>
-                </span>
+                </span> */}
               </div>
             </div>
             <div className='flex flex-col w-full'>
@@ -191,11 +194,7 @@ const ProjectStructure: React.FC = () => {
           className='flex items-center gap-2 mt-2 text-primary font-semibold text-sm focus:outline-none'
           style={{ background: "none", border: "none" }}
         >
-          <img
-            src='/images/applicants/link.svg'
-            alt='plan'
-            className='w-4 h-4'
-          />
+          <Plus className='w-4 h-4' />
           Plan next phase
         </button>
       </div>
@@ -222,7 +221,13 @@ const ProjectStructure: React.FC = () => {
           </span>
         </div>
         <div className='flex items-center justify-end'>
-          <span className='text-2xl font-medium text-gray-dark'>$0.00</span>
+          <span className='text-2xl font-medium text-gray-dark'>
+            $
+            {totalAmount.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
         </div>
       </div>
     </div>

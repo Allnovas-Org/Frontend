@@ -24,4 +24,9 @@ export interface Job {
   amountBudget?: string;
   deliveryPeriod?: string;
   services?: string[];
+  experience?: string;
+  budget?: string;
+  delivery?: string;
+  about?: string;
+  hearted?: boolean;
 }

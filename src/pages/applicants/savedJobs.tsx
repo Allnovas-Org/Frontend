@@ -6,20 +6,7 @@ import {
   BackArrowIcon,
   FrontArrowIcon,
 } from "../../assets/applicants/customIcons";
-
-interface Job {
-  id: string;
-  position: string;
-  company: string;
-  logo: string;
-  applicants: number;
-  badges: Array<{ type: string; value: string }>;
-  description: string;
-  price: string;
-  posted: string;
-  postedDate: number;
-  hearted?: boolean;
-}
+import { Job } from "../../types";
 
 interface SavedJobsContextType {
   savedJobs: Job[];
