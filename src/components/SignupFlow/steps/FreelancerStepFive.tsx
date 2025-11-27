@@ -1,160 +1,143 @@
 import React, { useState } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Camera } from "lucide-react";
 
 interface FreelancerStepFiveProps {
-  onNext: () => void;
-  onBack: () => void;
+	onNext: () => void;
+	onBack: () => void;
 }
 
 const FreelancerStepFive: React.FC<FreelancerStepFiveProps> = ({
-  onNext,
-  onBack,
+	onNext,
+	onBack,
 }) => {
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [gender, setGender] = useState("");
+	const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validation
-    if (formData.password.length < 8) {
-      setError("Password must be at least 8 characters long");
-      return;
-    }
-    
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    
-    setError("");
-    console.log("Password created successfully");
-    onNext();
-  };
+	const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+		if (file) {
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setProfileImage(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+	const handleContinue = () => {
+		if (firstName && lastName && gender) {
+			onNext();
+		}
+	};
 
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
+	const isValid = firstName && lastName && gender;
 
-  const isFormValid = 
-    formData.password.length >= 8 && 
-    formData.password === formData.confirmPassword;
+	return (
+		<div className="flex flex-col h-full">
+			<button
+				onClick={onBack}
+				className="flex items-center gap-2 text-gray-700 mb-6 hover:text-gray-900 transition w-fit"
+			>
+				<ArrowLeft size={20} />
+				<span>Back</span>
+			</button>
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors w-fit"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        <span className="text-sm font-medium">Back</span>
-      </button>
+			<h1 className="text-3xl font-bold mb-2">Who's Joining Us Today?</h1>
+			<p className="text-gray-600 mb-8">Let's personalize your profile.</p>
 
-      {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Create a Secure Password
-        </h1>
-      </div>
+			{/* Profile Picture Upload */}
+			<div className="flex flex-col items-center mb-6">
+				<div className="relative">
+					<div className="w-24 h-24 rounded-full bg-purple-100 flex items-center justify-center overflow-hidden">
+						{profileImage ? (
+							<img
+								src={profileImage}
+								alt="Profile"
+								className="w-full h-full object-cover"
+							/>
+						) : (
+							<Camera className="w-8 h-8 text-[#6A0DAD]" />
+						)}
+					</div>
+					<input
+						type="file"
+						accept="image/*"
+						onChange={handleImageUpload}
+						className="hidden"
+						id="profile-upload"
+					/>
+				</div>
+				<label
+					htmlFor="profile-upload"
+					className="mt-3 text-sm text-gray-600 cursor-pointer"
+				>
+					Take a picture or{" "}
+					<span className="text-[#6A0DAD] font-semibold">select a photo</span>
+				</label>
+				<p className="text-xs text-gray-400 mt-1">Max 5MB</p>
+			</div>
 
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-        <div className="flex-1 space-y-6">
-          {/* Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={formData.password}
-                onChange={(e) => {
-                  setFormData({ ...formData, password: e.target.value });
-                  setError("");
-                }}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400 pr-12"
-                placeholder="Enter your Password"
-                required
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
+			{/* Name Fields */}
+			<div className="grid grid-cols-2 gap-4 mb-6">
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						First Name
+					</label>
+					<input
+						type="text"
+						value={firstName}
+						onChange={(e) => setFirstName(e.target.value)}
+						placeholder="Enter your name"
+						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
+					/>
+				</div>
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Last Name
+					</label>
+					<input
+						type="text"
+						value={lastName}
+						onChange={(e) => setLastName(e.target.value)}
+						placeholder="Enter your last name"
+						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
+					/>
+				</div>
+			</div>
 
-          {/* Confirm Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                value={formData.confirmPassword}
-                onChange={(e) => {
-                  setFormData({ ...formData, confirmPassword: e.target.value });
-                  setError("");
-                }}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400 pr-12"
-                placeholder="Re-enter your Password"
-                required
-              />
-              <button
-                type="button"
-                onClick={toggleConfirmPasswordVisibility}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
+			{/* Gender Field */}
+			<div className="mb-8">
+				<label className="block text-sm font-medium text-gray-700 mb-2">
+					Gender
+				</label>
+				<select
+					value={gender}
+					onChange={(e) => setGender(e.target.value)}
+					className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent appearance-none bg-white"
+				>
+					<option value="">Select your gender</option>
+					<option value="male">Male</option>
+					<option value="female">Female</option>
+					<option value="other">Other</option>
+					<option value="prefer-not-to-say">Prefer not to say</option>
+				</select>
+			</div>
 
-          {/* Error Message */}
-          {error && (
-            <p className="text-red-600 text-sm">{error}</p>
-          )}
-        </div>
-
-        {/* Continue Button */}
-        <div className="mt-8">
-          <button
-            type="submit"
-            disabled={!isFormValid}
-            className={`w-full py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
-              isFormValid
-                ? "bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
-                : "bg-gray-300 cursor-not-allowed"
-            }`}
-          >
-            Continue
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+			<button
+				onClick={handleContinue}
+				disabled={!isValid}
+				className={`w-full py-4 rounded-full font-semibold transition-all ${
+					isValid
+						? "bg-[#6A0DAD] text-white hover:bg-[#5a0b92] cursor-pointer"
+						: "bg-gray-200 text-gray-400 cursor-not-allowed"
+				}`}
+			>
+				Continue
+			</button>
+		</div>
+	);
 };
 
 export default FreelancerStepFive;
