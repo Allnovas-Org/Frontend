@@ -82,36 +82,9 @@ export default function AllNovaSections() {
   return (
     <div className="bg-white py-16 px-5 relative overflow-hidden">
       {/* Animated Background Blobs */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200 rounded-full blur-3xl opacity-20 animate-blob"></div>
+      {/* <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200 rounded-full blur-3xl opacity-20 animate-blob"></div>
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-red-200 rounded-full blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-blue-200 rounded-full blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-
-      {/* Video Section */}
-      <div className="max-w-6xl mx-auto mb-20 relative z-10">
-        <div className="text-center mb-4">
-          <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-3">
-            How AllNova Works
-          </h2>
-          <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-            Your Path to Success: From Choosing the Perfect Freelancer to Seamless<br className="hidden md:block" />
-            Deliveries at Your Virtual Doorstep
-          </p>
-        </div>
-        
-        <div 
-          ref={videoRef}
-          className="w-full max-w-4xl mx-auto mt-10 rounded-xl overflow-hidden shadow-2xl"
-        >
-          <div className="relative pb-[56.25%] h-0">
-            <iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&mute=1"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>
-      </div>
+      <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-blue-200 rounded-full blur-3xl opacity-20 animate-blob animation-delay-4000"></div> */}
 
       {/* Resources Section */}
       <div ref={resourcesRef} className="max-w-6xl mx-auto relative z-10">

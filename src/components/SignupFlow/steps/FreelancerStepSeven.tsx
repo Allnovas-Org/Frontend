@@ -1,197 +1,83 @@
-import React, { useState } from "react";
-import { ArrowLeft, Calendar, ChevronDown } from "lucide-react";
+import React from "react";
+import { ArrowLeft, Mail } from "lucide-react";
 
 interface FreelancerStepSevenProps {
-  onNext: () => void;
-  onBack: () => void;
+	onNext: () => void;
+	onBack: () => void;
 }
 
 const FreelancerStepSeven: React.FC<FreelancerStepSevenProps> = ({
-  onNext,
-  onBack,
+	onNext,
+	onBack,
 }) => {
-  const [formData, setFormData] = useState({
-    dateOfBirth: "",
-    country: "",
-    countryCode: "+234",
-    phoneNumber: "",
-  });
+	return (
+		<div className="flex flex-col h-full">
+			<button
+				onClick={onBack}
+				className="flex items-center gap-2 text-gray-700 mb-6 hover:text-gray-900 transition w-fit"
+			>
+				<ArrowLeft size={20} />
+				<span>Back</span>
+			</button>
 
-  const countryCodes = [
-    { code: "+1", country: "US", flag: "🇺🇸" },
-    { code: "+44", country: "GB", flag: "🇬🇧" },
-    { code: "+234", country: "NG", flag: "🇳🇬" },
-    { code: "+91", country: "IN", flag: "🇮🇳" },
-    { code: "+86", country: "CN", flag: "🇨🇳" },
-    { code: "+81", country: "JP", flag: "🇯🇵" },
-    { code: "+49", country: "DE", flag: "🇩🇪" },
-    { code: "+33", country: "FR", flag: "🇫🇷" },
-    { code: "+39", country: "IT", flag: "🇮🇹" },
-    { code: "+61", country: "AU", flag: "🇦🇺" },
-  ];
+			<h1 className="text-3xl font-bold mb-8">
+				Welcome! How would you like to join?
+			</h1>
 
-  const countries = [
-    "United States",
-    "United Kingdom",
-    "Nigeria",
-    "India",
-    "China",
-    "Japan",
-    "Germany",
-    "France",
-    "Italy",
-    "Australia",
-    "Canada",
-    "Brazil",
-    "Mexico",
-    "South Africa",
-    "Kenya",
-    "Ghana",
-    "Egypt",
-  ].sort();
+			<div className="space-y-4">
+				{/* Continue with Email */}
+				<button
+					onClick={onNext}
+					className="w-full flex items-center justify-center gap-3 py-4 px-6 border-2 border-gray-300 rounded-full hover:border-gray-400 transition-all"
+				>
+					<Mail size={20} className="text-gray-700" />
+					<span className="font-medium text-gray-700">Continue with email</span>
+				</button>
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Additional profile data:", formData);
-    onNext();
-  };
+				<div className="relative flex items-center justify-center my-6">
+					<div className="border-t border-gray-300 w-full"></div>
+					<span className="absolute bg-white px-4 text-gray-500 text-sm">
+						OR
+					</span>
+				</div>
 
-  const isFormValid =
-    formData.dateOfBirth !== "" &&
-    formData.country !== "" &&
-    formData.phoneNumber.length >= 8;
+				{/* Continue with Google */}
+				<button className="w-full flex items-center justify-center gap-3 py-4 px-6 border-2 border-gray-300 rounded-full hover:border-gray-400 transition-all">
+					<svg width="20" height="20" viewBox="0 0 24 24">
+						<path
+							fill="#4285F4"
+							d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+						/>
+						<path
+							fill="#34A853"
+							d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+						/>
+						<path
+							fill="#FBBC05"
+							d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+						/>
+						<path
+							fill="#EA4335"
+							d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+						/>
+					</svg>
+					<span className="font-medium text-gray-700">
+						Continue with Google
+					</span>
+				</button>
 
-  return (
-    <div className="flex flex-col h-full">
-      {/* Back Button */}
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors w-fit"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        <span className="text-sm font-medium">Back</span>
-      </button>
-
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Almost there</h1>
-        <p className="text-gray-600 text-base">
-          Let's personalize your profile.
-        </p>
-      </div>
-
-      {/* Form */}
-      <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
-        <div className="flex-1 space-y-6">
-          {/* Date of Birth */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Date of Birth
-            </label>
-            <div className="relative">
-              <input
-                type="date"
-                value={formData.dateOfBirth}
-                onChange={(e) =>
-                  setFormData({ ...formData, dateOfBirth: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400"
-                placeholder="mm / dd / yy"
-                required
-              />
-              <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* Country */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Country
-            </label>
-            <div className="relative">
-              <select
-                value={formData.country}
-                onChange={(e) =>
-                  setFormData({ ...formData, country: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 appearance-none cursor-pointer bg-white"
-                required
-              >
-                <option value="" disabled>
-                  Select country
-                </option>
-                {countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* Phone Number with Country Code */}
-          <div className="grid grid-cols-[120px_1fr] gap-3">
-            {/* Country Code */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Code
-              </label>
-              <div className="relative">
-                <select
-                  value={formData.countryCode}
-                  onChange={(e) =>
-                    setFormData({ ...formData, countryCode: e.target.value })
-                  }
-                  className="w-full px-3 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 appearance-none cursor-pointer bg-white"
-                  required
-                >
-                  {countryCodes.map((item) => (
-                    <option key={item.code} value={item.code}>
-                      {item.code} {item.flag}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-
-            {/* Phone Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, phoneNumber: e.target.value })
-                }
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400"
-                placeholder="81*********"
-                required
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Continue Button */}
-        <div className="mt-8">
-          <button
-            type="submit"
-            disabled={!isFormValid}
-            className={`w-full py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
-              isFormValid
-                ? "bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
-                : "bg-gray-300 cursor-not-allowed"
-            }`}
-          >
-            Continue
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+				{/* Continue with LinkedIn */}
+				<button className="w-full flex items-center justify-center gap-3 py-4 px-6 border-2 border-gray-300 rounded-full hover:border-gray-400 transition-all">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="#0077B5">
+						<path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+					</svg>
+					<span className="font-medium text-gray-700">
+						Continue with LinkedIn
+					</span>
+				</button>
+			</div>
+		</div>
+	);
 };
 
 export default FreelancerStepSeven;
