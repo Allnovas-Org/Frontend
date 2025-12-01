@@ -17,14 +17,6 @@ body {
 		font-family: "Mali", cursive;
 	}
 }
-
-h1 {
-	color: var(--typography-heading-1-h-1, #0f0f0f);
-	text-align: center;
-	/* WEB/Display/Small/SemiBold */
-
-	font-size: 48px;
-	font-style: normal;
-	font-weight: 600;
-	line-height: 120%; /* 57.6px */
+button {
+	cursor: pointer;
 }
