@@ -32,31 +32,29 @@ const LeftSide: React.FC<LeftSideProps> = ({
 				/>
 			)}
 
-			{currentStep === 2 && userType === "freelancer" && (
+			{currentStep === 2 && (
 				<FreelancerStepTwo onNext={onNext} onBack={onBack} />
 			)}
 
-			{currentStep === 3 && userType === "freelancer" && (
+			{currentStep === 3 && (
 				<FreelancerStepThree onNext={onNext} onBack={onBack} />
 			)}
 
-			{currentStep === 4 && userType === "freelancer" && (
+			{currentStep === 4 && (
 				<FreelancerStepFour onNext={onNext} onBack={onBack} />
 			)}
 
-			{currentStep === 5 && userType === "freelancer" && (
+			{currentStep === 5 && (
 				<FreelancerStepFive onNext={onNext} onBack={onBack} />
 			)}
 
-			{currentStep === 6 && userType === "freelancer" && (
+			{currentStep === 6 && (
 				<FreelancerStepSix onNext={onNext} onBack={onBack} />
 			)}
 
-			{currentStep === 7 && userType === "freelancer" && (
+			{/* {currentStep === 7 && userType === "freelancer" && (
 				<FreelancerStepSeven onNext={onNext} onBack={onBack} />
-			)}
-
-			{/* Add more steps as needed */}
+			)} */}
 		</div>
 	);
 };
