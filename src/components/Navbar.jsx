@@ -164,9 +164,7 @@ const Navbar = () => {
         onClose={() => setIsSignInModalOpen(false)}
       />
     </>
-  )
-}
-  )
+  );
 }
 
 export default Navbar;
