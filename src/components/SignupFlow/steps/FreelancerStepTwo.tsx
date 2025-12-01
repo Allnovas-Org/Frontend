@@ -11,16 +11,16 @@ const FreelancerStepTwo: React.FC<FreelancerStepTwoProps> = ({
   onBack,
 }) => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  // const [password, setPassword] = useState("");
+  // const [showPassword, setShowPassword] = useState(false);
 
   const handleContinue = () => {
-    if (email && password) {
+    if (email) {
       onNext();
     }
   };
 
-  const isValid = email && password;
+  const isValid = email.length > 0;
 
   return (
     <div className='flex flex-col h-full'>
@@ -52,27 +52,27 @@ const FreelancerStepTwo: React.FC<FreelancerStepTwoProps> = ({
         </div>
 
         {/* Password Field */}
-        <div>
-          <label className='block text-sm font-medium text-gray-700 mb-2'>
-            Password
-          </label>
-          <div className='relative'>
-            <input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Enter your Password'
-              className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12'
-            />
-            <button
-              type='button'
-              onClick={() => setShowPassword(!showPassword)}
-              className='absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
-        </div>
+        {/* <div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Password
+					</label>
+					<div className="relative">
+						<input
+							type={showPassword ? "text" : "password"}
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							placeholder="Enter your Password"
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
+						/>
+						<button
+							type="button"
+							onClick={() => setShowPassword(!showPassword)}
+							className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+						>
+							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+						</button>
+					</div>
+				</div> */}
       </div>
 
       <button
