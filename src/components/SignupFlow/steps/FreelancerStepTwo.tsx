@@ -11,16 +11,16 @@ const FreelancerStepTwo: React.FC<FreelancerStepTwoProps> = ({
 	onBack,
 }) => {
 	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
+	// const [password, setPassword] = useState("");
+	// const [showPassword, setShowPassword] = useState(false);
 
 	const handleContinue = () => {
-		if (email && password) {
+		if (email) {
 			onNext();
 		}
 	};
 
-	const isValid = email && password;
+	const isValid = email.length > 0;
 
 	return (
 		<div className="flex flex-col h-full">
@@ -52,7 +52,7 @@ const FreelancerStepTwo: React.FC<FreelancerStepTwoProps> = ({
 				</div>
 
 				{/* Password Field */}
-				<div>
+				{/* <div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">
 						Password
 					</label>
@@ -72,7 +72,7 @@ const FreelancerStepTwo: React.FC<FreelancerStepTwoProps> = ({
 							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
 						</button>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
 			<button
