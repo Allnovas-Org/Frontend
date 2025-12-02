@@ -1,189 +1,313 @@
-import { useState, useEffect } from 'react';
-import { Search } from 'lucide-react';
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import scribble from "../assets/images/misc-06.png";
 
-const HeroSection = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
+function HeroSection() {
+	const testimonials = [
+		{
+			text: "We found an amazing talent for our project in no time",
+			avatar:
+				"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+			rotate: 0, // First card - no rotation
+		},
+		{
+			text: "The collaboration tools made our workflow seamless",
+			avatar:
+				"https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces",
+			rotate: -3,
+		},
+		{
+			text: "Best freelancing platform we've ever used",
+			avatar:
+				"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces",
+			rotate: 2,
+		},
+		{
+			text: "Quality work delivered right on time every single time",
+			avatar:
+				"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
+			rotate: -4,
+		},
+	];
 
-  // Testimonial data with images
-  const testimonials = {
-    left: [
-      {
-        text: "Freelancing let you to earn on your terms, anytime, anywhere",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
-      },
-      {
-        text: "We found an amazing talent for our project in no time",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop"
-      },
-      {
-        text: "The quality of work exceeded our expectations",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop"
-      }
-    ],
-    right: [
-      {
-        text: "Freelancing unlocks the freedom to turn your skills into income.",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop"
-      },
-      {
-        text: "Building my career on my own terms has been incredible",
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop"
-      },
-      {
-        text: "Best decision I made was to start freelancing",
-        image: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=100&h=100&fit=crop"
-      }
-    ]
-  };
+	const testimonials2 = [
+		{
+			text: "Freelancing is the way to becoming self employed",
+			avatar:
+				"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces",
+			rotate: 5, // First card - slight rotation
+		},
+		{
+			text: "Build your career on your own terms with flexibility",
+			avatar:
+				"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces",
+			rotate: 7,
+		},
+		{
+			text: "Turn your passion into profit starting today",
+			avatar:
+				"https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=faces",
+			rotate: 3,
+		},
+		{
+			text: "Freedom to work from anywhere in the world",
+			avatar:
+				"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=faces",
+			rotate: 6,
+		},
+	];
 
-  const popularSearches = [
-    'Graphic Design',
-    'Web Development',
-    'Programming',
-    'UI/UX Design',
-    'Presentation Design',
-    'Video Editing'
-  ];
+	const [currentCard1, setCurrentCard1] = useState(0);
+	const [currentCard2, setCurrentCard2] = useState(0);
 
-  // Rotate testimonials every 4 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonialIndex((prevIndex) => 
-        (prevIndex + 1) % testimonials.left.length
-      );
-    }, 4000);
+	useEffect(() => {
+		const interval1 = setInterval(() => {
+			setCurrentCard1((prev) => (prev + 1) % testimonials.length);
+		}, 5000);
 
-    return () => clearInterval(interval);
-  }, []);
+		const interval2 = setInterval(() => {
+			setCurrentCard2((prev) => (prev + 1) % testimonials2.length);
+		}, 5500);
 
-  const currentLeftTestimonial = testimonials.left[currentTestimonialIndex];
-  const currentRightTestimonial = testimonials.right[currentTestimonialIndex];
+		return () => {
+			clearInterval(interval1);
+			clearInterval(interval2);
+		};
+	}, [testimonials.length, testimonials2.length]);
 
-  return (
-      <div className="bg-white pt-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 xl:px-24 py-16 lg:py-18">
-        {/* Floating Testimonial Cards */}
-        <div className="relative">
-          {/* Left Testimonial - Image on TOP LEFT outside box */}
-          <div className="absolute -left-4 xl:-left-20 top-32 lg:top-20 hidden lg:block">
-            <div className="relative">
-              {/* Profile Image - positioned outside at top left - FIXED */}
-              <div className="absolute -top-6 -left-6 w-14 h-14 rounded-full overflow-hidden border-4 border-white shadow-lg z-10">
-                <img 
-                  src={currentLeftTestimonial.image} 
-                  alt="Testimonial" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              {/* Text Box - with subtle static tilt */}
-              <div 
-                key={currentTestimonialIndex}
-                className="bg-linear-to-br from-pink-50 to-rose-100 shadow-lg p-5 w-64 transform rotate-4 hover:rotate-3 transition-all duration-300"
-              >
-                <p className="text-xs text-gray-700 leading-relaxed pt-2">
-                  {currentLeftTestimonial.text}
-                </p>
-              </div>
-            </div>
-          </div>
+	const cardVariants = {
+		enter: (direction) => ({
+			x: direction > 0 ? 100 : -100,
+			opacity: 0,
+			rotate: direction > 0 ? 15 : -15,
+			scale: 0.8,
+		}),
+		center: {
+			x: 0,
+			opacity: 1,
+			rotate: 8,
+			scale: 1,
+		},
+		exit: (direction) => ({
+			x: direction < 0 ? 100 : -100,
+			opacity: 0,
+			rotate: direction < 0 ? 15 : -15,
+			scale: 0.8,
+		}),
+	};
 
-          {/* Right Testimonial - Image on TOP RIGHT outside box */}
-          <div className="absolute -right-4 xl:-right-20 top-10 lg:top-8 hidden lg:block">
-            <div className="relative">
-              {/* Profile Image - positioned outside at top right - FIXED */}
-              <div className="absolute -top-6 -right-6 w-14 h-14 rounded-full overflow-hidden border-4 border-white shadow-lg z-10">
-                <img 
-                  src={currentRightTestimonial.image} 
-                  alt="Testimonial" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              {/* Text Box - with subtle static tilt */}
-              <div 
-                key={`right-${currentTestimonialIndex}`}
-                className="bg-linear-to-br from-blue-50 to-cyan-50 shadow-lg p-5 w-64 transform -rotate-4 hover:-rotate-3 transition-all duration-300"
-              >
-                <p className="text-xs text-gray-800 leading-relaxed pt-2">
-                  {currentRightTestimonial.text}
-                </p>
-              </div>
-            </div>
-          </div>
+	const cardVariants2 = {
+		enter: (direction) => ({
+			x: direction > 0 ? 100 : -100,
+			opacity: 0,
+			rotate: direction > 0 ? -15 : 15,
+			scale: 0.8,
+		}),
+		center: {
+			x: 0,
+			opacity: 1,
+			rotate: -8,
+			scale: 1,
+		},
+		exit: (direction) => ({
+			x: direction < 0 ? 100 : -100,
+			opacity: 0,
+			rotate: direction < 0 ? -15 : 15,
+			scale: 0.8,
+		}),
+	};
 
-          {/* Main Content */}
-          <div className="text-center max-w-4xl mx-auto relative z-10">
-            {/* Badge */}
-            <div className="inline-block mb-6">
-              <span className="text-[#6A0DAD] px-5 py-2 text-sm font-medium">
-                Designed for modern collaboration
-              </span>
-            </div>
+	return (
+		<section
+			id="home"
+			className="shrink-0 min-h-fit w-full flex flex-col md:py-24 lg:justify-center items-center py-8"
+		>
+			<p className="text-sm font-medium text-pinkish">
+				Designed for modern collaboration
+			</p>
+			<div className="inline-flex justify-center items-center w-full max-w-5xl">
+				{/* Slanted card 1 - Shuffling */}
+				<div className="relative max-lg:hidden max-w-[250px] min-w-[250px] h-[150px]">
+					<AnimatePresence initial={false} custom={1}>
+						<motion.div
+							key={currentCard1}
+							custom={1}
+							variants={cardVariants}
+							initial="enter"
+							animate="center"
+							exit="exit"
+							transition={{
+								x: { type: "spring", stiffness: 300, damping: 30 },
+								opacity: { duration: 1.3 },
+								rotate: { duration: 1.4 },
+								scale: { duration: 1.3 },
+							}}
+							className="absolute inset-x-0 inset-y-16"
+						>
+							{/* Main Card */}
+							<motion.div
+								whileHover={{ rotate: 10, scale: 1.02 }}
+								transition={{ duration: 0.3 }}
+								className="bg-[#FFDDC1] p-4 shadow-2xl relative inline-flex items-center"
+								style={{
+									transform: `rotate(${testimonials[currentCard1].rotate}deg)`,
+								}}
+							>
+								<p className="text-xs text-[#2C3E50] leading-tight">
+									{testimonials[currentCard1].text}
+								</p>
+							</motion.div>
 
-            {/* SVG Decoration - Mobile Only */}
-            <div className="lg:hidden flex justify-end max-w-sm mx-auto -mb-6">
-              {/* Replace this SVG with your own */}
-              <img
-                src="/images/text-dec.svg" 
-                alt="Decoration" 
-                className="w-12 h-12"
-              />
-            </div>
+							{/* Avatar Circle */}
+							<motion.div
+								initial={{ opacity: 0, scale: 0 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ duration: 0.4, delay: 0.2 }}
+								className="absolute -top-12 -left-4 w-12 h-12 rounded-full overflow-hidden shadow-xl"
+								whileHover={{ scale: 1.1 }}
+							>
+								<img
+									src={testimonials[currentCard1].avatar}
+									alt="Person"
+									className="w-full h-full object-cover"
+								/>
+							</motion.div>
+						</motion.div>
+					</AnimatePresence>
+				</div>
 
-            {/* Main Heading */}
-            <h1 className="mobile-font text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="text-gray-900">Co-Creating Your Vision,</span>
-              <br />
-              <span className="text-[#F05658]">
-                One Step at a Time
-              </span>
-            </h1>
+				{/* Hero Information */}
+				<div className="text-center p-0 m-0 mx-6 flex flex-col">
+					<span className="text-[2.5rem] font-bold leading-tight">
+						Co-Creating Your Vision,
+					</span>
+					<span className="relative text-[2.5rem] text-[#F05658] font-bold leading-tight">
+						One Step at a Time
+						<motion.div
+							initial={{ opacity: 0, scale: 0 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ duration: 0.4, delay: 0.2 }}
+							className="absolute -top-9 right-2 w-12 h-12 overflow-hidden lg:hidden"
+							whileHover={{ scale: 1.1 }}
+						>
+							<img
+								src={scribble}
+								alt="Person"
+								className="w-full h-full object-cover"
+							/>
+						</motion.div>
+					</span>
+				</div>
 
-            {/* Subtitle */}
-            <p className="text-gray-600 text-base md:text-lg lg:text-xl mb-10 max-w-2xl mx-auto leading-relaxed">
-              From concept to final deliverables, we build with transparency at every stage, keeping you inspired throughout the journey
-            </p>
+				{/* Slanted card 2 - Shuffling */}
+				<div className="relative max-lg:hidden max-w-[250px] min-w-[250px] h-[150px]">
+					<AnimatePresence initial={false} custom={1}>
+						<motion.div
+							key={currentCard2}
+							custom={1}
+							variants={cardVariants2}
+							initial="enter"
+							animate="center"
+							exit="exit"
+							transition={{
+								x: { type: "spring", stiffness: 300, damping: 30 },
+								opacity: { duration: 1.3 },
+								rotate: { duration: 1.4 },
+								scale: { duration: 1.3 },
+							}}
+							className="absolute inset-x-0 inset-y-8"
+						>
+							{/* Main Card */}
+							<motion.div
+								whileHover={{ rotate: -10, scale: 1.02 }}
+								transition={{ duration: 0.3 }}
+								className="bg-[#FFDDC1] p-4 shadow-2xl relative inline-flex items-center"
+								style={{
+									transform: `rotate(${testimonials2[currentCard2].rotate}deg)`,
+								}}
+							>
+								<p className="text-xs text-[#2C3E50] leading-tight">
+									{testimonials2[currentCard2].text}
+								</p>
+								<span className="p-4"></span>
+							</motion.div>
 
-            {/* Search Bar */}
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="relative group">
-                <input
-                  type="text"
-                  placeholder="What are you looking for?"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-6 py-4 pr-14 rounded-full border-2 border-gray-200 focus:outline-none text-base lg:text-lg transition-all shadow-md group-hover:shadow-lg"
-                />
-                <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#F05658] text-white p-2.5 rounded-full transition-all transform hover:scale-105 cursor-pointer">
-                  <Search size={20} />
-                </button>
-              </div>
-            </div>
+							{/* Avatar Circle */}
+							<motion.div
+								initial={{ opacity: 0, scale: 0 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ duration: 0.4, delay: 0.2 }}
+								className="absolute -top-4 -right-4 w-12 h-12 rounded-full overflow-hidden shadow-xl"
+								whileHover={{ scale: 1.1 }}
+							>
+								<img
+									src={testimonials2[currentCard2].avatar}
+									alt="Person"
+									className="w-full h-full object-cover"
+								/>
+							</motion.div>
+						</motion.div>
+					</AnimatePresence>
+				</div>
+			</div>
 
-            {/* Popular Searches */}
-            <div className="flex flex-wrap items-center justify-center gap-2 lg:gap-3">
-              <span className="text-gray-600 font-medium text-sm lg:text-base">Popular Search:</span>
-              {popularSearches.map((search, index) => (
-                <button
-                  key={index}
-                  className="bg-gray-100 border border-[#F3F4F6] text-gray-700 px-3 lg:px-4 py-1.5 lg:py-2 rounded-full text-xs lg:text-sm font-medium transition-all hover:text-[#F05658] hover:shadow-sm cursor-pointer"
-                >
-                  {search}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+			<p className="text-gray-600 text-center -mt-3 max-lg:mt-4 max-w-lg">
+				From concept to final deliverables, we build with transparency at every
+				stage, keeping you inspired throughout the journey
+			</p>
 
-        {/* Decorative Blur Elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-purple-200 rounded-full blur-3xl opacity-30 animate-pulse hidden lg:block"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-red-200 rounded-full blur-3xl opacity-30 animate-pulse hidden lg:block"></div>
-      </div>
-      </div>
-  );
-};
+			{/* Search Bar */}
+			<div className="mt-12 w-full max-w-lg flex justify-center px-4">
+				<div className="w-full flex items-center gap-2 bg-gray-100 rounded-full px-4 py-2">
+					<input
+						type="text"
+						placeholder="What are you looking for?"
+						className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400"
+					/>
+					<button className="bg-[#F05658] hover:bg-[#f056589f] px-2 py-2 rounded-full hover:opacity-90 transition-opacity cursor-pointer">
+						<svg
+							className="w-5 h-5 text-white hover:animate-bounce"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
+						</svg>
+					</button>
+				</div>
+			</div>
+
+			<div className="flex flex-wrap justify-center items-center gap-4 py-6 max-w-5xl px-4">
+				<span className="text-gray-600 text-sm">Popular Search:</span>
+
+				{[
+					"Graphic Design",
+					"Web Development",
+					"Programming",
+					"UI/UX Design",
+					"Presentation Design",
+					"Video Editing",
+				].map((term, index) => (
+					<motion.button
+						key={index}
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.3, delay: 0.8 + index * 0.1 }}
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-xs text-gray-800 font-medium rounded-full transition-colors duration-200"
+					>
+						{term}
+					</motion.button>
+				))}
+			</div>
+		</section>
+	);
+}
 
 export default HeroSection;

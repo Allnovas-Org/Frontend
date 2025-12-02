@@ -1,204 +1,220 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
+import { Memory, Settings, VerifiedUser } from "@mui/icons-material";
+import CustomButton from "../components/ui/CustomButton";
 
 const Function = () => {
-  const [hoveredIndex, setHoveredIndex] = useState(1); // Default to middle card (Functionality)
+	const [activeCard, setActiveCard] = useState(1); // Default to middle card (Functionality)
 
-  const features = [
-    {
-      title: "Accessibility",
-      icon: (
-        <svg
-          className="w-10 h-10 mb-6 opacity-70"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" />
-          <circle cx="8.5" cy="8.5" r="1.5" />
-          <circle cx="15.5" cy="8.5" r="1.5" />
-          <circle cx="8.5" cy="15.5" r="1.5" />
-          <circle cx="15.5" cy="15.5" r="1.5" />
-          <path d="M12 8.5v7M8.5 12h7" />
-        </svg>
-      ),
-      // Sharp transition - 45deg from bottom-left when collapsed
-      bgColorCollapsed: "from-blue-950 from-40% via-blue-800 via-50% to-blue-600 to-60%",
-      // Sharp transition - 180deg from bottom when expanded
-      bgColorExpanded: "from-blue-950 from-50% via-blue-800 via-60% to-blue-600 to-70%",
-      gradientDirectionCollapsed: "bg-gradient-to-tr", // bottom-left to top-right (45deg)
-      gradientDirectionExpanded: "bg-gradient-to-t", // bottom to top (180deg)
-      description: "Work from anywhere, build your career. Your style, your terms.",
-      buttonColor: "bg-blue-800/50 hover:bg-blue-700/60",
-    },
-    {
-      title: "Functionality",
-      icon: (
-        <svg
-          className="w-12 h-12 mb-6 opacity-80"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <circle cx="12" cy="12" r="3" />
-          <circle cx="12" cy="12" r="8" />
-          <circle cx="12" cy="12" r="11" />
-        </svg>
-      ),
-      // Sharp transition - 45deg from top-left when collapsed
-      bgColorCollapsed: "from-purple-950 from-40% via-purple-800 via-50% to-purple-600 to-60%",
-      // Sharp transition - 180deg from bottom when expanded (already expanded by default)
-      bgColorExpanded: "from-purple-950 from-50% via-purple-800 via-60% to-purple-600 to-70%",
-      gradientDirectionCollapsed: "bg-gradient-to-br", // top-left to bottom-right (45deg)
-      gradientDirectionExpanded: "bg-gradient-to-t", // bottom to top (180deg)
-      description: "Connect, create and earn with tools that make freelancing seamless.",
-      buttonColor: "bg-purple-800/50 hover:bg-purple-700/60",
-    },
-    {
-      title: "Security",
-      icon: (
-        <svg
-          className="w-10 h-10 mb-6 opacity-70"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-          <path d="M9 12l2 2 4-4" />
-        </svg>
-      ),
-      // Sharp transition - 45deg from top-left when collapsed
-      bgColorCollapsed: "from-green-950 from-40% via-green-800 via-50% to-green-600 to-60%",
-      // Sharp transition - 180deg from bottom when expanded
-      bgColorExpanded: "from-green-950 from-50% via-green-800 via-60% to-green-600 to-70%",
-      gradientDirectionCollapsed: "bg-gradient-to-br", // top-left to bottom-right (45deg)
-      gradientDirectionExpanded: "bg-gradient-to-t", // bottom to top (180deg)
-      description: "Transparent systems and reduced service fees that protect your hustle.",
-      buttonColor: "bg-green-800/50 hover:bg-green-700/60",
-    },
-  ];
+	const cards = [
+		{
+			id: 0,
+			title: "Accessibility",
+			description:
+				"Work from anywhere, build your career. Your style, your terms.",
+			icon: Memory,
+			inactiveGradient:
+				"linear-gradient(43.5deg, #011E40 42.65%, #014088 59.45%)",
+			activeGradient: "linear-gradient(180deg, #0066CC 0%, #011E40 100%)", // Vertical: light to dark
+		},
+		{
+			id: 1,
+			title: "Functionality",
+			description:
+				"Connect, create and earn with tools that make freelancing seamless.",
+			icon: Settings,
+			inactiveGradient:
+				"linear-gradient(0.85deg, #460050 29.2%, #630071 46.57%)",
+			activeGradient: "linear-gradient(180deg, #630071 50%, #460050 100%)", // Vertical: light to dark
+		},
+		{
+			id: 2,
+			title: "Security",
+			description:
+				"Transparent systems and reduced service fees that protect your hustle.",
+			icon: VerifiedUser,
+			inactiveGradient:
+				"linear-gradient(314.23deg, #026813 37.39%, #003B0A 53.62%)",
+			activeGradient: "linear-gradient(180deg, #00B81F 0%, #003B0A 100%)", // Vertical: light to dark
+		},
+	];
 
-  return (
-    <section className="py-20 max-w-[80%] mx-auto from-white">
-      <div className="max-w-7xl mx-auto 2xl:px-[200px]">
-        {/* Header */}
-        <div className="text-center mb-16 animate-fade-in">
-          <p className="text-purple-600 font-semibold text-sm tracking-wider mb-4">
-            Our Mission
-          </p>
-          <h2 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-4 leading-tight">
-            Building A Trusted Ecosystem Where
-            <br />
-            Talents Thrive And Opportunities Grow
-          </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Secured payments, verified talents and transparent projects
-          </p>
-        </div>
+	return (
+		<section
+			id="missionSection"
+			className="shrink-0 max-md:min-h-screen w-full flex flex-col justify-center items-center gap-8 px-4"
+		>
+			<div className="min-h-fit flex flex-col justify-center items-center gap-4">
+				<p className="text-sm font-medium text-pinkish">Our Mission</p>
+				<div className="text-center p-0 m-0 mx-6 max-lg:w-full max-w-136">
+					<h2 className="text-3xl font-semibold leading-tight">
+						Building A Trusted Ecosystem Where Talents Thrive And Opportunities
+						Grow
+					</h2>
+				</div>
+				<p className="text-gray-600 text-center max-w-lg">
+					Secured payments, verified talents and transparent projects
+				</p>
+			</div>
+			<div className="flex gap-4 max-w-5xl mx-auto w-full max-lg:hidden">
+				{cards.map((card) => {
+					const Icon = card.icon;
+					const isActive = activeCard === card.id;
 
-        {/* Feature Cards */}
-        <div className="flex flex-col md:flex-row gap-4 lg:gap-5" onMouseLeave={() => setHoveredIndex(1)}>
-          {features.map((feature, index) => {
-            const isExpanded = hoveredIndex === index;
-            
-            // Corner styles - all cards have same style
-            const cornerClass = 'rounded-tl-none rounded-bl-3xl rounded-br-none rounded-tr-3xl';
-            
-            return (
-              <div
-                key={index}
-                onMouseEnter={() => setHoveredIndex(index)}
-                className={`group relative overflow-hidden transition-all duration-700 cursor-pointer
-                  ${cornerClass}
-                  ${isExpanded 
-                    ? 'md:flex-2 shadow-2xl' 
-                    : 'md:flex-[0.6] shadow-lg'
-                  }
-                  flex-1
-                `}
-              >
-                {/* Background Gradient - Sharp transition line that shifts on hover */}
-                <div className={`absolute inset-0 transition-all duration-700 ${
-                  isExpanded 
-                    ? `${feature.gradientDirectionExpanded} ${feature.bgColorExpanded}`
-                    : `${feature.gradientDirectionCollapsed} ${feature.bgColorCollapsed}`
-                }`}></div>
-                
-                {/* Decorative Circles for subtle glow */}
-                <div className="absolute -top-20 -right-20 w-60 h-60 bg-white/5 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white/5 rounded-full blur-3xl"></div>
+					return (
+						<motion.div
+							key={card.id}
+							onMouseEnter={() => setActiveCard(card.id)}
+							onMouseLeave={() => setActiveCard(1)}
+							animate={{
+								flex: isActive ? 2 : 1,
+								background: isActive
+									? card.activeGradient
+									: card.inactiveGradient,
+							}}
+							transition={{
+								duration: 1.5,
+								ease: [0.34, 1.56, 0.64, 1],
+							}}
+							className="rounded-tr-3xl rounded-bl-3xl overflow-hidden cursor-pointer max-lg:flex-1"
+							style={{
+								height: "400px",
+							}}
+						>
+							<div
+								className={
+									"p-8 h-full flex flex-col items-center text-white max-lg:justify-between max-lg:pb-12" +
+									(isActive
+										? ""
+										: " justify-between pb-12 lg:justify-between lg:pb-12")
+								}
+							>
+								<motion.div
+									animate={{
+										scale: isActive ? 1.1 : 1,
+										opacity: isActive ? 1 : 0.8,
+									}}
+									transition={{ duration: 0.3 }}
+									className="max-lg:scale-110 max-lg:opacity-100 mb-3"
+								>
+									<Icon style={{ fontSize: 48, opacity: 0.9 }} />
+								</motion.div>
 
-                {/* Content */}
-                <div className={`relative z-10 flex flex-col transition-all duration-700 h-[400px] ${
-                  isExpanded 
-                    ? 'p-8 text-center justify-start pt-16' 
-                    : 'md:p-6 md:text-center p-8 text-center justify-between'
-                }`}>
-                  {/* Icon - Always at top */}
-                  <div className="text-white/90 transition-all duration-700 mx-auto">
-                    {feature.icon}
-                  </div>
+								{/* Content */}
+								<div className={"text-center " + (isActive ? "lg:h-7/12" : "")}>
+									<motion.h2
+										className="text-3xl font-bold mb-3 font-mali"
+										animate={{
+											y: isActive ? 0 : 20,
+										}}
+										transition={{ duration: 0.4 }}
+									>
+										{card.title}
+									</motion.h2>
 
-                  {/* Title and Content - Position changes based on expanded state */}
-                  <div className={`transition-all duration-700 text-center ${
-                    isExpanded ? 'mt-4' : ''
-                  }`}>
-                    <h3 className={`font-bold text-white transition-all duration-700 mali-font ${
-                      isExpanded ? 'text-3xl md:text-4xl mb-2' : 'text-2xl md:text-2xl mb-0'
-                    }`}>
-                      {feature.title}
-                    </h3>
-                    
-                    {/* Description - Show on mobile always, on desktop only when expanded */}
-                    <div className={`overflow-hidden transition-all mali-font duration-700 ${
-                      isExpanded 
-                        ? 'md:max-h-40 md:opacity-100 max-h-40 opacity-100' 
-                        : 'md:max-h-0 md:opacity-0 max-h-40 opacity-100'
-                    }`}>
-                      <p className="text-white/90 text-base mb-0 leading-relaxed mt-4">
-                        {feature.description}
-                      </p>
-                    </div>
-                  </div>
+									{/* Desktop: AnimatePresence for conditional rendering */}
+									<div className="h-full">
+										<AnimatePresence mode="wait">
+											{isActive && (
+												<motion.div
+													initial={{ opacity: 0, y: 20 }}
+													animate={{ opacity: 1, y: 0 }}
+													exit={{ opacity: 0, y: 20 }}
+													transition={{ duration: 0.3, delay: 0.1 }}
+													className="h-full flex flex-col justify-between"
+												>
+													<p className="max-w-[350px] font-light text-base mb-8 text-white/90">
+														{card.description}
+													</p>
+													<CustomButton
+														buttonText="Get Started"
+														otherStyles="bg-black/10 rounded-full mx-auto"
+													/>
+												</motion.div>
+											)}
+										</AnimatePresence>
+									</div>
+								</div>
+							</div>
+						</motion.div>
+					);
+				})}
+			</div>
+			{/* Mobile screens */}
+			<div className="w-full flex flex-col items-center gap-4 lg:hidden">
+				{cards.map((card, index) => {
+					const Icon = card.icon;
 
-                  {/* Button - Only visible when expanded, stays at bottom */}
-                  {isExpanded && (
-                    <div className="mt-auto transition-all duration-700 text-center">
-                      <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${feature.buttonColor}`}>
-                        Get Started
-                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
+					return (
+						<motion.div
+							key={card.id}
+							className="max-w-[80%] rounded-tr-3xl rounded-bl-3xl overflow-hidden cursor-pointer w-full"
+							style={{
+								background: card.activeGradient, // Always use active gradient on mobile
+								height: "300px",
+							}}
+							initial={{ opacity: 0, y: 50 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							viewport={{ once: true, margin: "-50px" }}
+							transition={{
+								duration: 0.5,
+								delay: index * 0.1,
+								ease: "easeOut",
+							}}
+							whileTap={{ scale: 1.02 }}
+						>
+							<div className="p-8 h-full flex flex-col items-center justify-between text-white">
+								<motion.div
+									initial={{ scale: 0 }}
+									whileInView={{ scale: 1 }}
+									viewport={{ once: true }}
+									transition={{
+										duration: 0.5,
+										delay: index * 0.1 + 0.2,
+										type: "spring",
+										stiffness: 200,
+									}}
+								>
+									<Icon style={{ fontSize: 48, opacity: 0.9 }} />
+								</motion.div>
 
-                  {/* Button for mobile - always visible */}
-                  <div className={`md:hidden mt-auto transition-all duration-700 text-center overflow-hidden ${
-                    isExpanded ? 'max-h-0 opacity-0' : 'max-h-20 opacity-100'
-                  }`}>
-                    <button className={`inline-flex items-center text-white font-semibold hover:translate-x-2 transition-transform duration-300 px-5 py-2.5 rounded-lg ${feature.buttonColor}`}>
-                      Get Started
-                      <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </button>
-                  </div>
+								{/* Content */}
+								<motion.div
+									className="text-center flex flex-col gap-4"
+									initial={{ opacity: 0 }}
+									whileInView={{ opacity: 1 }}
+									viewport={{ once: true }}
+									transition={{
+										duration: 0.5,
+										delay: index * 0.1 + 0.3,
+									}}
+								>
+									<h2 className="text-2xl font-bold font-mali">{card.title}</h2>
+									<p className="text-base text-white/90">{card.description}</p>
+								</motion.div>
 
-                  {/* Hover Effect Overlay */}
-                  <div className={`absolute inset-0 bg-white/0 transition-all duration-700 pointer-events-none ${
-                    isExpanded ? 'bg-white/5' : ''
-                  }`}></div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
+								<motion.div
+									initial={{ opacity: 0, y: 10 }}
+									whileInView={{ opacity: 1, y: 0 }}
+									viewport={{ once: true }}
+									transition={{
+										duration: 0.5,
+										delay: index * 0.1 + 0.4,
+									}}
+								>
+									<CustomButton
+										buttonText="Get Started"
+										otherStyles="bg-black/10 rounded-full"
+									/>
+								</motion.div>
+							</div>
+						</motion.div>
+					);
+				})}
+			</div>
+		</section>
+	);
 };
 
 export default Function;

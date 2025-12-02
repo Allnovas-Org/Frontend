@@ -1,207 +1,156 @@
-import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import Logo from "../assets/AllNova black 2 (1).png";
+import React, { useState } from 'react';
+import logo from "../assets/allnova-logo-black.png"
+import { Drawer } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import SignupModal from "./SignupFlow/SignupModal";
 import SignInModal from "./SignInFlow/SignInModal";
+import { Link, useLocation } from "react-router-dom";
+
+const headerLinks = [
+  { title: 'Find Freelancers', url: '#finalCTASection' },
+  { title: 'Services', url: '#nichesSection' },
+  { title: 'Resources', url: '#resourcesSection' },
+  { title: 'About Us', url: '#missionSection' },
+  { title: 'Offshore Services', url: '#' },
+]
 
 const Navbar = () => {
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openMobileNav, setOpenMobileNav] = useState(false);
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  const toggleMobileNav = () => {
+    setOpenMobileNav(!openMobileNav);
+  }
 
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  const handleNavClick = (url) => {
+    if (url === '#') return; // Don't scroll if no URL
 
-  const navLinkClass = ({ isActive }) =>
-    `transition-colors duration-200 ${
-      isActive
-        ? "text-red-800 font-bold"
-        : "text-gray-700 hover:text-[#FF5E60] font-semibold"
-    }`;
+    const element = document.querySelector(url);
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
 
-  const mobileNavLinkClass = ({ isActive }) =>
-    `block py-3 px-4 transition-colors duration-200 ${
-      isActive
-        ? "text-red-900 font-semibold bg-red-50"
-        : "text-gray-700 hover:text-[#F05658] hover:bg-gray-50"
-    }`;
+    // Close mobile drawer if open
+    if (openMobileNav) {
+      setOpenMobileNav(false);
+    }
+  }
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full bg-white backdrop-blur-md z-50 2xl:px-[200px]">
-        {/* Desktop Navigation */}
-        <nav className="hidden lg:flex justify-between items-center px-6 lg:px-19 py-3">
-          {/* Logo */}
-          <div className="flex items-center">
-            <img src={Logo} alt="AllNova Logo" className="h-8 w-auto" />
-          </div>
+      <header className="bg-white p-4 w-full flex justify-center">
+        <nav className="max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between">
+          <Link to='/' className="w-[10%]">
+            <img src={logo} alt="AllNova Logo" className="w-full" />
+          </Link>
 
-          {/* Center Nav Links */}
-          <div className="flex">
-            <ul className="flex space-x-10 items-center text-semibold">
-              <li>
-                <NavLink to="/freelancers" className={navLinkClass}>
-                  Find Freelancers
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/services" className={navLinkClass}>
-                  Services
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/resources" className={navLinkClass}>
-                  Resources
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/about" className={navLinkClass}>
-                  About Us
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/offshore" className={navLinkClass}>
-                  Offshore Services
-                </NavLink>
-              </li>
-            </ul>
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center space-x-6">
-            <button
-              onClick={() => setIsSignInModalOpen(true)}
-              className="text-[#F05658] hover:text-[#F05640] transition-colors duration-200 font-medium"
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setIsSignupModalOpen(true)}
-              className="bg-[#F05658] hover:bg-[#c16456] rounded-full px-6 text-white py-2 
-                       transition-colors duration-200 focus:outline-none focus:ring-2 
-                       focus:ring-offset-2 focus:ring-[#F05658]"
-            >
-              Join
-            </button>
-          </div>
-        </nav>
-
-        {/* Mobile Navigation */}
-        <nav className="lg:hidden flex justify-between items-center px-4 py-3 bg-[#F056581A]">
-          {/* Mobile Menu Button - LEFT */}
-          <button
-            onClick={toggleMobileMenu}
-            className="flex flex-col justify-center items-center w-10 h-10 
-                     focus:outline-none group z-50"
-            aria-label="Toggle menu"
-          >
-            <span
-              className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ease-in-out ${
-                isMobileMenuOpen ? "rotate-45 translate-y-1.5" : ""
-              }`}
-            ></span>
-            <span
-              className={`block w-6 h-0.5 bg-gray-700 mt-1.5 transition-all duration-300 ease-in-out ${
-                isMobileMenuOpen ? "opacity-0" : ""
-              }`}
-            ></span>
-            <span
-              className={`block w-6 h-0.5 bg-gray-700 mt-1.5 transition-all duration-300 ease-in-out ${
-                isMobileMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
-              }`}
-            ></span>
-          </button>
-
-          {/* Logo - CENTER */}
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <img src={Logo} alt="AllNova Logo" className="h-10 w-auto" />
-          </div>
-
-          {/* Join Button - RIGHT */}
-          <h3
-            onClick={() => setIsSignupModalOpen(true)}
-            className="text-[#F05658] hover:text-[#c16456] text-lg font-bold cursor-pointer"
-          >
-            Join
-          </h3>
-        </nav>
-
-        {/* Mobile Menu Dropdown */}
-        <div
-          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-            isMobileMenuOpen ? "max-h-screen" : "max-h-0"
-          }`}
-        >
-          <div className="px-6 py-4 bg-white border-t border-gray-200">
-            <ul className="space-y-1">
-              <li>
-                <NavLink
-                  to="/freelancers"
-                  className={mobileNavLinkClass}
-                  onClick={closeMobileMenu}
+          {isHomePage ? (
+            <>
+              <ul className="inline-flex space-x-12 max-lg:space-x-6">
+                {headerLinks.map((link) => (
+                  <li
+                    key={link.title}
+                    onClick={() => handleNavClick(link.url)}
+                    className='text-black hover:text-gray-500 transition cursor-pointer'
+                  >
+                    {link.title}
+                  </li>
+                ))}
+              </ul>
+              <div className='inline-flex gap-x-4 items-center'>
+                <button
+                  onClick={() => setIsSignInModalOpen(true)}
+                  className="bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition"
                 >
-                  Find Freelancers
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/services"
-                  className={mobileNavLinkClass}
-                  onClick={closeMobileMenu}
+                  Sign in
+                </button>
+                <button
+                  onClick={() => setIsSignupModalOpen(true)}
+                  className="bg-primary text-white px-[1.2rem] py-[0.45rem] rounded-full hover:bg-primary/70 transition"
                 >
-                  Services
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/resources"
-                  className={mobileNavLinkClass}
-                  onClick={closeMobileMenu}
-                >
-                  Resources
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/about"
-                  className={mobileNavLinkClass}
-                  onClick={closeMobileMenu}
-                >
-                  About Us
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/offshore"
-                  className={mobileNavLinkClass}
-                  onClick={closeMobileMenu}
-                >
-                  Offshore Services
-                </NavLink>
-              </li>
-            </ul>
-
-            {/* Mobile Sign In Button */}
-            <div className="mt-6 border-t border-gray-200 pt-4">
-              <button
-                onClick={() => {
-                  setIsSignInModalOpen(true);
-                  closeMobileMenu();
-                }}
-                className="w-full text-[#F05658] hover:text-[#F05640] py-2 
-                         transition-colors duration-200 font-medium"
-              >
-                Sign In
-              </button>
+                  Join
+                </button>
+              </div>
+            </>
+          ) : (
+            // Empty div to maintain layout when on non-home pages
+            <div className="flex-1 flex justify-end">
+              {/* Only logo shows, links and buttons are hidden */}
             </div>
-          </div>
-        </div>
-      </div>
+          )}
+
+          {/* Mobile navigation - separate from desktop */}
+          <nav className='w-full hidden max-md:inline-flex items-center justify-between'>
+            <button
+              onClick={toggleMobileNav}
+              className='text-3xl font-bold'
+              aria-label="Toggle mobile menu"
+              aria-expanded={openMobileNav}
+            >
+              <MenuIcon />
+            </button>
+            <img src={logo} alt="AllNova Logo" className="w-[30%]" />
+            {isHomePage ? (
+              <button
+                onClick={() => setIsSignupModalOpen(true)}
+                className="bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition"
+              >
+                Join
+              </button>
+            ) : (
+              <div className="w-[1.2rem]"></div> // Spacer for alignment
+            )}
+          </nav>
+
+          {/* Mobile Drawer - only show on home page */}
+          {isHomePage && (
+            <Drawer anchor='left' open={openMobileNav} onClose={toggleMobileNav}>
+              <div className='w-64 p-4 flex flex-col justify-between h-full pb-8'>
+                <ul className='flex flex-col space-y-6'>
+                  <button onClick={() => handleNavClick('#home')} className="w-4/5 mx-auto">
+                    <img src={logo} alt="AllNova Logo" className="w-full" />
+                  </button>
+                  {headerLinks.map((link) => (
+                    <li
+                      key={link.title}
+                      onClick={() => handleNavClick(link.url)}
+                      className='text-black font-medium hover:text-gray-500 transition cursor-pointer'
+                    >
+                      {link.title}
+                    </li>
+                  ))}
+                </ul>
+                <div className='flex flex-col gap-y-3'>
+                  <button
+                    onClick={() => {
+                      setIsSignInModalOpen(true);
+                      setOpenMobileNav(false);
+                    }}
+                    className="bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition border border-primary"
+                  >
+                    Sign in
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsSignupModalOpen(true);
+                      setOpenMobileNav(false);
+                    }}
+                    className="bg-primary text-white px-[1.2rem] py-[0.45rem] rounded-full hover:bg-primary/70 transition"
+                  >
+                    Join
+                  </button>
+                </div>
+              </div>
+            </Drawer>
+          )}
+        </nav>
+      </header>
 
       {/* Signup Modal */}
       <SignupModal
@@ -216,6 +165,6 @@ const Navbar = () => {
       />
     </>
   );
-};
+}
 
 export default Navbar;
