@@ -21,6 +21,21 @@ const FreelancerStepSix: React.FC<FreelancerStepSixProps> = ({
 		}
 	};
 
+	const formatDateToMMDDYY = (dateString: string): string => {
+		if (!dateString) return "";
+
+		const date = new Date(dateString);
+
+		// Check if the date is valid
+		if (isNaN(date.getTime())) return "";
+
+		const month = String(date.getMonth() + 1).padStart(2, "0");
+		const day = String(date.getDate()).padStart(2, "0");
+		const year = String(date.getFullYear()).slice(-2);
+
+		return `${month}/${day}/${year}`;
+	};
+
 	const isValid = dateOfBirth && country && phoneNumber;
 
 	const countries = [
@@ -54,17 +69,19 @@ const FreelancerStepSix: React.FC<FreelancerStepSixProps> = ({
 					</label>
 					<div className="relative">
 						<input
-							type="text"
+							type="date"
 							value={dateOfBirth}
 							onChange={(e) => setDateOfBirth(e.target.value)}
 							placeholder="mm / dd / yy"
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
 						/>
-						<Calendar
-							className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
-							size={20}
-						/>
 					</div>
+					{/* Display formatted date below the input */}
+					{dateOfBirth && (
+						<p className="text-sm text-gray-500 mt-2">
+							Formatted: {formatDateToMMDDYY(dateOfBirth)}
+						</p>
+					)}
 				</div>
 
 				{/* Country */}
