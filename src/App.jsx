@@ -13,27 +13,7 @@ import SavedJobs from "./pages/applicants/savedJobs";
 import { SavedJobsProvider } from "./store/SavedJobsProvider.tsx";
 import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion.tsx";
 
-// function App() {
-//   return (
-//     <>
-//       <Navbar />
 
-//       <Routes>
-//         <Route path='/' element={<Home />} />
-//         <Route path='/about' element={<About />} />
-//         <Route
-//           path='/applicants/find-jobs'
-//           element={
-//             <>
-//               <ApplicantsNavbar />
-//               <FindJobs />
-//             </>
-//           }
-//         />
-//       </Routes>
-//     </>
-//   );
-// }
 function App() {
   return (
     <Routes>
