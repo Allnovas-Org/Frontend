@@ -8,7 +8,7 @@ function HeroSection() {
 			text: "We found an amazing talent for our project in no time",
 			avatar:
 				"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
-			rotate: 0, // First card - no rotation
+			rotate: 0,
 		},
 		{
 			text: "The collaboration tools made our workflow seamless",
@@ -35,7 +35,7 @@ function HeroSection() {
 			text: "Freelancing is the way to becoming self employed",
 			avatar:
 				"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces",
-			rotate: 5, // First card - slight rotation
+			rotate: 5,
 		},
 		{
 			text: "Build your career on your own terms with flexibility",
@@ -75,45 +75,53 @@ function HeroSection() {
 		};
 	}, [testimonials.length, testimonials2.length]);
 
+	// --- NEW CLEAN VERTICAL VARIANTS ---
+	const verticalTransition = {
+		y: { duration: 0.5, ease: "easeInOut" },
+		opacity: { duration: 0.5, ease: "easeInOut" },
+		scale: { duration: 0.5, ease: "easeInOut" },
+		rotate: { duration: 0.5, ease: "easeInOut" },
+	};
+
 	const cardVariants = {
-		enter: (direction) => ({
-			x: direction > 0 ? 100 : -100,
+		enter: () => ({
+			y: 40,
 			opacity: 0,
-			rotate: direction > 0 ? 15 : -15,
-			scale: 0.8,
+			rotate: 5,
+			scale: 0.9,
 		}),
 		center: {
-			x: 0,
+			y: 0,
 			opacity: 1,
-			rotate: 8,
+			rotate: 0,
 			scale: 1,
 		},
-		exit: (direction) => ({
-			x: direction < 0 ? 100 : -100,
+		exit: () => ({
+			y: -40,
 			opacity: 0,
-			rotate: direction < 0 ? 15 : -15,
-			scale: 0.8,
+			rotate: -5,
+			scale: 0.9,
 		}),
 	};
 
 	const cardVariants2 = {
-		enter: (direction) => ({
-			x: direction > 0 ? 100 : -100,
+		enter: () => ({
+			y: 40,
 			opacity: 0,
-			rotate: direction > 0 ? -15 : 15,
-			scale: 0.8,
+			rotate: -5,
+			scale: 0.9,
 		}),
 		center: {
-			x: 0,
+			y: 0,
 			opacity: 1,
-			rotate: -8,
+			rotate: 0,
 			scale: 1,
 		},
-		exit: (direction) => ({
-			x: direction < 0 ? 100 : -100,
+		exit: () => ({
+			y: -40,
 			opacity: 0,
-			rotate: direction < 0 ? -15 : 15,
-			scale: 0.8,
+			rotate: 5,
+			scale: 0.9,
 		}),
 	};
 
@@ -125,26 +133,20 @@ function HeroSection() {
 			<p className="text-sm font-medium text-pinkish">
 				Designed for modern collaboration
 			</p>
+
 			<div className="inline-flex justify-center items-center w-full max-w-5xl">
-				{/* Slanted card 1 - Shuffling */}
+				{/* Left card */}
 				<div className="relative max-lg:hidden max-w-[250px] min-w-[250px] h-[150px]">
-					<AnimatePresence initial={false} custom={1}>
+					<AnimatePresence initial={false}>
 						<motion.div
 							key={currentCard1}
-							custom={1}
 							variants={cardVariants}
 							initial="enter"
 							animate="center"
 							exit="exit"
-							transition={{
-								x: { type: "spring", stiffness: 300, damping: 30 },
-								opacity: { duration: 1.3 },
-								rotate: { duration: 1.4 },
-								scale: { duration: 1.3 },
-							}}
+							transition={verticalTransition}
 							className="absolute inset-x-0 inset-y-16"
 						>
-							{/* Main Card */}
 							<motion.div
 								whileHover={{ rotate: 10, scale: 1.02 }}
 								transition={{ duration: 0.3 }}
@@ -158,7 +160,6 @@ function HeroSection() {
 								</p>
 							</motion.div>
 
-							{/* Avatar Circle */}
 							<motion.div
 								initial={{ opacity: 0, scale: 0 }}
 								animate={{ opacity: 1, scale: 1 }}
@@ -176,7 +177,7 @@ function HeroSection() {
 					</AnimatePresence>
 				</div>
 
-				{/* Hero Information */}
+				{/* Hero text */}
 				<div className="text-center p-0 m-0 mx-6 flex flex-col">
 					<span className="text-[2.5rem] font-bold leading-tight">
 						Co-Creating Your Vision,
@@ -199,25 +200,18 @@ function HeroSection() {
 					</span>
 				</div>
 
-				{/* Slanted card 2 - Shuffling */}
+				{/* Right card */}
 				<div className="relative max-lg:hidden max-w-[250px] min-w-[250px] h-[150px]">
-					<AnimatePresence initial={false} custom={1}>
+					<AnimatePresence initial={false}>
 						<motion.div
 							key={currentCard2}
-							custom={1}
 							variants={cardVariants2}
 							initial="enter"
 							animate="center"
 							exit="exit"
-							transition={{
-								x: { type: "spring", stiffness: 300, damping: 30 },
-								opacity: { duration: 1.3 },
-								rotate: { duration: 1.4 },
-								scale: { duration: 1.3 },
-							}}
+							transition={verticalTransition}
 							className="absolute inset-x-0 inset-y-8"
 						>
-							{/* Main Card */}
 							<motion.div
 								whileHover={{ rotate: -10, scale: 1.02 }}
 								transition={{ duration: 0.3 }}
@@ -232,7 +226,6 @@ function HeroSection() {
 								<span className="p-4"></span>
 							</motion.div>
 
-							{/* Avatar Circle */}
 							<motion.div
 								initial={{ opacity: 0, scale: 0 }}
 								animate={{ opacity: 1, scale: 1 }}
@@ -282,6 +275,7 @@ function HeroSection() {
 				</div>
 			</div>
 
+			{/* Popular search terms */}
 			<div className="flex flex-wrap justify-center items-center gap-4 py-6 max-w-5xl px-4">
 				<span className="text-gray-600 text-sm">Popular Search:</span>
 
