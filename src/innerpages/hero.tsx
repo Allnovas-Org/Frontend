@@ -35,25 +35,25 @@ function HeroSection() {
 			text: "Freelancing is the way to becoming self employed",
 			avatar:
 				"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces",
-			rotate: 5,
+			rotate: -5,
 		},
 		{
 			text: "Build your career on your own terms with flexibility",
 			avatar:
 				"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces",
-			rotate: 7,
+			rotate: -7,
 		},
 		{
 			text: "Turn your passion into profit starting today",
 			avatar:
 				"https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&h=400&fit=crop&crop=faces",
-			rotate: 3,
+			rotate: -3,
 		},
 		{
 			text: "Freedom to work from anywhere in the world",
 			avatar:
 				"https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=400&fit=crop&crop=faces",
-			rotate: 6,
+			rotate: -6,
 		},
 	];
 
@@ -230,7 +230,7 @@ function HeroSection() {
 								initial={{ opacity: 0, scale: 0 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.4, delay: 0.2 }}
-								className="absolute -top-4 -right-4 w-12 h-12 rounded-full overflow-hidden shadow-xl"
+								className="absolute -top-12 -right-4 w-12 h-12 rounded-full overflow-hidden shadow-xl"
 								whileHover={{ scale: 1.1 }}
 							>
 								<img
