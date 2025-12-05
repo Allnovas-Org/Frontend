@@ -22,21 +22,54 @@ export const VideoSection: React.FC = () => {
 	const [showShareMenu, setShowShareMenu] = useState<boolean>(false);
 	const controlsTimeoutRef = useRef<number | null>(null);
 
+	/* ------------------------------------------------------
+	   AUTOPLAY + AUTOPAUSE WHEN ENTERING / LEAVING VIEW
+	------------------------------------------------------ */
 	useEffect(() => {
 		const video = videoRef.current;
 		if (!video) return;
 
-		const handleLoadedMetadata = () => {
-			setDuration(video.duration);
-		};
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const entry = entries[0];
 
-		const handleTimeUpdate = () => {
-			setCurrentTime(video.currentTime);
-		};
+				if (entry.isIntersecting) {
+					// Entering view → play
+					video
+						.play()
+						.then(() => {
+							setIsPlaying(true);
+						})
+						.catch(() => {
+							// Autoplay fallback (muted)
+							video.muted = true;
+							setIsMuted(true);
+							video.play().then(() => setIsPlaying(true));
+						});
+				} else {
+					// Leaving view → pause
+					video.pause();
+					setIsPlaying(false);
+				}
+			},
+			{
+				threshold: 0.4, // play/pause when ~40% visible
+			},
+		);
 
-		const handleEnded = () => {
-			setIsPlaying(false);
-		};
+		observer.observe(video);
+
+		return () => observer.disconnect();
+	}, []);
+	/* ------------------------------------------------------ */
+
+	useEffect(() => {
+		const video = videoRef.current;
+		if (!video) return;
+
+		const handleLoadedMetadata = () => setDuration(video.duration);
+		const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+		const handleEnded = () => setIsPlaying(false);
 
 		video.addEventListener("loadedmetadata", handleLoadedMetadata);
 		video.addEventListener("timeupdate", handleTimeUpdate);
@@ -50,21 +83,19 @@ export const VideoSection: React.FC = () => {
 	}, []);
 
 	const togglePlay = () => {
-		if (videoRef.current) {
-			if (isPlaying) {
-				videoRef.current.pause();
-			} else {
-				videoRef.current.play();
-			}
-			setIsPlaying(!isPlaying);
+		if (!videoRef.current) return;
+		if (isPlaying) {
+			videoRef.current.pause();
+		} else {
+			videoRef.current.play();
 		}
+		setIsPlaying(!isPlaying);
 	};
 
 	const toggleMute = () => {
-		if (videoRef.current) {
-			videoRef.current.muted = !isMuted;
-			setIsMuted(!isMuted);
-		}
+		if (!videoRef.current) return;
+		videoRef.current.muted = !isMuted;
+		setIsMuted(!isMuted);
 	};
 
 	const toggleFullscreen = () => {
@@ -72,26 +103,22 @@ export const VideoSection: React.FC = () => {
 		if (!container) return;
 
 		if (!isFullscreen) {
-			if (container.requestFullscreen) {
-				container.requestFullscreen();
-			}
+			container.requestFullscreen?.();
 		} else {
-			if (document.exitFullscreen) {
-				document.exitFullscreen();
-			}
+			document.exitFullscreen?.();
 		}
 		setIsFullscreen(!isFullscreen);
 	};
 
 	const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const newTime = parseFloat(e.target.value);
+		const newTime = Number(e.target.value);
 		if (videoRef.current) {
 			videoRef.current.currentTime = newTime;
 			setCurrentTime(newTime);
 		}
 	};
 
-	const formatTime = (time: number): string => {
+	const formatTime = (time: number) => {
 		const minutes = Math.floor(time / 60);
 		const seconds = Math.floor(time % 60);
 		return `${minutes}:${seconds.toString().padStart(2, "0")}`;
@@ -99,13 +126,10 @@ export const VideoSection: React.FC = () => {
 
 	const handleMouseMove = () => {
 		setShowControls(true);
-		if (controlsTimeoutRef.current) {
-			clearTimeout(controlsTimeoutRef.current);
-		}
-		controlsTimeoutRef.current = setTimeout(() => {
-			if (isPlaying) {
-				setShowControls(false);
-			}
+		if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+
+		controlsTimeoutRef.current = window.setTimeout(() => {
+			if (isPlaying) setShowControls(false);
 		}, 3000);
 	};
 
@@ -135,7 +159,6 @@ export const VideoSection: React.FC = () => {
 				onMouseLeave={() => isPlaying && setShowControls(false)}
 			>
 				<div className="relative bg-black rounded-lg overflow-hidden shadow-2xl max-w-5xl mx-auto">
-					{/* Video Element */}
 					<video
 						ref={videoRef}
 						className="w-full aspect-video min-h-[200px] max-h-[400px]"
@@ -143,98 +166,64 @@ export const VideoSection: React.FC = () => {
 						onClick={togglePlay}
 					/>
 
-					{/* Play Button Overlay (when paused) */}
 					{!isPlaying && (
 						<motion.div
 							className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer"
 							onClick={togglePlay}
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
-						>
-							{/* <div className="bg-white/90 rounded-full p-6 hover:bg-white transition-colors">
-                                <PlayArrow style={{ fontSize: 64, color: '#000' }} />
-                            </div> */}
-						</motion.div>
+						/>
 					)}
 
-					{/* Video Controls */}
 					<motion.div
 						className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/80 to-transparent p-4"
 						initial={{ opacity: 1 }}
 						animate={{ opacity: showControls ? 1 : 0 }}
 						transition={{ duration: 0.3 }}
 					>
-						{/* Control Buttons */}
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-3">
-								{/* Play/Pause */}
-								<button
-									onClick={togglePlay}
-									className="text-white hover:text-gray-300 transition-colors"
-								>
-									{isPlaying ? (
-										<Pause style={{ fontSize: 24 }} />
-									) : (
-										<PlayArrow style={{ fontSize: 24 }} />
-									)}
+								<button onClick={togglePlay} className="text-white">
+									{isPlaying ? <Pause /> : <PlayArrow />}
 								</button>
 
-								{/* Time Display */}
 								<span className="text-white text-sm font-medium">
 									{formatTime(currentTime)} / {formatTime(duration)}
 								</span>
 							</div>
 
 							<div className="flex items-center gap-3 relative">
-								{/* Volume */}
-								<button
-									onClick={toggleMute}
-									className="text-white hover:text-gray-300 transition-colors"
-								>
-									{isMuted ? (
-										<VolumeOff style={{ fontSize: 24 }} />
-									) : (
-										<VolumeUp style={{ fontSize: 24 }} />
-									)}
+								<button onClick={toggleMute} className="text-white">
+									{isMuted ? <VolumeOff /> : <VolumeUp />}
 								</button>
 
-								{/* Fullscreen */}
-								<button
-									onClick={toggleFullscreen}
-									className="text-white hover:text-gray-300 transition-colors"
-								>
-									{isFullscreen ? (
-										<FullscreenExit style={{ fontSize: 24 }} />
-									) : (
-										<Fullscreen style={{ fontSize: 24 }} />
-									)}
+								<button onClick={toggleFullscreen} className="text-white">
+									{isFullscreen ? <FullscreenExit /> : <Fullscreen />}
 								</button>
 
-								{/* Share Button */}
 								<button
 									onClick={() => setShowShareMenu(!showShareMenu)}
-									className="text-white hover:text-gray-300 transition-colors"
+									className="text-white"
 								>
-									<MoreVert style={{ fontSize: 24 }} />
+									<MoreVert />
 								</button>
 
-								{/* Share Menu */}
 								{showShareMenu && (
 									<motion.div
 										className="absolute bottom-full right-0 mb-2 bg-white rounded-lg shadow-xl p-4 min-w-[200px]"
 										initial={{ opacity: 0, y: 10 }}
 										animate={{ opacity: 1, y: 0 }}
-										exit={{ opacity: 0, y: 10 }}
 									>
 										<div className="flex items-center justify-between mb-3">
 											<span className="font-semibold text-gray-800">Share</span>
 											<button
 												onClick={() => setShowShareMenu(false)}
-												className="text-gray-500 hover:text-gray-700"
+												className="text-gray-500"
 											>
 												<Close style={{ fontSize: 20 }} />
 											</button>
 										</div>
+
 										<div className="flex flex-col gap-2">
 											<button className="text-left px-3 py-2 hover:bg-gray-100 rounded text-sm">
 												Share on Facebook
@@ -255,7 +244,6 @@ export const VideoSection: React.FC = () => {
 							</div>
 						</div>
 
-						{/* Progress Bar */}
 						<div className="mb-3">
 							<input
 								type="range"
@@ -263,7 +251,7 @@ export const VideoSection: React.FC = () => {
 								max={duration || 0}
 								value={currentTime}
 								onChange={handleProgressChange}
-								className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+								className="w-full h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
 								style={{
 									background: `linear-gradient(to right, #dc2626 ${
 										(currentTime / duration) * 100
@@ -273,7 +261,6 @@ export const VideoSection: React.FC = () => {
 						</div>
 					</motion.div>
 
-					{/* AllNova Watermark */}
 					<div className="absolute top-4 right-4 text-white/70 text-sm font-medium">
 						AllNova
 					</div>
