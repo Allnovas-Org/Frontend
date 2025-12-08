@@ -4,27 +4,31 @@ import Logo from "../assets/AllNova black 2 (1).png";
 import SignupModal from "./SignupFlow/SignupModal";
 import SignInModal from "./SignInFlow/SignInModal";
 
-const Navbar = () => {
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+interface NavLinkClassProps {
+  isActive: boolean;
+}
 
-  const toggleMobileMenu = () => {
+const Navbar: React.FC = () => {
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+
+  const toggleMobileMenu = (): void => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const closeMobileMenu = () => {
+  const closeMobileMenu = (): void => {
     setIsMobileMenuOpen(false);
   };
 
-  const navLinkClass = ({ isActive }) =>
+  const navLinkClass = ({ isActive }: NavLinkClassProps): string =>
     `transition-colors duration-200 ${
       isActive
         ? "text-red-800 font-bold"
         : "text-gray-700 hover:text-[#FF5E60] font-semibold"
     }`;
 
-  const mobileNavLinkClass = ({ isActive }) =>
+  const mobileNavLinkClass = ({ isActive }: NavLinkClassProps): string =>
     `block py-3 px-4 transition-colors duration-200 ${
       isActive
         ? "text-red-900 font-semibold bg-red-50"
