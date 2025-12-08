@@ -11,6 +11,7 @@ import { About } from "./pages/about.tsx";
 import FindJobs from "./pages/applicants/findJobs";
 import SavedJobs from "./pages/applicants/savedJobs";
 import { SavedJobsProvider } from "./store/SavedJobsProvider.tsx";
+import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion.tsx";
 
 // function App() {
 //   return (
@@ -39,6 +40,7 @@ function App() {
       <Route element={<MainLayout />}>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
+        <Route path='/profile-completion' element={<ProfileCompletion />} />
       </Route>
       <Route
         element={
