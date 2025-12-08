@@ -1,29 +1,17 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
+import { profileCompletionsSkills } from "../../../utils/profile-completion-data";
 
 const SkillsStep = () => {
 	const [selectedSkill, setSelectedSkill] = useState("");
 	const [skills, setSkills] = useState<string[]>(["Video Editing & Animation"]);
 	const [experience, setExperience] = useState("Intermediate (2-5 years)");
 
-	const specializationOptions = [
-		"Video Editing",
-		"Motion Graphics",
-		"2D Animation",
-		"3D Animation",
-		"Explainer Videos",
-		"Whiteboard Animation",
-		"Video Ads & Promos",
-		"Logo Animation",
-		"Intros & Outros",
-		"Subtitling & Captioning",
-		"Visual Effects (VFX)",
-		"Animated Presentations",
-		"Slideshow Videos",
-		"Cinematic Video Editing",
-		"Music Video Editing",
-		"Social Media Video Content",
-	];
+	const currentCategory = profileCompletionsSkills.find(
+		(cat) => cat.name === selectedSkill || skills.includes(cat.name),
+	);
+
+	const specializationOptions = currentCategory ? currentCategory.subs : [];
 
 	const [selectedSpecializations, setSelectedSpecializations] = useState<
 		string[]
@@ -50,14 +38,26 @@ const SkillsStep = () => {
 			<div className="mb-6 max-lg:text-sm">
 				<label className="block font-medium mb-3">Your Skills</label>
 				<div className="flex gap-3">
-					<input
-						type="text"
+					<select
 						value={selectedSkill}
 						onChange={(e) => setSelectedSkill(e.target.value)}
-						placeholder="Video Editing & Animation"
 						className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD]"
-					/>
-					<button className="px-6 py-3 bg-[#6A0DAD] text-white rounded-lg font-semibold hover:bg-[#5a0b92]">
+					>
+						<option value="">Select a skill category</option>
+						{profileCompletionsSkills.map((cat) => (
+							<option key={cat.name} value={cat.name}>
+								{cat.name}
+							</option>
+						))}
+					</select>
+					<button
+						onClick={() => {
+							if (selectedSkill && !skills.includes(selectedSkill)) {
+								setSkills([...skills, selectedSkill]);
+							}
+						}}
+						className="px-6 py-3 bg-[#6A0DAD] text-white rounded-lg font-semibold hover:bg-[#5a0b92]"
+					>
 						+
 					</button>
 				</div>
