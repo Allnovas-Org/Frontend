@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   MagnifierIcon,
   RecentIcon,
@@ -33,20 +33,65 @@ const FindJobs: React.FC = () => {
   const totalPages = Math.ceil(jobs.length / jobsPerPage);
 
   const [search, setSearch] = useState<string>("");
+  const [categoryInput, setCategoryInput] = useState("");
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string>("");
   const [sortDropdownOpen, setSortDropdownOpen] = useState<boolean>(false);
   const [sortOption, setSortOption] = useState<string>("Most Recent");
   const [filterDropdownOpen, setFilterDropdownOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<Filters>({});
 
-  // Filtering and sorting use postedDate
+  // Collect all categories and subcategories for autocomplete
+  const allCategories = useMemo(
+    () => Array.from(new Set(jobs.map((j) => j.category).filter(Boolean))),
+    [jobs]
+  );
+  const allSubcategories = useMemo(
+    () => Array.from(new Set(jobs.map((j) => j.subcategory).filter(Boolean))),
+    [jobs]
+  );
+
   const filteredJobs = jobs
     .filter((job) => {
       const searchTerm = search.trim().toLowerCase();
-      if (!searchTerm) return true;
-      return (
-        job.position.toLowerCase().includes(searchTerm) ||
-        job.company.toLowerCase().includes(searchTerm)
-      );
+      const categoryTerm = categoryInput.trim().toLowerCase();
+      // If nothing is searched, show all
+      if (
+        !searchTerm &&
+        !categoryTerm &&
+        !selectedCategory &&
+        !selectedSubcategory
+      )
+        return true;
+      // If searching by category (from input or selected), match jobs with that category
+      if (
+        (selectedCategory || categoryTerm) &&
+        !(selectedSubcategory || searchTerm)
+      ) {
+        const cat = selectedCategory || categoryTerm;
+        return job.category && job.category.toLowerCase() === cat.toLowerCase();
+      }
+      // If searching by subcategory (from input or selected), match jobs where subcategory is used as position
+      if (selectedSubcategory || searchTerm) {
+        const sub = selectedSubcategory || searchTerm;
+        // Subcategory as position
+        if (
+          job.subcategory &&
+          job.subcategory.toLowerCase() === sub.toLowerCase()
+        ) {
+          return true;
+        }
+        // Also allow searching by position
+        if (
+          job.position &&
+          job.position.toLowerCase().includes(sub.toLowerCase())
+        ) {
+          return true;
+        }
+        return false;
+      }
+      return true;
     })
     .filter((job) => {
       // Budget filter
@@ -116,10 +161,13 @@ const FindJobs: React.FC = () => {
   // Filter by badge if filter is set
   const finalJobs = jobsWithDate;
 
-  const jobsToShow = finalJobs.slice(
-    (currentPage - 1) * jobsPerPage,
-    currentPage * jobsPerPage
-  );
+  // Use subcategory as position if present
+  const jobsToShow = finalJobs
+    .slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage)
+    .map((job) => ({
+      ...job,
+      position: job.subcategory || job.position,
+    }));
 
   // Helper function for posted text
   function getPostedText(postedDate: number | Date): string {
@@ -166,12 +214,79 @@ const FindJobs: React.FC = () => {
               <input
                 type='text'
                 placeholder='Job title/keyword'
-                value={search}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setSearch(e.target.value)
-                }
-                className='w-full pl-10 pr-4 py-2 rounded-lg border border-input text-base shadow-sm text-heading'
+                value={categoryInput}
+                onChange={(e) => {
+                  setCategoryInput(e.target.value);
+                  setShowCategoryDropdown(true);
+                  setSelectedCategory("");
+                  setSelectedSubcategory("");
+                }}
+                className='w-full pl-10 pr-4 py-2 rounded-lg border border-input text-base shadow-sm text-heading mb-2'
               />
+              {showCategoryDropdown && categoryInput.trim() !== "" && (
+                <div className='absolute left-0 top-full w-full bg-white border border-input rounded-lg shadow-lg z-20 mt-1 max-h-60 overflow-auto'>
+                  {/* Show matching categories */}
+                  {allCategories
+                    .filter(
+                      (cat) =>
+                        cat &&
+                        cat
+                          .toLowerCase()
+                          .includes(categoryInput.trim().toLowerCase())
+                    )
+                    .map((cat) => (
+                      <div
+                        key={cat}
+                        className='px-4 py-2 text-sm hover:bg-primary/10 cursor-pointer'
+                        onClick={() => {
+                          setSelectedCategory(cat || "");
+                          setCategoryInput(cat || "");
+                          setShowCategoryDropdown(false);
+                          setSelectedSubcategory("");
+                        }}
+                      >
+                        {cat}
+                      </div>
+                    ))}
+                  {/* Show matching subcategories */}
+                  {allSubcategories
+                    .filter(
+                      (sub) =>
+                        sub &&
+                        sub
+                          .toLowerCase()
+                          .includes(categoryInput.trim().toLowerCase())
+                    )
+                    .map((sub) => (
+                      <div
+                        key={sub}
+                        className='px-4 py-2 text-sm hover:bg-primary/10 cursor-pointer'
+                        onClick={() => {
+                          setSelectedSubcategory(sub || "");
+                          setCategoryInput(sub || "");
+                          setShowCategoryDropdown(false);
+                          setSelectedCategory("");
+                        }}
+                      >
+                        {sub}
+                      </div>
+                    ))}
+                  {/* If nothing matches */}
+                  {allCategories
+                    .concat(allSubcategories)
+                    .filter(
+                      (item) =>
+                        item &&
+                        item
+                          .toLowerCase()
+                          .includes(categoryInput.trim().toLowerCase())
+                    ).length === 0 && (
+                    <div className='px-4 py-2 text-sm text-gray-400'>
+                      No match found
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <div className='flex items-center space-x-4 ml-4'>

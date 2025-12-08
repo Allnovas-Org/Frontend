@@ -24,6 +24,8 @@ const jobs: Job[] = [
     amountBudget: "$1,400 - $2,000",
     deliveryPeriod: "2-4 weeks",
     services: ["Web Development", "UI/UX Design", "Consulting"],
+    category: "Web Development",
+    subcategory: "Front-End Development",
   },
   {
     qualifications: [
@@ -75,7 +77,7 @@ const jobs: Job[] = [
     id: "3",
     logo: "https://placehold.co/48x48?text=Logo",
     company: "DataWorks",
-    position: "Data Scientist",
+    position: "Data Science",
     applicants: 15,
     badges: [
       { type: "experience", value: "Intermediate" },
@@ -94,6 +96,8 @@ const jobs: Job[] = [
     amountBudget: "$3,000 - $5,000",
     deliveryPeriod: "4-6 weeks",
     services: ["Data Science", "Machine Learning", "Analytics"],
+    category: "Programming & Tech",
+    subcategory: "Data Science",
   },
   {
     qualifications: [
@@ -122,6 +126,8 @@ const jobs: Job[] = [
     price: "$55/hr",
     postedDate: Date.now() - 1 * 24 * 60 * 60 * 1000, // 1 day ago
     posted: "Posted 1 day ago",
+    category: "Web Development",
+    subcategory: "Back-End Development",
   },
   {
     id: "4",
@@ -157,12 +163,14 @@ const jobs: Job[] = [
     amountBudget: "$2,500 - $4,000",
     deliveryPeriod: "2-3 weeks",
     services: ["UI/UX Design", "Branding", "Web Design"],
+    category: "UI/UX Design",
+    subcategory: "Website UI Design",
   },
   {
     id: "5",
     logo: "https://placehold.co/48x48?text=Logo",
     company: "SecureIT",
-    position: "Security Analyst",
+    position: "Security Analysis",
     applicants: 7,
     badges: [
       { type: "experience", value: "Intermediate" },
@@ -198,6 +206,8 @@ const jobs: Job[] = [
     amountBudget: "$1,800 - $2,500",
     deliveryPeriod: "3-4 weeks",
     services: ["Security Analysis", "Compliance", "Risk Assessment"],
+    category: "Programming & Tech",
+    subcategory: "Security Analysis",
   },
   {
     id: "6",
@@ -233,6 +243,8 @@ const jobs: Job[] = [
     amountBudget: "$2,200 - $3,500",
     deliveryPeriod: "4-5 weeks",
     services: ["DevOps", "Cloud Infrastructure", "CI/CD"],
+    category: "Programming & Tech",
+    subcategory: "DevOps",
   },
   {
     id: "7",
@@ -274,6 +286,8 @@ const jobs: Job[] = [
     amountBudget: "$5,000 - $8,000",
     deliveryPeriod: "6-8 weeks",
     services: ["AI Engineering", "Machine Learning", "Research"],
+    category: "Programming & Tech",
+    subcategory: "AI Engineering",
   },
 ];
 
