@@ -14,33 +14,36 @@ const headerLinks = [
   { title: 'Offshore Services', url: '#' },
 ]
 
-const Navbar = () => {
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [openMobileNav, setOpenMobileNav] = useState(false);
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
+interface NavLinkClassProps {
+  isActive: boolean;
+}
 
-  const toggleMobileNav = () => {
-    setOpenMobileNav(!openMobileNav);
-  }
+const Navbar: React.FC = () => {
+  const [isSignupModalOpen, setIsSignupModalOpen] = useState<boolean>(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
-  const handleNavClick = (url) => {
-    if (url === '#') return; // Don't scroll if no URL
+  const toggleMobileMenu = (): void => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-    const element = document.querySelector(url);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-    }
+  const closeMobileMenu = (): void => {
+    setIsMobileMenuOpen(false);
+  };
 
-    // Close mobile drawer if open
-    if (openMobileNav) {
-      setOpenMobileNav(false);
-    }
-  }
+  const navLinkClass = ({ isActive }: NavLinkClassProps): string =>
+    `transition-colors duration-200 ${
+      isActive
+        ? "text-red-800 font-bold"
+        : "text-gray-700 hover:text-[#FF5E60] font-semibold"
+    }`;
+
+  const mobileNavLinkClass = ({ isActive }: NavLinkClassProps): string =>
+    `block py-3 px-4 transition-colors duration-200 ${
+      isActive
+        ? "text-red-900 font-semibold bg-red-50"
+        : "text-gray-700 hover:text-[#F05658] hover:bg-gray-50"
+    }`;
 
   return (
     <>
