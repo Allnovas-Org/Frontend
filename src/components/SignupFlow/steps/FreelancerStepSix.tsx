@@ -1,152 +1,155 @@
 import React, { useState } from "react";
-import { ArrowLeft, Calendar } from "lucide-react";
+import { X } from "lucide-react";
 
-interface FreelancerStepSixProps {
-	onNext: () => void;
-	onBack: () => void;
-}
+// Mock data for demonstration
+const profileCompletionsSkills = [
+	{
+		name: "Video Editing & Animation",
+		subs: [
+			"Motion Graphics",
+			"Color Grading",
+			"Video Production",
+			"3D Animation",
+		],
+	},
+	{
+		name: "Graphic Design",
+		subs: ["Logo Design", "Brand Identity", "UI/UX Design", "Illustration"],
+	},
+	{
+		name: "Web Development",
+		subs: ["Frontend", "Backend", "Full Stack", "Mobile Apps"],
+	},
+];
 
-const FreelancerStepSix: React.FC<FreelancerStepSixProps> = ({
-	onNext,
-	onBack,
-}) => {
-	const [dateOfBirth, setDateOfBirth] = useState("");
-	const [country, setCountry] = useState("");
-	const [countryCode, setCountryCode] = useState("+234");
-	const [phoneNumber, setPhoneNumber] = useState("");
+const SkillsStep = () => {
+	const [selectedSkill, setSelectedSkill] = useState("");
+	const [skills, setSkills] = useState<string[]>(["Video Editing & Animation"]);
+	const [tempSkillStore, setTempSkillStore] = useState<
+		{ skill: string; specialisations: string[] }[]
+	>([]);
+	const [selectedSpecializations, setSelectedSpecializations] = useState<
+		string[]
+	>(["Video Editing & Animation"]);
+	const [experience, setExperience] = useState("Intermediate (2-5 years)");
 
-	const handleContinue = () => {
-		if (dateOfBirth && country && phoneNumber) {
-			onNext();
+	const currentCategory = profileCompletionsSkills.find(
+		(cat) => cat.name === selectedSkill || skills.includes(cat.name),
+	);
+
+	const specializationOptions = currentCategory ? currentCategory.subs : [];
+
+	const toggleSpecialization = (spec: string) => {
+		if (selectedSpecializations.includes(spec)) {
+			setSelectedSpecializations(
+				selectedSpecializations.filter((s) => s !== spec),
+			);
+		} else {
+			setSelectedSpecializations([...selectedSpecializations, spec]);
 		}
 	};
 
-	const formatDateToMMDDYY = (dateString: string): string => {
-		if (!dateString) return "";
+	const handleAddSkill = () => {
+		if (!selectedSkill) return;
 
-		const date = new Date(dateString);
+		const newEntry = {
+			skill: selectedSkill,
+			specialisations: selectedSpecializations,
+		};
 
-		// Check if the date is valid
-		if (isNaN(date.getTime())) return "";
+		const updatedTempSkillStore = [...tempSkillStore, newEntry];
+		setTempSkillStore(updatedTempSkillStore);
 
-		const month = String(date.getMonth() + 1).padStart(2, "0");
-		const day = String(date.getDate()).padStart(2, "0");
-		const year = String(date.getFullYear()).slice(-2);
+		// Console log the updated store
+		console.log("tempSkillStore:", updatedTempSkillStore);
 
-		return `${month}/${day}/${year}`;
+		if (!skills.includes(selectedSkill)) setSkills([...skills, selectedSkill]);
 	};
 
-	const isValid = dateOfBirth && country && phoneNumber;
-
-	const countries = [
-		"Nigeria",
-		"United States",
-		"United Kingdom",
-		"Canada",
-		"Ghana",
-		"Kenya",
-		"South Africa",
-	];
-
 	return (
-		<div className="flex flex-col h-full">
-			<button
-				onClick={onBack}
-				className="flex items-center gap-2 text-gray-700 mb-6 hover:text-gray-900 transition w-fit"
-			>
-				<ArrowLeft size={20} />
-				<span>Back</span>
-			</button>
+		<div className="p-8 max-w-4xl">
+			<h2 className="text-2xl font-bold mb-2">What Are You Great At</h2>
+			<p className="text-gray-600 mb-8">
+				Help clients understand your expertise and experience level
+			</p>
 
-			<h1 className="text-3xl font-bold mb-2">Almost there</h1>
-			<p className="text-gray-600 mb-8">Let's personalize your profile.</p>
-
-			<div className="space-y-6 mb-8">
-				{/* Date of Birth */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Date of Birth
-					</label>
-					<div className="relative">
-						<input
-							type="date"
-							value={dateOfBirth}
-							onChange={(e) => setDateOfBirth(e.target.value)}
-							placeholder="mm / dd / yy"
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
-						/>
-					</div>
-					{/* Display formatted date below the input */}
-					{dateOfBirth && (
-						<p className="text-sm text-gray-500 mt-2">
-							Formatted: {formatDateToMMDDYY(dateOfBirth)}
-						</p>
-					)}
-				</div>
-
-				{/* Country */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Country
-					</label>
+			{/* Your Skills */}
+			<div className="mb-6 max-lg:text-sm">
+				<label className="block font-medium mb-3">Your Skills</label>
+				<div className="flex gap-3">
 					<select
-						value={country}
-						onChange={(e) => setCountry(e.target.value)}
-						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent appearance-none bg-white"
+						value={selectedSkill}
+						onChange={(e) => setSelectedSkill(e.target.value)}
+						className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
 					>
-						<option value="">Select country</option>
-						{countries.map((c) => (
-							<option key={c} value={c}>
-								{c}
+						<option value="">Select a skill category</option>
+						{profileCompletionsSkills.map((cat) => (
+							<option key={cat.name} value={cat.name}>
+								{cat.name}
 							</option>
 						))}
 					</select>
+					<button
+						onClick={handleAddSkill}
+						className="px-6 py-3 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700"
+					>
+						+
+					</button>
 				</div>
 
-				{/* Phone Number */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Phone Number
-					</label>
-					<div className="grid grid-cols-3 gap-3">
-						<div className="col-span-1">
-							<select
-								value={countryCode}
-								onChange={(e) => setCountryCode(e.target.value)}
-								className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent appearance-none bg-white"
-							>
-								<option value="+234">+234 🇳🇬</option>
-								<option value="+1">+1 🇺🇸</option>
-								<option value="+44">+44 🇬🇧</option>
-								<option value="+254">+254 🇰🇪</option>
-							</select>
-						</div>
-						<div className="col-span-2">
-							<input
-								type="tel"
-								value={phoneNumber}
-								onChange={(e) => setPhoneNumber(e.target.value)}
-								placeholder="81*********"
-								className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
+				{/* Selected Skills */}
+				<div className="flex flex-wrap gap-2 mt-3">
+					{skills.map((skill, index) => (
+						<span
+							key={index}
+							className="px-4 py-2 bg-purple-100 text-purple-600 rounded-full flex items-center gap-2"
+						>
+							{skill}
+							<X
+								className="w-4 h-4 cursor-pointer"
+								onClick={() => setSkills(skills.filter((_, i) => i !== index))}
 							/>
-						</div>
-					</div>
+						</span>
+					))}
 				</div>
 			</div>
 
-			<button
-				onClick={handleContinue}
-				disabled={!isValid}
-				className={`w-full py-4 rounded-full font-semibold transition-all ${
-					isValid
-						? "bg-[#6A0DAD] text-white hover:bg-[#5a0b92] cursor-pointer"
-						: "bg-gray-200 text-gray-400 cursor-not-allowed"
-				}`}
-			>
-				Join
-			</button>
+			{/* Years of Experience */}
+			<div className="mb-8 max-lg:text-sm">
+				<label className="block lg:font-medium mb-3">Years of Experience</label>
+				<select
+					value={experience}
+					onChange={(e) => setExperience(e.target.value)}
+					className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+				>
+					<option>Entry Level (0-2 years)</option>
+					<option>Intermediate (2-5 years)</option>
+					<option>Expert (5+ years)</option>
+				</select>
+			</div>
+
+			{/* Specialization Areas */}
+			<div>
+				<label className="block font-medium mb-3">Specialization Areas</label>
+				<div className="grid lg:grid-cols-4 max-md:grid-cols-2 grid-cols-3 gap-3">
+					{specializationOptions.map((spec) => (
+						<label
+							key={spec}
+							className="flex items-center gap-2 cursor-pointer"
+						>
+							<input
+								type="checkbox"
+								checked={selectedSpecializations.includes(spec)}
+								onChange={() => toggleSpecialization(spec)}
+								className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-600"
+							/>
+							<span className="text-sm">{spec}</span>
+						</label>
+					))}
+				</div>
+			</div>
 		</div>
 	);
 };
 
-export default FreelancerStepSix;
+export default SkillsStep;
