@@ -9,7 +9,8 @@ import {
 
 import Pagination from "../../components/Applicants/Pagination";
 import FilterDropdown from "../../components/Applicants/FilterDropdown";
-import JobCard, { Job } from "../../components/Applicants/JobCard";
+import JobCard from "../../components/Applicants/JobCard";
+import { Job } from "../../types";
 import JobSidebar from "../../components/Applicants/JobSidebar";
 import JobApplicationPanel from "../../components/Applicants/JobApplicationPanel";
 import jobs from "../../mockData/jobs";
