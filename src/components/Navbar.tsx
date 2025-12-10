@@ -45,6 +45,7 @@ const Navbar = () => {
   return (
     <>
       <header className='bg-white p-4 w-full flex justify-center'>
+        {/* Desktop Navigation */}
         <nav className='max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between'>
           <Link to='/' className='w-[10%]'>
             <img src={logo} alt='AllNova Logo' className='w-full' />
@@ -79,84 +80,79 @@ const Navbar = () => {
               </div>
             </>
           ) : (
-            // Empty div to maintain layout when on non-home pages
             <div className='flex-1 flex justify-end'>
               {/* Only logo shows, links and buttons are hidden */}
             </div>
           )}
+        </nav>
 
-          {/* Mobile navigation - separate from desktop */}
-          <nav className='w-full hidden max-md:inline-flex items-center justify-between'>
+        {/* Mobile Navigation */}
+        <nav className='max-w-6xl w-full hidden max-md:flex items-center justify-between'>
+          <button
+            onClick={toggleMobileNav}
+            className='text-3xl font-bold'
+            aria-label='Toggle mobile menu'
+            aria-expanded={openMobileNav}
+          >
+            <MenuIcon />
+          </button>
+          <img src={logo} alt='AllNova Logo' className='w-[120px]' />
+          {isHomePage ? (
             <button
-              onClick={toggleMobileNav}
-              className='text-3xl font-bold'
-              aria-label='Toggle mobile menu'
-              aria-expanded={openMobileNav}
+              onClick={() => setIsSignupModalOpen(true)}
+              className='bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition'
             >
-              <MenuIcon />
+              Join
             </button>
-            <img src={logo} alt='AllNova Logo' className='w-[30%]' />
-            {isHomePage ? (
-              <button
-                onClick={() => setIsSignupModalOpen(true)}
-                className='bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition'
-              >
-                Join
-              </button>
-            ) : (
-              <div className='w-[1.2rem]'></div> // Spacer for alignment
-            )}
-          </nav>
-
-          {/* Mobile Drawer - only show on home page */}
-          {isHomePage && (
-            <Drawer
-              anchor='left'
-              open={openMobileNav}
-              onClose={toggleMobileNav}
-            >
-              <div className='w-64 p-4 flex flex-col justify-between h-full pb-8'>
-                <ul className='flex flex-col space-y-6'>
-                  <button
-                    onClick={() => handleNavClick("#home")}
-                    className='w-4/5 mx-auto'
-                  >
-                    <img src={logo} alt='AllNova Logo' className='w-full' />
-                  </button>
-                  {headerLinks.map((link) => (
-                    <li
-                      key={link.title}
-                      onClick={() => handleNavClick(link.url)}
-                      className='text-black font-medium hover:text-gray-500 transition cursor-pointer'
-                    >
-                      {link.title}
-                    </li>
-                  ))}
-                </ul>
-                <div className='flex flex-col gap-y-3'>
-                  <button
-                    onClick={() => {
-                      setIsSignInModalOpen(true);
-                      setOpenMobileNav(false);
-                    }}
-                    className='bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition border border-primary'
-                  >
-                    Sign in
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsSignupModalOpen(true);
-                      setOpenMobileNav(false);
-                    }}
-                    className='bg-primary text-white px-[1.2rem] py-[0.45rem] rounded-full hover:bg-primary/70 transition'
-                  >
-                    Join
-                  </button>
-                </div>
-              </div>
-            </Drawer>
+          ) : (
+            <div className='w-[1.2rem]'></div>
           )}
         </nav>
+
+        {/* Mobile Drawer - only show on home page */}
+        {isHomePage && (
+          <Drawer anchor='left' open={openMobileNav} onClose={toggleMobileNav}>
+            <div className='w-64 p-4 flex flex-col justify-between h-full pb-8'>
+              <ul className='flex flex-col space-y-6'>
+                <button
+                  onClick={() => handleNavClick("#home")}
+                  className='w-4/5 mx-auto'
+                >
+                  <img src={logo} alt='AllNova Logo' className='w-full' />
+                </button>
+                {headerLinks.map((link) => (
+                  <li
+                    key={link.title}
+                    onClick={() => handleNavClick(link.url)}
+                    className='text-black font-medium hover:text-gray-500 transition cursor-pointer'
+                  >
+                    {link.title}
+                  </li>
+                ))}
+              </ul>
+              <div className='flex flex-col gap-y-3'>
+                <button
+                  onClick={() => {
+                    setIsSignInModalOpen(true);
+                    setOpenMobileNav(false);
+                  }}
+                  className='bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition border border-primary'
+                >
+                  Sign in
+                </button>
+                <button
+                  onClick={() => {
+                    setIsSignupModalOpen(true);
+                    setOpenMobileNav(false);
+                  }}
+                  className='bg-primary text-white px-[1.2rem] py-[0.45rem] rounded-full hover:bg-primary/70 transition'
+                >
+                  Join
+                </button>
+              </div>
+            </div>
+          </Drawer>
+        )}
       </header>
 
       {/* Signup Modal */}
