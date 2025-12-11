@@ -11,13 +11,15 @@ const headerLinks = [
 	{ title: "Services", url: "#nichesSection" },
 	{ title: "Resources", url: "#resourcesSection" },
 	{ title: "About Us", url: "#missionSection" },
-	{ title: "Offshore Services", url: "#" },
+	// offshore page route
+	{ title: "Offshore Services", url: "/offshore", type: "route" },
 ];
 
 const Navbar = () => {
 	const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 	const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
 	const [openMobileNav, setOpenMobileNav] = useState(false);
+
 	const location = useLocation();
 	const isHomePage = location.pathname === "/";
 
@@ -25,8 +27,9 @@ const Navbar = () => {
 		setOpenMobileNav(!openMobileNav);
 	};
 
+	// Scroll handler for homepage scroll links
 	const handleNavClick = (url) => {
-		if (url === "#") return; // Don't scroll if no URL
+		if (!isHomePage || !url.startsWith("#")) return;
 
 		const element = document.querySelector(url);
 		if (element) {
@@ -36,7 +39,6 @@ const Navbar = () => {
 			});
 		}
 
-		// Close mobile drawer if open
 		if (openMobileNav) {
 			setOpenMobileNav(false);
 		}
@@ -55,15 +57,26 @@ const Navbar = () => {
 						<>
 							<ul className="inline-flex space-x-12 max-lg:space-x-6">
 								{headerLinks.map((link) => (
-									<li
-										key={link.title}
-										onClick={() => handleNavClick(link.url)}
-										className="text-black hover:text-gray-500 transition cursor-pointer"
-									>
-										{link.title}
+									<li key={link.title} className="cursor-pointer">
+										{link.type === "route" ? (
+											<Link
+												to={link.url}
+												className="text-black hover:text-gray-500 transition"
+											>
+												{link.title}
+											</Link>
+										) : (
+											<span
+												onClick={() => handleNavClick(link.url)}
+												className="text-black hover:text-gray-500 transition"
+											>
+												{link.title}
+											</span>
+										)}
 									</li>
 								))}
 							</ul>
+
 							<div className="inline-flex gap-x-4 items-center">
 								<button
 									onClick={() => setIsSignInModalOpen(true)}
@@ -80,9 +93,7 @@ const Navbar = () => {
 							</div>
 						</>
 					) : (
-						<div className="flex-1 flex justify-end">
-							{/* Only logo shows, links and buttons are hidden */}
-						</div>
+						<div className="flex-1 flex justify-end"></div>
 					)}
 				</nav>
 
@@ -96,7 +107,11 @@ const Navbar = () => {
 					>
 						<MenuIcon />
 					</button>
-					<img src={logo} alt="AllNova Logo" className="w-[120px]" />
+
+					<Link to="/">
+						<img src={logo} alt="AllNova Logo" className="w-[120px]" />
+					</Link>
+
 					{isHomePage ? (
 						<button
 							onClick={() => setIsSignupModalOpen(true)}
@@ -109,7 +124,7 @@ const Navbar = () => {
 					)}
 				</nav>
 
-				{/* Mobile Drawer - only show on home page */}
+				{/* Mobile Drawer (Home Only) */}
 				{isHomePage && (
 					<Drawer anchor="left" open={openMobileNav} onClose={toggleMobileNav}>
 						<div className="w-64 p-4 flex flex-col justify-between h-full pb-8">
@@ -120,16 +135,29 @@ const Navbar = () => {
 								>
 									<img src={logo} alt="AllNova Logo" className="w-full" />
 								</button>
+
 								{headerLinks.map((link) => (
-									<li
-										key={link.title}
-										onClick={() => handleNavClick(link.url)}
-										className="text-black font-medium hover:text-gray-500 transition cursor-pointer"
-									>
-										{link.title}
+									<li key={link.title} className="cursor-pointer">
+										{link.type === "route" ? (
+											<Link
+												to={link.url}
+												onClick={() => setOpenMobileNav(false)}
+												className="text-black font-medium hover:text-gray-500 transition"
+											>
+												{link.title}
+											</Link>
+										) : (
+											<span
+												onClick={() => handleNavClick(link.url)}
+												className="text-black font-medium hover:text-gray-500 transition"
+											>
+												{link.title}
+											</span>
+										)}
 									</li>
 								))}
 							</ul>
+
 							<div className="flex flex-col gap-y-3">
 								<button
 									onClick={() => {
@@ -140,6 +168,7 @@ const Navbar = () => {
 								>
 									Sign in
 								</button>
+
 								<button
 									onClick={() => {
 										setIsSignupModalOpen(true);
@@ -155,13 +184,12 @@ const Navbar = () => {
 				)}
 			</header>
 
-			{/* Signup Modal */}
+			{/* Modals */}
 			<SignupModal
 				isOpen={isSignupModalOpen}
 				onClose={() => setIsSignupModalOpen(false)}
 			/>
 
-			{/* SignIn Modal */}
 			<SignInModal
 				isOpen={isSignInModalOpen}
 				onClose={() => setIsSignInModalOpen(false)}
