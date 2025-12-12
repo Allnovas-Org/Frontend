@@ -29,4 +29,6 @@ export interface Job {
   delivery?: string;
   about?: string;
   hearted?: boolean;
+  category?: string;
+  subcategory?: string;
 }

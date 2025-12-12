@@ -11,7 +11,7 @@ const OffshoreNavbar: React.FC = () => {
 
           {/* Logo */}
           <div>
-            <Link to="/" className="flex-shrink-0">
+            <Link to="/offshore" className="flex-shrink-0">
               <img 
                 src={AllNovaBlack} 
                 alt="Allnova Logo" 
