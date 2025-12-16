@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import GlobalButton from '../button/GlobalButton';  
+import GlobalButton from '../../components/button/GlobalButton';  
 
 
 const HeroSection: React.FC = () => {
@@ -15,7 +15,7 @@ const HeroSection: React.FC = () => {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+        <h1 className="text-4xl md:text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
           Build Your Vision with Allnova{' '}
           <span className="text-purple-600">Offshore Services</span>
         </h1>

@@ -1,7 +1,7 @@
 import React from "react";
-import Form from "../components/offshore/ContactUs/Form";
-import FAQ from "../components/offshore/Faq";
-import Newsletter from "../components/offshore/ContactUs/Newsletter";
+import Form from "../pages/offshore/ContactUs/Form";
+import FAQ from "../pages/offshore/Faq";
+import Newsletter from "../pages/offshore/ContactUs/Newsletter";
 
 
 const OffshoreServices = () => {

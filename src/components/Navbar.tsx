@@ -15,6 +15,12 @@ const headerLinks = [
 	{ title: "Offshore Services", url: "/offshore", type: "route" },
 ];
 
+const offshoreLinks = [
+	{ title: "Services", url: "/offshore/services", type: "route" },
+	{ title: "Contact Us", url: "/offshore/contact", type: "route" },
+];
+
+
 const Navbar = () => {
 	const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
 	const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
@@ -23,35 +29,35 @@ const Navbar = () => {
 	const location = useLocation();
 	const isHomePage = location.pathname === "/";
 
-	const toggleMobileNav = () => {
-		setOpenMobileNav(!openMobileNav);
-	};
+  const toggleMobileNav = () => {
+    setOpenMobileNav(!openMobileNav);
+  };
 
 	// Scroll handler for homepage scroll links
 	const handleNavClick = (url) => {
 		if (!isHomePage || !url.startsWith("#")) return;
 
-		const element = document.querySelector(url);
-		if (element) {
-			element.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-			});
-		}
+    const element = document.querySelector(url);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
 
 		if (openMobileNav) {
 			setOpenMobileNav(false);
 		}
 	};
 
-	return (
-		<>
-			<header className="bg-white p-4 w-full flex justify-center">
-				{/* Desktop Navigation */}
-				<nav className="max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between">
-					<Link to="/" className="w-[10%]">
-						<img src={logo} alt="AllNova Logo" className="w-full" />
-					</Link>
+  return (
+    <>
+      <header className='bg-white p-4 w-full flex justify-center'>
+        {/* Desktop Navigation */}
+        <nav className='max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between'>
+          <Link to='/' className='w-[10%]'>
+            <img src={logo} alt='AllNova Logo' className='w-full' />
+          </Link>
 
 					{isHomePage ? (
 						<>

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import GlobalButton from "../button/GlobalButton";
+import GlobalButton from "../../components/button/GlobalButton";
 import AllNovaBlack from "../../assets/AllNova black 2 (1).png";
 
 const OffshoreNavbar: React.FC = () => {
