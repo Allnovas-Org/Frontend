@@ -10,7 +10,8 @@ import Offshore from "./pages/offshore.tsx";
 import OffshoreNavbar from "./components/offshore/OffshoreNavbar.tsx";
 import OffshoreServices from "./pages/offshoreServices.tsx";
 import OffshoreContact from "./pages/offshoreContact.tsx";
-import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion.tsx";
+import ProfileCompletion from "./pages/auth/ProfileCompletion/ProfileCompletion.tsx";
+import SettingsLayout from "./layout/SettingsLayout.tsx";
 
 function App() {
 	return (
@@ -42,6 +43,16 @@ function App() {
 						<>
 							<Navbar />
 							<About />
+						</>
+					}
+				/>
+
+				<Route
+					path="/settings"
+					element={
+						<>
+							<Navbar />
+							<SettingsLayout />
 						</>
 					}
 				/>
