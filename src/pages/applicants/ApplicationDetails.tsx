@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { InfoBadge } from "../Applicants/help";
+import { InfoBadge } from "./help";
 import { Job } from "../../types";
 
 interface JobDetails {

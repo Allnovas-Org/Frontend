@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from "react";
 import { useFormik } from "formik";
-import { SectionTitle } from "../Applicants/help";
+import { SectionTitle } from "./help";
 import { FormContext } from "../../store/FormContext";
 import { Plus } from "lucide-react";
 
