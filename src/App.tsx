@@ -7,7 +7,7 @@ import { About } from "./pages/about.tsx";
 
 // Offshore Pages
 import Offshore from "./pages/offshore.tsx";
-import OffshoreNavbar from "./components/offshore/OffshoreNavbar.tsx";
+import OffshoreNavbar from "./pages/offshore/OffshoreNavbar.tsx";
 import OffshoreServices from "./pages/offshoreServices.tsx";
 import OffshoreContact from "./pages/offshoreContact.tsx";
 import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion.tsx";

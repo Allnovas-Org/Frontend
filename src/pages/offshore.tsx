@@ -1,9 +1,9 @@
 import React from "react";  
-import HeroSection from "../components/offshore/HeroSection";
-import ProjectHighlight from "../components/offshore/ProjectHighlight";
-import IndustryServe from "../components/offshore/IndustryServe";
-import Review from "../components/offshore/Review";
-import Faq from "../components/offshore/Faq";
+import HeroSection from "../pages/offshore/HeroSection";
+import ProjectHighlight from "../pages/offshore/ProjectHighlight";
+import IndustryServe from "../pages/offshore/IndustryServe";
+import Review from "../pages/offshore/Review";
+import Faq from "../pages/offshore/Faq";
 import GlobalButton from "../components/button/GlobalButton";
 
 export default function OffshorePage() {
