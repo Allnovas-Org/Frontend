@@ -2,8 +2,6 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Navbar from "./components/Navbar.tsx";
-import MainLayout from "./layout/MainLayout.tsx";
-
 import Home from "./pages/home.tsx";
 import { About } from "./pages/about.tsx";
 
@@ -18,12 +16,35 @@ function App() {
 	return (
 		<>
 			<Routes>
-				{/* Main site */}
-				<Route element={<MainLayout />}>
-					<Route index element={<Home />} />
-					<Route path="profile-completion" element={<ProfileCompletion />} />
-					<Route path="about" element={<About />} />
-				</Route>
+				{/* Main Website Layout (shows Main Navbar) */}
+				<Route
+					path="/"
+					element={
+						<>
+							<Navbar />
+							<Home />
+						</>
+					}
+				/>
+				<Route
+					path="/profile-completion"
+					element={
+						<>
+							<Navbar />
+							<ProfileCompletion />
+						</>
+					}
+				/>
+
+				<Route
+					path="/about"
+					element={
+						<>
+							<Navbar />
+							<About />
+						</>
+					}
+				/>
 
 				{/* Offshore Layout (shows ONLY Offshore Navbar) */}
 				<Route
