@@ -32,3 +32,19 @@ export interface Job {
   category?: string;
   subcategory?: string;
 }
+
+export interface Step {
+  id: number;
+  label: string;
+}
+
+export interface WorkExperience {
+  jobTitle: string;
+  company: string;
+  stillWorking: boolean;
+  jobDescription: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+}
