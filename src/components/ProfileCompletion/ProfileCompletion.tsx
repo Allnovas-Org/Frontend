@@ -45,8 +45,7 @@ const ProfileCompletion = () => {
 	};
 
 	const handleSaveAndContinueLater = () => {
-		console.log("Saved progress");
-		// Save and close
+		window.location.href = "/jobs";
 	};
 
 	const progressPercentage = (currentStep / steps.length) * 100;
@@ -149,7 +148,7 @@ const ProfileCompletion = () => {
 
 						{currentStep === 6 ? (
 							<button
-								onClick={() => console.log("Complete Profile")}
+								onClick={() => window.location.href = "/jobs"}
 								className="px-5 py-2 bg-[#6A0DAD] text-white rounded-full font-semibold hover:bg-[#5a0b92] transition flex items-center gap-2"
 							>
 								<ShieldCheck className="w-5 h-5" />
