@@ -185,14 +185,14 @@ const FindJobs: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-2'>
+    <div className='min-h-screen bg-white px-4 sm:px-6 lg:px-2'>
       {showApplicationPanel ? (
         <JobApplicationPanel
           onClose={() => setShowApplicationPanel(false)}
           job={selectedJob as Job}
         />
       ) : (
-        <div className='max-w-6xl mx-auto pt-12'>
+        <div className='max-w-6xl mx-auto pt-8'>
           <div className='text-left flex justify-start flex-col'>
             {/* Page Heading */}
             <h1
