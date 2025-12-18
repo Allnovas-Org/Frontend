@@ -7,44 +7,22 @@ import { About } from "./pages/about.tsx";
 
 // Offshore Pages
 import Offshore from "./pages/offshore.tsx";
-import OffshoreNavbar from "./pages/offshore/OffshoreNavbar.tsx";
+import OffshoreNavbar from "./components/offshore/OffshoreNavbar.tsx";
 import OffshoreServices from "./pages/offshoreServices.tsx";
 import OffshoreContact from "./pages/offshoreContact.tsx";
-import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion.tsx";
+import ProfileCompletion from "./pages/auth/ProfileCompletion/ProfileCompletion.tsx";
+import MainLayout from "./layout/MainLayout.tsx";
 
 function App() {
 	return (
 		<>
 			<Routes>
-				{/* Main Website Layout (shows Main Navbar) */}
-				<Route
-					path="/"
-					element={
-						<>
-							<Navbar />
-							<Home />
-						</>
-					}
-				/>
-				<Route
-					path="/profile-completion"
-					element={
-						<>
-							<Navbar />
-							<ProfileCompletion />
-						</>
-					}
-				/>
-
-				<Route
-					path="/about"
-					element={
-						<>
-							<Navbar />
-							<About />
-						</>
-					}
-				/>
+				{/* Main site */}
+				<Route element={<MainLayout />}>
+					<Route index element={<Home />} />
+					<Route path="profile-completion" element={<ProfileCompletion />} />
+					<Route path="about" element={<About />} />
+				</Route>
 
 				{/* Offshore Layout (shows ONLY Offshore Navbar) */}
 				<Route
