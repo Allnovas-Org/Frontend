@@ -12,50 +12,38 @@ import OffshoreServices from "./pages/offshoreServices.tsx";
 import OffshoreContact from "./pages/offshoreContact.tsx";
 import ProfileCompletion from "./pages/auth/ProfileCompletion/ProfileCompletion.tsx";
 import SettingsLayout from "./layout/SettingsLayout.tsx";
+import MainLayout from "./layout/MainLayout.tsx";
 
 function App() {
 	return (
 		<>
 			<Routes>
-				{/* Main Website Layout (shows Main Navbar) */}
-				<Route
-					path="/"
-					element={
-						<>
-							<Navbar />
-							<Home />
-						</>
-					}
-				/>
-				<Route
-					path="/profile-completion"
-					element={
-						<>
-							<Navbar />
-							<ProfileCompletion />
-						</>
-					}
-				/>
-
-				<Route
-					path="/about"
-					element={
-						<>
-							<Navbar />
-							<About />
-						</>
-					}
-				/>
-
-				<Route
-					path="/settings"
-					element={
-						<>
-							<Navbar />
-							<SettingsLayout />
-						</>
-					}
-				/>
+				{/* Main site */}
+				<Route element={<MainLayout />}>
+					<Route index element={<Home />} />
+					<Route path="profile-completion" element={<ProfileCompletion />} />
+					<Route path="about" element={<About />} />
+					<Route path="settings" element={<SettingsLayout />}>
+						<Route index element={<div>Profile Settings Page</div>} />
+						<Route
+							path="notifications"
+							element={<div>Notifications Settings Page</div>}
+						/>
+						<Route
+							path="security"
+							element={<div>Security Settings Page</div>}
+						/>
+						<Route path="billing" element={<div>Billing Settings Page</div>} />
+						<Route
+							path="preferences"
+							element={<div>Preferences Settings Page</div>}
+						/>
+						<Route
+							path="withdraw"
+							element={<div>Withdraw Settings Page</div>}
+						/>
+					</Route>
+				</Route>
 
 				{/* Offshore Layout (shows ONLY Offshore Navbar) */}
 				<Route
