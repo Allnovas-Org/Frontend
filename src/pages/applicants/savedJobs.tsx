@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { SavedJobsContext } from "../../store/SavedJobsContext";
-import JobCard from "../../components/Applicants/JobCard";
+import JobCard from "./JobCard";
 import {
   BackArrowIcon,
   FrontArrowIcon,
