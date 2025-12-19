@@ -1,10 +1,72 @@
 import React, { useState } from "react";
+import SellerHeader from "../../../components/SellerHeader";
+import ImageCarousel from "../../../components/ImageCarousel";
+import PricingTable from "../../../components/PricingTable";
+import ToolBadge from "../../../components/ToolBadge";
+import ReviewSection from "../../../components/ReviewSection";
+import OtherCatalogues from "../../../components/OtherCatalogues";
 import { Pencil, Clock } from "lucide-react";
 import Pagination from "../../../components/Pagination";
 
 const CatelogSection: React.FC = () => {
   const [page, setPage] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
   const total = 2;
+
+  // Example gig data (replace with real data as needed)
+  const seller = {
+    name: "Ajayi Samuel",
+    avatarUrl: "/images/applicants/avatar2.png",
+    isAvailable: true,
+    recommendations: 50,
+  };
+  const images = [
+    "/images/applicants/preview1.png",
+    "/images/applicants/preview2.png",
+    "/images/applicants/preview3.png",
+    "/images/applicants/preview4.png",
+    "/images/applicants/preview5.png",
+  ];
+  const gigDetails = {
+    description:
+      "A modern, responsive web application built with best practices.",
+    tools: ["React", "Tailwind CSS", "TypeScript"],
+    pricing: [
+      {
+        name: "Basic",
+        deliveryTime: "3 days",
+        plugins: false,
+        pages: "3",
+        responsive: true,
+        revisions: 1,
+        designSystem: false,
+        mockup: false,
+        price: 200,
+      },
+      {
+        name: "Standard",
+        deliveryTime: "5 days",
+        plugins: true,
+        pages: "5",
+        responsive: true,
+        revisions: 2,
+        designSystem: true,
+        mockup: false,
+        price: 400,
+      },
+      {
+        name: "Premium",
+        deliveryTime: "7 days",
+        plugins: true,
+        pages: "10",
+        responsive: true,
+        revisions: 5,
+        designSystem: true,
+        mockup: true,
+        price: 800,
+      },
+    ],
+  };
   return (
     <div>
       <div className='flex items-center justify-between mb-4'>
@@ -35,13 +97,48 @@ const CatelogSection: React.FC = () => {
                   </p>
                 </div>
               </div>
-              <button className='mt-2 ml-auto bg-transparent text-primary px-7 py-3 border border-primary rounded-lg text-xs flex items-center gap-1 hover:bg-transparent transition'>
+              <button
+                className='mt-2 ml-auto bg-transparent text-primary px-7 py-3 border border-primary rounded-lg text-xs flex items-center gap-1 hover:bg-transparent transition'
+                onClick={() => setModalOpen(true)}
+              >
                 View Project
               </button>
             </div>
           </div>
         ))}
       </div>
+      {/* Modal for project details */}
+      {modalOpen && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40'>
+          <div className='relative w-[96vw] max-w-6xl bg-white rounded-2xl shadow-xl py-8 px-36 overflow-y-auto max-h-[96vh]'>
+            <button
+              className='absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700'
+              onClick={() => setModalOpen(false)}
+              aria-label='Close'
+            >
+              &times;
+            </button>
+            <SellerHeader seller={seller} />
+            <ImageCarousel images={images} />
+            <section className='mt-10'>
+              <h2 className='text-lg font-semibold mb-2'>Gig Details</h2>
+              <p className='text-gray-700 mb-4'>{gigDetails.description}</p>
+              <div className='flex flex-wrap gap-2 mb-6'>
+                {gigDetails.tools.map((tool) => (
+                  <ToolBadge key={tool} label={tool} />
+                ))}
+              </div>
+              <PricingTable tiers={gigDetails.pricing} />
+              <div className='mt-12'>
+                <ReviewSection />
+              </div>
+              <div className='mt-12'>
+                <OtherCatalogues />
+              </div>
+            </section>
+          </div>
+        </div>
+      )}
       {/* Pagination (bottom left) */}
       <div className='flex justify-start mt-4'>
         <Pagination current={page} total={total} onPageChange={setPage} />

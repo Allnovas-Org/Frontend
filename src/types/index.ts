@@ -48,3 +48,58 @@ export interface WorkExperience {
   endMonth: string;
   endYear: string;
 }
+
+export interface Seller {
+  name: string;
+  avatarUrl: string;
+  isAvailable: boolean;
+  recommendations: number;
+}
+
+export interface PricingTier {
+  name: string;
+  deliveryTime: string;
+  plugins: boolean;
+  pages: string;
+  responsive: boolean;
+  revisions: number;
+  designSystem: boolean;
+  mockup: boolean;
+  price: number;
+}
+
+export interface GigDetailsData {
+  description: string;
+  tools: string[];
+  pricing: PricingTier[];
+}
+
+export interface RatingBreakdown {
+  label: string;
+  score: number;
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  initials: string;
+  avatarColor: string;
+  rating: number;
+  date: string;
+  comment: string;
+}
+
+export interface CatalogueItem {
+  id: string;
+  image: string;
+  title: string;
+  deliveryTime: string;
+  price: number;
+  author: {
+    name: string;
+    avatar: string;
+    rating: number;
+    reviewsCount: number;
+    isTopRated: boolean;
+  };
+}
