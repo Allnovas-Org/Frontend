@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import logo from "../assets/allnova-logo-black.png";
+import user from "../assets/applicants/user.png";
 import { Drawer } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import SignupModal from "../pages/auth/SignupFlow/SignupModal";
 import SignInModal from "../pages/auth/SignInFlow/SignInModal";
 import { Link, useLocation } from "react-router-dom";
+import ActivitiesDrawer from "../pages/applicants/ActivitiesDrawer";
+import UserDropdown from "../pages/applicants/UserDropdown";
 
 const headerLinks = [
 	{ title: "Find Freelancers", url: "#finalCTASection" },
@@ -24,10 +27,20 @@ const Navbar = () => {
 	const toggleMobileNav = () => {
 		setOpenMobileNav(!openMobileNav);
 	};
+	const toggleMobileNav = () => {
+		setOpenMobileNav(!openMobileNav);
+	};
 
 	const handleNavClick = (url) => {
 		if (url === "#") return; // Don't scroll if no URL
 
+		const element = document.querySelector(url);
+		if (element) {
+			element.scrollIntoView({
+				behavior: "smooth",
+				block: "start",
+			});
+		}
 		const element = document.querySelector(url);
 		if (element) {
 			element.scrollIntoView({
@@ -42,6 +55,14 @@ const Navbar = () => {
 		}
 	};
 
+	return (
+		<>
+			<header className="bg-white p-4 w-full flex justify-center">
+				{/* Desktop Navigation */}
+				<nav className="max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between">
+					<Link to="/" className="w-[10%]">
+						<img src={logo} alt="AllNova Logo" className="w-full" />
+					</Link>
 	return (
 		<>
 			<header className="bg-white p-4 w-full flex justify-center">

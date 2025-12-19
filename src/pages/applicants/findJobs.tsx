@@ -6,13 +6,14 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "../../assets/applicants/customIcons";
+import { SavedJobsProvider } from "../../store/SavedJobsProvider";
 
-import Pagination from "../../components/Applicants/Pagination";
-import FilterDropdown from "../../components/Applicants/FilterDropdown";
-import JobCard from "../../components/Applicants/JobCard";
+import Pagination from "./Pagination";
+import FilterDropdown from "./FilterDropdown";
+import JobCard from "./JobCard";
 import { Job } from "../../types";
-import JobSidebar from "../../components/Applicants/JobSidebar";
-import JobApplicationPanel from "../../components/Applicants/JobApplicationPanel";
+import JobSidebar from "./JobSidebar";
+import JobApplicationPanel from "./JobApplicationPanel";
 import jobs from "../../mockData/jobs";
 
 // This page will list job opportunities for users
@@ -97,7 +98,7 @@ const FindJobs: React.FC = () => {
     .filter((job) => {
       // Budget filter
       if (filters.budget) {
-        let priceNum = Number(job.price.replace(/[^\d]/g, ""));
+        const priceNum = Number(job.price.replace(/[^\d]/g, ""));
         if (filters.budget === "Custom" && filters.customBudget) {
           if (
             priceNum < filters.customBudget[0] ||
@@ -184,14 +185,14 @@ const FindJobs: React.FC = () => {
   }
 
   return (
-    <div className='min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-2'>
+    <div className='min-h-screen bg-white px-4 sm:px-6 lg:px-2'>
       {showApplicationPanel ? (
         <JobApplicationPanel
           onClose={() => setShowApplicationPanel(false)}
           job={selectedJob as Job}
         />
       ) : (
-        <div className='max-w-6xl mx-auto ' style={{ paddingTop: "100px" }}>
+        <div className='max-w-6xl mx-auto pt-8'>
           <div className='text-left flex justify-start flex-col'>
             {/* Page Heading */}
             <h1
@@ -209,7 +210,7 @@ const FindJobs: React.FC = () => {
           {/* Search and filter bar */}
           <div className='flex items-center justify-between mb-10'>
             <div className='relative w-full max-w-lg'>
-              <span className='absolute left-3 top-1/2 -translate-y-1/2 flex items-center'>
+              <span className='absolute left-3 top-[44%] -translate-y-1/2 flex items-center'>
                 <MagnifierIcon color='#D2D6DB' />
               </span>
               <input
@@ -338,7 +339,11 @@ const FindJobs: React.FC = () => {
                   aria-label='Filter'
                   onClick={() => setFilterDropdownOpen((v) => !v)}
                 >
-                  <img src='/images/applicants/filter.svg' alt='filter' />
+                  <img
+                    className='w-4 h-4'
+                    src='/images/applicants/filter.svg'
+                    alt='filter'
+                  />
                 </button>
                 <FilterDropdown
                   open={filterDropdownOpen}
@@ -399,18 +404,20 @@ const FindJobs: React.FC = () => {
             </>
           )}
 
-          {/* Job Sidebar Drawer */}
-          {sidebarOpen && !showApplicationPanel && (
-            <JobSidebar
-              job={selectedJob as Job}
-              open={sidebarOpen}
-              onClose={() => setSidebarOpen(false)}
-              onApplyNow={() => {
-                setSidebarOpen(false);
-                setShowApplicationPanel(true);
-              }}
-            />
-          )}
+          <SavedJobsProvider>
+            {/* Job Sidebar Drawer */}
+            {sidebarOpen && !showApplicationPanel && (
+              <JobSidebar
+                job={selectedJob as Job}
+                open={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+                onApplyNow={() => {
+                  setSidebarOpen(false);
+                  setShowApplicationPanel(true);
+                }}
+              />
+            )}
+          </SavedJobsProvider>
         </div>
       )}
     </div>

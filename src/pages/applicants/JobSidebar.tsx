@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { SavedJobsContext } from "../../store/SavedJobsContext";
-import { InfoBadge } from "../Applicants/help";
-import { SectionTitle, DescriptionList } from "../Applicants/help";
+import { InfoBadge } from "./help";
+import { SectionTitle, DescriptionList } from "./help";
 import Badge from "./Badge";
 import { Job } from "../../types";
-import ReviewStars from "../Applicants/ReviewStars";
-import JobApplicationPanel from "../Applicants/JobApplicationPanel";
+import ReviewStars from "./ReviewStars";
+import JobApplicationPanel from "./JobApplicationPanel";
 
 import {
   ChevronLeftIcon,

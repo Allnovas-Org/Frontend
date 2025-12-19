@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import WithdrawModal from "../Applicants/modal/WithdrawModal";
-import ConfirmWithdrawModal from "../Applicants/modal/ConfirmWithdrawModal";
+import WithdrawModal from "./modal/WithdrawModal";
+import ConfirmWithdrawModal from "./modal/ConfirmWithdrawModal";
 import { useFormik, FormikValues } from "formik";
 import {
   MagnifierIcon,
@@ -9,10 +9,10 @@ import {
   BackArrowIcon,
 } from "../../assets/applicants/customIcons";
 
-import { SuccessBanner } from "../Applicants/help";
-import ApplicationDetails from "../Applicants/ApplicationDetails";
-import FormSubmission from "../Applicants/FormSubmission";
-import ProjectStructure from "../Applicants/ProjectStructure";
+import { SuccessBanner } from "./help";
+import ApplicationDetails from "./ApplicationDetails";
+import FormSubmission from "./FormSubmission";
+import ProjectStructure from "./ProjectStructure";
 import { FormContext } from "../../store/FormContext";
 
 interface JobApplicationPanelProps {

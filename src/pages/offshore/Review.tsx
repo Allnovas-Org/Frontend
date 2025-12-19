@@ -55,6 +55,18 @@ const Review: React.FC = () => {
     setCurrentIndex(index);
   };
 
+  // Get visible reviews based on current index and screen size
+  const getVisibleReviews = () => {
+    const visible = [];
+    for (let i = 0; i < 4; i++) {
+      const index = (currentIndex + i) % reviews.length;
+      visible.push({ ...reviews[index], originalIndex: index });
+    }
+    return visible;
+  };
+
+  const visibleReviews = getVisibleReviews();
+
   return (
     <section className="w-full bg-gray-50 px-4 py-16 md:py-24 flex justify-center items-center min-h-screen">
       <div className="max-w-5xl mx-auto">
@@ -71,13 +83,13 @@ const Review: React.FC = () => {
         {/* Reviews Carousel */}
         <div className="relative">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {reviews.map((review, index) => (
+            {visibleReviews.map((review, displayIndex) => (
               <div
-                key={review.id}
-                className={`bg-white rounded-xl p-8 min-h-[320px] flex flex-col justify-between transition-all duration-500 hover:-translate-y-3 hover:bg-gradient-to-br hover:from-red-50 hover:to-gray-100 ${
-                  index >= currentIndex && index < currentIndex + 4
-                    ? 'opacity-100'
-                    : 'hidden lg:block opacity-100'
+                key={`${review.id}-${currentIndex}-${displayIndex}`}
+                className={`bg-white rounded-xl p-8 min-h-[320px] flex flex-col justify-between transition-all duration-300 hover:-translate-y-3 hover:bg-gradient-to-br hover:from-red-50 hover:to-gray-100 ${
+                  displayIndex === 0 ? 'block' : 
+                  displayIndex < 2 ? 'hidden md:block' : 
+                  'hidden lg:block'
                 }`}
               >
                 {/* Quote */}

@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from "react";
-import { SectionTitle } from "../Applicants/help";
+import { SectionTitle } from "./help";
 import { FormContext } from "../../store/FormContext";
 
 const howLongOptions = [

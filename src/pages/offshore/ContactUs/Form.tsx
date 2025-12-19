@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import GlobalButton from '../../button/GlobalButton';
+import GlobalButton from '../../../components/button/GlobalButton';
 
 const ContactForm: React.FC = () => {
   const [formData, setFormData] = useState({
