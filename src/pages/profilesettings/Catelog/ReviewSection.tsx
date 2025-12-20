@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ReviewCard from "./ReviewCard";
-import { Review, RatingBreakdown } from "../types";
+import { Review, RatingBreakdown } from "../../../types";
 
 const MOCK_REVIEWS: Review[] = [
   {

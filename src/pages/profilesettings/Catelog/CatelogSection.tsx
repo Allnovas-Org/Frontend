@@ -1,10 +1,28 @@
 import React, { useState } from "react";
-import SellerHeader from "../../../components/SellerHeader";
-import ImageCarousel from "../../../components/ImageCarousel";
-import PricingTable from "../../../components/PricingTable";
-import ToolBadge from "../../../components/ToolBadge";
-import ReviewSection from "../../../components/ReviewSection";
-import OtherCatalogues from "../../../components/OtherCatalogues";
+import GigPreviewHeader from "./GigPreviewHeader";
+import ImageCarousel from "./ImageCarousel";
+import PricingTable from "./PricingTable";
+import ToolBadge from "./ToolBadge";
+import ReviewSection from "./ReviewSection";
+import PortfolioSection from "./PortfolioSection";
+import OtherCatalogues from "./OtherCatalogues";
+const portfolioItems = [
+  {
+    id: "1",
+    title: "Dashboard UI Design",
+    image: "/images/applicants/proj1.png",
+  },
+  {
+    id: "2",
+    title: "Landing Page UI Design",
+    image: "/images/applicants/proj2.png",
+  },
+  {
+    id: "3",
+    title: "Flyer Design",
+    image: "/images/applicants/proj3.png",
+  },
+];
 import { Pencil, Clock } from "lucide-react";
 import Pagination from "../../../components/Pagination";
 
@@ -13,8 +31,9 @@ const CatelogSection: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const total = 2;
 
-  // Example gig data (replace with real data as needed)
   const seller = {
+    gigTitle:
+      "You will get Wix Expert, Wix Designer Wix website Wix developer Wix Web Design Wix SEO",
     name: "Ajayi Samuel",
     avatarUrl: "/images/applicants/avatar2.png",
     isAvailable: true,
@@ -118,7 +137,7 @@ const CatelogSection: React.FC = () => {
             >
               &times;
             </button>
-            <SellerHeader seller={seller} />
+            <GigPreviewHeader seller={seller} />
             <ImageCarousel images={images} />
             <section className='mt-10'>
               <h2 className='text-lg font-semibold mb-2'>Gig Details</h2>
@@ -131,6 +150,9 @@ const CatelogSection: React.FC = () => {
               <PricingTable tiers={gigDetails.pricing} />
               <div className='mt-12'>
                 <ReviewSection />
+              </div>
+              <div className='mt-12'>
+                <PortfolioSection items={portfolioItems} />
               </div>
               <div className='mt-12'>
                 <OtherCatalogues />

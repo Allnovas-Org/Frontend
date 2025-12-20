@@ -50,6 +50,7 @@ export interface WorkExperience {
 }
 
 export interface Seller {
+  gigTitle: string;
   name: string;
   avatarUrl: string;
   isAvailable: boolean;
@@ -102,4 +103,10 @@ export interface CatalogueItem {
     reviewsCount: number;
     isTopRated: boolean;
   };
+}
+
+export interface PortfolioItem {
+  id: string;
+  title: string;
+  image: string;
 }

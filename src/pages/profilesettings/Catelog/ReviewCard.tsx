@@ -1,5 +1,5 @@
 import React from "react";
-import { Review } from "../types";
+import { Review } from "../../../types";
 
 const ReviewCard: React.FC<{ review: Review }> = ({ review }) => {
   return (

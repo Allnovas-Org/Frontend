@@ -12,7 +12,8 @@ const ImageCarousel = ({ images }: ImageCarouselProps) => {
         <img
           src={images[activeIndex]}
           alt='Gig preview'
-          className='w-full h-[420px] object-cover'
+          className='w-full h-[420px] object-cover transition-all duration-200'
+          style={{ filter: "none" }}
         />
       </div>
       <ul className='flex justify-center gap-3 mt-4'>

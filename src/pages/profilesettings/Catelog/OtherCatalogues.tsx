@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import CatalogueCard from "./CatalogueCard";
-import { CatalogueItem } from "../types";
+import { CatalogueItem } from "../../../types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const MOCK_DATA: CatalogueItem[] = Array(4).fill({
@@ -17,8 +17,6 @@ const MOCK_DATA: CatalogueItem[] = Array(4).fill({
     isTopRated: true,
   },
 });
-
-// ...existing imports...
 
 const OtherCatalogues: React.FC = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -65,12 +63,13 @@ const OtherCatalogues: React.FC = () => {
         </button>
       </div>
       {/* Profile Footer Section */}
-      <div className='flex flex-col items-center border-t border-gray-100 pt-10'>
-        <div className='relative mb-4'>
-          <div className='w-12 h-12 bg-purple-700 rounded-full flex items-center justify-center text-white font-bold'>
+      <div className='flex flex-col items-center border-t border-gray-100 pt-10 relative'>
+        <div className='absolute left-1/2 -translate-x-1/2 -top-6 z-10'>
+          <div className='w-12 h-12 bg-purple-700 rounded-full flex items-center justify-center text-white font-bold border-4 border-white shadow'>
             SD
           </div>
         </div>
+        <div className='mb-4' />
         <h3 className='text-2xl font-bold text-gray-800 mb-6'>Ajayi Samuel</h3>
         <div className='flex gap-4'>
           <button className='px-8 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold transition-colors'>
