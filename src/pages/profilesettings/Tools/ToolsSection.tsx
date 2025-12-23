@@ -13,7 +13,7 @@ const ToolsSection: React.FC = () => {
       <div className='flex items-center justify-between mb-2'>
         <h3 className='text-base font-semibold text-gray-800'>Tools</h3>
         <button
-          className='bg-white rounded-full p-1 shadow hover:bg-gray-100 transition'
+          className='bg-gray-100 rounded-full p-1 shadow hover:bg-gray-100 transition '
           onClick={() => setOpen(true)}
         >
           <span className='sr-only'>Edit Tools</span>

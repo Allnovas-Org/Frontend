@@ -118,7 +118,6 @@ const ToolsModal: React.FC<ToolsModalProps> = ({
           ))}
         </div>
       </div>
-      {/* Input and Add Tool */}
       <div className='flex items-center gap-2 mb-4 relative'>
         <input
           type='text'
@@ -150,7 +149,6 @@ const ToolsModal: React.FC<ToolsModalProps> = ({
         >
           <Plus className='w-4 h-4' /> Add
         </button>
-        {/* Dropdown */}
         {dropdown.length > 0 && (
           <div className='absolute left-0 top-12 w-full bg-white border border-gray-200 rounded-lg shadow z-10'>
             {dropdown.map((tool) => (
@@ -165,7 +163,6 @@ const ToolsModal: React.FC<ToolsModalProps> = ({
           </div>
         )}
       </div>
-      {/* Suggested Tools */}
       <div className='mt-4'>
         <div className='text-gray-700 font-semibold mb-2'>Suggested tools:</div>
         <div className='flex flex-wrap gap-2'>

@@ -6,8 +6,8 @@ const MOCK_REVIEWS: Review[] = [
   {
     id: "1",
     author: "Samuel Daniel",
-    initials: "SD",
-    avatarColor: "bg-purple-700",
+    avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+    package: "Standard",
     rating: 4.9,
     date: "May 23, 2025",
     comment:
@@ -16,8 +16,8 @@ const MOCK_REVIEWS: Review[] = [
   {
     id: "2",
     author: "Beejay Jones",
-    initials: "BJ",
-    avatarColor: "bg-green-500",
+    avatar: "https://randomuser.me/api/portraits/men/2.jpg",
+    package: "Premium",
     rating: 4.9,
     date: "May 23, 2025",
     comment:
@@ -26,8 +26,8 @@ const MOCK_REVIEWS: Review[] = [
   {
     id: "3",
     author: "Ogo Glory",
-    initials: "OG",
-    avatarColor: "bg-orange-400",
+    avatar: "https://randomuser.me/api/portraits/women/3.jpg",
+    package: "Basic",
     rating: 4.9,
     date: "May 23, 2025",
     comment:
@@ -50,14 +50,12 @@ const ReviewSection: React.FC = () => {
   return (
     <div className='max-w-5xl mx-auto p-8 bg-white font-sans'>
       <h2 className='text-2xl font-bold mb-6 text-gray-800'>Client Ratings</h2>
-      {/* Ratings Summary Header */}
       <div className='grid md:grid-cols-2 gap-12 mb-10'>
         <div>
           <div className='flex items-baseline gap-2 mb-4'>
             <span className='text-xl font-bold'>4.8</span>
             <span className='text-gray-500 text-sm'>- 331 Reviews</span>
           </div>
-          {/* Star Progress Bars */}
           {[5, 4, 3, 2, 1].map((star) => (
             <div key={star} className='flex items-center gap-3 mb-1'>
               <div className='flex text-orange-400 text-lg w-16'>
@@ -80,7 +78,6 @@ const ReviewSection: React.FC = () => {
             </div>
           ))}
         </div>
-        {/* Categories Breakdown */}
         <div>
           <h3 className='font-bold mb-4 text-gray-800'>Ratings Breakdown</h3>
           <div className='grid grid-cols-2 gap-x-8 gap-y-2'>
@@ -138,7 +135,6 @@ const ReviewSection: React.FC = () => {
           <ReviewCard key={rev.id} review={rev} />
         ))}
       </div>
-      {/* See More Button */}
       <button className='mt-6 px-6 py-2 border border-red-400 text-red-400 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium'>
         See More
       </button>

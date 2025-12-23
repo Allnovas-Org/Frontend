@@ -80,16 +80,6 @@ export interface RatingBreakdown {
   score: number;
 }
 
-export interface Review {
-  id: string;
-  author: string;
-  initials: string;
-  avatarColor: string;
-  rating: number;
-  date: string;
-  comment: string;
-}
-
 export interface CatalogueItem {
   id: string;
   image: string;
@@ -109,4 +99,83 @@ export interface PortfolioItem {
   id: string;
   title: string;
   image: string;
+}
+
+export type TabType = "Profile" | "Portfolio" | "Catalogue" | "Review";
+
+export interface TipItem {
+  id: number;
+  text: string;
+}
+
+export interface TabContent {
+  title: string;
+  tips: TipItem[];
+}
+
+export interface Service {
+  id: string;
+  image: string;
+  title: string;
+  deliveryTime: string;
+  price: number;
+}
+
+export interface ProjectData {
+  title: string;
+  description: string;
+  skills: string[];
+  publishDate: string;
+  link: string;
+  author: string;
+  images: {
+    dashboard: string;
+    gig: string;
+    others: string[];
+  };
+}
+
+export interface RatingStat {
+  stars: number;
+  percentage: number;
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  avatar: string;
+  rating: number;
+  package: string;
+  date: string;
+  comment: string;
+  response?: string;
+}
+
+export type StepId =
+  | "basic"
+  | "pricing"
+  | "description"
+  | "requirements"
+  | "gallery"
+  | "publish";
+
+export interface CatalogueData {
+  serviceTitle: string;
+  category: string;
+  subCategory: string;
+  serviceType: "one-time" | "over-time";
+  pricing: {
+    basic: PricingTier;
+    standard: PricingTier;
+    premium: PricingTier;
+  };
+  faqs: Array<{ question: string; answer: string }>;
+}
+
+export interface PricingTier {
+  deliveryTime: string;
+  pages: number;
+  revisions: number;
+  features: string[];
+  price: number;
 }

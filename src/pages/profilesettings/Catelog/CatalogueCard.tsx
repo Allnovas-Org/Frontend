@@ -16,7 +16,6 @@ const CatalogueCard: React.FC<{ item: CatalogueItem }> = ({ item }) => {
           alt={item.title}
           className='w-full h-full object-cover'
         />
-        {/* Love Icon */}
         {hovered && (
           <div className='absolute top-3 right-3 z-10'>
             <span className='w-8 h-8 flex items-center justify-center rounded-full bg-white shadow border border-gray-200'>
@@ -24,13 +23,11 @@ const CatalogueCard: React.FC<{ item: CatalogueItem }> = ({ item }) => {
             </span>
           </div>
         )}
-        {/* Overlay */}
         <div
           className={`absolute inset-0 bg-black bg-opacity-10 transition ${
             hovered ? "opacity-35" : "opacity-0"
           }`}
         ></div>
-        {/* Explore Button */}
         <button
           className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition bg-black text-gray-lighter font-semibold text-sm gap-2 flex items-center px-8 py-2 rounded-lg shadow-lg ${
             hovered ? "opacity-100" : "opacity-0"

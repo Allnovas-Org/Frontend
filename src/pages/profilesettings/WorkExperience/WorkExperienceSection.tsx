@@ -3,6 +3,10 @@ import { Pencil } from "lucide-react";
 import WorkExperienceModal from "./WorkExperienceModal";
 import { WorkExperience } from "../../../types";
 
+interface WorkExperienceSectionProps {
+  showEdit: boolean;
+}
+
 const colorClasses = [
   "bg-purple text-white",
   "bg-blue-500 text-white",
@@ -23,24 +27,28 @@ const defaultExperiences: WorkExperience[] = [
   },
 ];
 
-const WorkExperienceSection: React.FC = () => {
+const WorkExperienceSection: React.FC<WorkExperienceSectionProps> = ({
+  showEdit,
+}) => {
   const [experiences, setExperiences] =
     useState<WorkExperience[]>(defaultExperiences);
   const [open, setOpen] = useState(false);
 
   return (
-    <div className=''>
+    <div className='flex-1 bg-white border border-gray-100 rounded-2xl p-4 sm:p-3 relative shadow-sm'>
       <div className='flex items-center justify-between mb-4'>
         <h3 className='text-base font-semibold text-gray-800'>
           Work Experience
         </h3>
-        <button
-          className='bg-white rounded-full p-1 shadow hover:bg-gray-100 transition'
-          onClick={() => setOpen(true)}
-        >
-          <span className='sr-only'>Edit Work Experience</span>
-          <Pencil className='w-4 h-4 text-gray-600' />
-        </button>
+        {showEdit && (
+          <button
+            className='bg-gray-100 rounded-full p-2 text-gray-400 hover:text-gray-600 transition-colors'
+            onClick={() => setOpen(true)}
+          >
+            <span className='sr-only'>Edit Work Experience</span>
+            <Pencil size={14} />
+          </button>
+        )}
       </div>
       <div className='grid grid-cols-4 gap-4'>
         {experiences.map((exp, i) => (

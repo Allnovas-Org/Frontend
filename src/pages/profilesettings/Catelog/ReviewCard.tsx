@@ -8,7 +8,6 @@ const ReviewCard: React.FC<{ review: Review }> = ({ review }) => {
         <div
           className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold relative ${review.avatarColor}`}
         >
-          {review.initials}
           <div className='absolute bottom-0 right-0 w-3 h-3 bg-blue-500 border-2 border-white rounded-full flex items-center justify-center'>
             <span className='text-[6px]'>✓</span>
           </div>
