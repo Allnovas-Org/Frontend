@@ -3,7 +3,7 @@ import { useFormikContext, Field, ErrorMessage } from "formik";
 import type { CatalogueFormValues } from "../CreateCatalogue";
 
 const BasicInfo: React.FC = () => {
-  const { touched, errors } = useFormikContext<CatalogueFormValues>();
+  useFormikContext<CatalogueFormValues>();
   return (
     <div className='space-y-6 animate-in fade-in duration-500'>
       <section>

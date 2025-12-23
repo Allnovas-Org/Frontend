@@ -20,12 +20,11 @@ const MOCK_PROJECTS: ProjectData[] = [
       gig: "/images/applicants/proj2.png",
       others: [
         "/images/applicants/proj3.png",
-        "/images/applicants/proj4.png",
-        "/images/applicants/proj5.png",
+        "/images/applicants/proj2.png",
+        "/images/applicants/proj1.png",
       ],
     },
   },
-  // Add more mock projects as needed
 ];
 
 interface ProjectsSectionProps {

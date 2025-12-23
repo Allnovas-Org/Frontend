@@ -3,7 +3,7 @@ import { useFormikContext, Field, ErrorMessage } from "formik";
 import type { CatalogueFormValues } from "../CreateCatalogue";
 
 const PricingTable: React.FC = () => {
-  const { values } = useFormikContext<CatalogueFormValues>();
+  useFormikContext<CatalogueFormValues>();
   const tiers = ["Basic", "Standard", "Premium"];
   const features = [
     "Plugin Installation",
@@ -21,7 +21,7 @@ const PricingTable: React.FC = () => {
             <th className='p-4 font-semibold text-gray-700'>Service Tiers</th>
             {tiers.map((tier, i) => (
               <th
-                key={tier}
+                key={`${tier}-${i}`}
                 className='p-4 font-semibold text-center text-gray-700'
               >
                 {tier} ✎
@@ -30,7 +30,6 @@ const PricingTable: React.FC = () => {
           </tr>
         </thead>
         <tbody className='divide-y divide-gray-100'>
-          {/* Delivery Time Row */}
           <tr>
             <td className='p-4 font-medium text-gray-600'>Delivery Time</td>
             {tiers.map((tier, i) => (
@@ -55,7 +54,7 @@ const PricingTable: React.FC = () => {
           </tr>
           {/* Feature Checkboxes */}
           {features.map((feature, fIdx) => (
-            <tr key={feature}>
+            <tr key={`${feature}-${fIdx}`}>
               <td className='p-4 text-gray-600'>{feature}</td>
               {tiers.map((tier, tIdx) => (
                 <td key={tier} className='p-4 text-center'>

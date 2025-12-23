@@ -65,7 +65,7 @@ const WorkExperienceModal: React.FC<WorkExperienceModalProps> = ({
           onClose();
         }}
       >
-        {({ values, setFieldValue, handleReset }) => (
+        {({ values, handleReset }) => (
           <Form>
             <div className='flex items-center justify-between mb-2'>
               <h3 className='text-base font-semibold'>Work Experience</h3>

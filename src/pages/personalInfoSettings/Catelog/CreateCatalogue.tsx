@@ -4,6 +4,7 @@ import PricingTable from "./steps/PricingTable";
 import DescriptionFAQ from "./steps/DescriptionFAQ";
 import Requirements from "./steps/Requirements";
 import PublishStatus from "./steps/PublishStatus";
+import Gallery from "./steps/Gallery";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 
@@ -40,6 +41,12 @@ export interface RequirementsForm {
   files: boolean[];
   additional: string;
 }
+export interface UploadedFile {
+  id: string;
+  file: File;
+  preview: string;
+}
+
 export interface CatalogueFormValues {
   title: string;
   category: string;
@@ -48,7 +55,7 @@ export interface CatalogueFormValues {
   description: string;
   faqs: Faq[];
   requirements: RequirementsForm;
-  // gallery?: ...
+  gallery: UploadedFile[];
 }
 
 const initialValues: CatalogueFormValues & { process?: string } = {
@@ -69,6 +76,7 @@ const initialValues: CatalogueFormValues & { process?: string } = {
     additional: "",
   },
   process: "",
+  gallery: [],
 };
 
 const catalogueSchema = Yup.object().shape({
@@ -91,6 +99,15 @@ const catalogueSchema = Yup.object().shape({
       a: Yup.string().required("Answer required"),
     })
   ),
+  gallery: Yup.array()
+    .of(
+      Yup.object().shape({
+        id: Yup.string().required(),
+        file: Yup.mixed().required(),
+        preview: Yup.string().required(),
+      })
+    )
+    .min(1, "At least one image is required"),
   requirements: Yup.object().shape({
     general: Yup.string().required("General instruction required"),
     specific: Yup.array().of(
@@ -106,8 +123,33 @@ const catalogueSchema = Yup.object().shape({
 
 function getStepCompletion(
   values: CatalogueFormValues,
-  errors: Partial<Record<keyof CatalogueFormValues, any>>
+  errors: Partial<Record<keyof CatalogueFormValues, unknown>>
 ): Record<string, boolean> {
+  // Helper type guards
+  function isRequirementsError(
+    obj: unknown
+  ): obj is { general?: unknown; specific?: unknown } {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      ("general" in obj || "specific" in obj)
+    );
+  }
+  function isFaqError(obj: unknown): obj is { q?: unknown; a?: unknown } {
+    return (
+      typeof obj === "object" && obj !== null && ("q" in obj || "a" in obj)
+    );
+  }
+  function isPricingError(
+    obj: unknown
+  ): obj is { price?: unknown; deliveryTime?: unknown } {
+    return (
+      typeof obj === "object" &&
+      obj !== null &&
+      ("price" in obj || "deliveryTime" in obj)
+    );
+  }
+
   return {
     basic:
       !!values.title &&
@@ -123,8 +165,20 @@ function getStepCompletion(
           !!tier.tier &&
           !!tier.price &&
           !!tier.deliveryTime &&
-          !(errors.pricing && errors.pricing[i]?.price) &&
-          !(errors.pricing && errors.pricing[i]?.deliveryTime)
+          !(
+            errors.pricing &&
+            Array.isArray(errors.pricing) &&
+            errors.pricing[i] &&
+            isPricingError(errors.pricing[i]) &&
+            errors.pricing[i].price
+          ) &&
+          !(
+            errors.pricing &&
+            Array.isArray(errors.pricing) &&
+            errors.pricing[i] &&
+            isPricingError(errors.pricing[i]) &&
+            errors.pricing[i].deliveryTime
+          )
       ),
     description:
       !!values.description &&
@@ -134,8 +188,20 @@ function getStepCompletion(
         (faq, i) =>
           !!faq.q &&
           !!faq.a &&
-          !(errors.faqs && errors.faqs[i]?.q) &&
-          !(errors.faqs && errors.faqs[i]?.a)
+          !(
+            errors.faqs &&
+            Array.isArray(errors.faqs) &&
+            errors.faqs[i] &&
+            isFaqError(errors.faqs[i]) &&
+            errors.faqs[i].q
+          ) &&
+          !(
+            errors.faqs &&
+            Array.isArray(errors.faqs) &&
+            errors.faqs[i] &&
+            isFaqError(errors.faqs[i]) &&
+            errors.faqs[i].a
+          )
       ) &&
       !errors.description,
     requirements:
@@ -144,12 +210,27 @@ function getStepCompletion(
       Array.isArray(values.requirements.specific) &&
       values.requirements.specific.length > 0 &&
       values.requirements.specific.every((req) => !!req.label) &&
-      !errors.requirements?.general &&
       !(
-        errors.requirements?.specific &&
-        errors.requirements.specific.some((e: any) => e && e.label)
+        errors.requirements &&
+        isRequirementsError(errors.requirements) &&
+        errors.requirements.general
+      ) &&
+      !(
+        errors.requirements &&
+        isRequirementsError(errors.requirements) &&
+        Array.isArray(errors.requirements.specific) &&
+        errors.requirements.specific.some(
+          (e: unknown) =>
+            typeof e === "object" &&
+            e !== null &&
+            "label" in e &&
+            (e as { label?: unknown }).label
+        )
       ),
-    // gallery can be added similarly
+    gallery:
+      Array.isArray(values.gallery) &&
+      values.gallery.length > 0 &&
+      !errors.gallery,
   };
 }
 
@@ -157,7 +238,6 @@ export const CreateCatalogue: React.FC<CreateCatalogueProps> = ({
   onClose,
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [draft, setDraft] = useState<CatalogueFormValues | null>(null);
 
   return (
     <Formik<CatalogueFormValues>
@@ -175,7 +255,6 @@ export const CreateCatalogue: React.FC<CreateCatalogueProps> = ({
         const percent = Math.round((completedCount / totalCount) * 100);
 
         const handleSaveDraft = () => {
-          setDraft(values);
           alert("Draft saved!");
         };
 
@@ -234,6 +313,7 @@ export const CreateCatalogue: React.FC<CreateCatalogueProps> = ({
               {currentStep === 1 && <PricingTable />}
               {currentStep === 2 && <DescriptionFAQ />}
               {currentStep === 3 && <Requirements />}
+              {currentStep === 4 && <Gallery />}
               {currentStep === 5 && (
                 <PublishStatus
                   percent={percent}

@@ -1,5 +1,5 @@
 import React from "react";
-import EditModal from "./EditModal";
+import EditModal from "../modal/EditsModal";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { aboutMeSchema } from "./validation";
 

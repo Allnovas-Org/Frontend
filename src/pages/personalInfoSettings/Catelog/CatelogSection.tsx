@@ -104,17 +104,17 @@ const images = [
 const portfolioItems = [
   {
     id: "1",
-    title: "Portfolio Item 1",
+    title: "Dashboard UI Design",
     image: "/images/applicants/proj1.png",
   },
   {
     id: "2",
-    title: "Portfolio Item 2",
+    title: "Landing Page UI Design",
     image: "/images/applicants/proj2.png",
   },
   {
     id: "3",
-    title: "Portfolio Item 3",
+    title: "Flyer Design",
     image: "/images/applicants/proj3.png",
   },
 ];

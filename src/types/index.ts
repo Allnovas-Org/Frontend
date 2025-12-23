@@ -174,7 +174,7 @@ export interface CatalogueData {
 
 export interface PricingTier {
   deliveryTime: string;
-  pages: number;
+  // pages: number;
   revisions: number;
   features: string[];
   price: number;

@@ -10,22 +10,7 @@ import DetailsStep from "./steps/DetailsStep";
 import TagsStep from "./steps/TagsStep";
 import ImagesStep from "./steps/ImagesStep";
 import ReviewStep from "./steps/ReviewStep";
-
-const months = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
-const years = Array.from({ length: 30 }, (_, i) => `${2025 - i}`);
+import type { FormikErrors } from "formik";
 
 const DetailsSchema = Yup.object().shape({
   title: Yup.string().required("Project title is required"),
@@ -67,12 +52,28 @@ const initialValues = {
   startYear: "",
   endMonth: "",
   endYear: "",
-  tags: [],
+  tags: [] as string[],
   images: [
-    { title: "", file: null },
-    { title: "", file: null },
+    { title: "", file: null as File | null },
+    { title: "", file: null as File | null },
   ],
 };
+
+export interface ProjectImage {
+  title: string;
+  file: File | null;
+}
+
+export interface ProjectFormValues {
+  title: string;
+  description: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+  tags: string[];
+  images: ProjectImage[];
+}
 
 type ProjectModalStepsProps = {
   open: boolean;
@@ -86,15 +87,15 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
   onSave,
 }) => {
   const [step, setStep] = useState(0);
-  const [uploading, setUploading] = useState([false, false]);
-  const [uploadProgress, setUploadProgress] = useState([25, 25]);
+  const [uploading, setUploading] = useState<boolean[]>([false, false]);
+  const [uploadProgress, setUploadProgress] = useState<number[]>([25, 25]);
 
   interface HandleFileUploadParams {
     file: File;
     idx: number;
     setFieldValue: (
       field: string,
-      value: string,
+      value: File | null,
       shouldValidate?: boolean
     ) => void;
   }
@@ -104,24 +105,18 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
     idx: HandleFileUploadParams["idx"],
     setFieldValue: HandleFileUploadParams["setFieldValue"]
   ): void => {
-    setUploading((prev: boolean[]) =>
-      prev.map((u, i) => (i === idx ? true : u))
-    );
-    setUploadProgress((prev: number[]) =>
-      prev.map((p, i) => (i === idx ? 25 : p))
-    );
+    setUploading((prev) => prev.map((u, i) => (i === idx ? true : u)));
+    setUploadProgress((prev) => prev.map((p, i) => (i === idx ? 25 : p)));
     // Simulate upload
     let progress = 25;
     const interval = setInterval(() => {
       progress += 15;
-      setUploadProgress((prev: number[]) =>
+      setUploadProgress((prev) =>
         prev.map((p, i) => (i === idx ? Math.min(progress, 100) : p))
       );
       if (progress >= 100) {
         clearInterval(interval);
-        setUploading((prev: boolean[]) =>
-          prev.map((u, i) => (i === idx ? false : u))
-        );
+        setUploading((prev) => prev.map((u, i) => (i === idx ? false : u)));
       }
     }, 400);
     setFieldValue(`images[${idx}].file`, file);
@@ -131,7 +126,7 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
     idx: number;
     setFieldValue: (
       field: string,
-      value: string,
+      value: File | null,
       shouldValidate?: boolean
     ) => void;
   }
@@ -140,12 +135,8 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
     idx: HandleCancelUploadParams["idx"],
     setFieldValue: HandleCancelUploadParams["setFieldValue"]
   ): void => {
-    setUploading((prev: boolean[]) =>
-      prev.map((u, i) => (i === idx ? false : u))
-    );
-    setUploadProgress((prev: number[]) =>
-      prev.map((p, i) => (i === idx ? 25 : p))
-    );
+    setUploading((prev) => prev.map((u, i) => (i === idx ? false : u)));
+    setUploadProgress((prev) => prev.map((p, i) => (i === idx ? 25 : p)));
     setFieldValue(`images[${idx}].file`, null);
   };
 
@@ -165,12 +156,9 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
     >
       {/* Step indicator and tracker */}
       <div className='mb-4'>
-        {/* <div className='text-xs text-gray-500 font-medium mb-2'>
-          Step {step + 1} of 4
-        </div> */}
         <StepTracker steps={steps} currentStep={step + 1} />
       </div>
-      <Formik
+      <Formik<ProjectFormValues>
         initialValues={initialValues}
         validationSchema={getValidationSchema()}
         validateOnChange={false}
@@ -184,15 +172,7 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
           }
         }}
       >
-        {({
-          values,
-          errors,
-          _touched,
-          setFieldValue,
-          handleSubmit,
-          _handleChange,
-          _resetForm,
-        }) => (
+        {({ values, errors, setFieldValue, handleSubmit }) => (
           <Form onSubmit={handleSubmit}>
             {step === 0 && <DetailsStep values={values} errors={errors} />}
             {step === 1 && (
@@ -200,7 +180,11 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
                 {({ push, remove }) => (
                   <TagsStep
                     values={values}
-                    errors={errors}
+                    errors={{
+                      tags: Array.isArray(errors.tags)
+                        ? errors.tags.join(", ")
+                        : (errors.tags as string | undefined),
+                    }}
                     push={push}
                     remove={remove}
                   />
@@ -210,7 +194,14 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
             {step === 2 && (
               <ImagesStep
                 values={values}
-                errors={errors}
+                errors={{
+                  images: Array.isArray(errors.images)
+                    ? errors.images.filter(
+                        (e): e is FormikErrors<ProjectImage> =>
+                          typeof e === "object" && e !== null
+                      )
+                    : [],
+                }}
                 uploading={uploading}
                 uploadProgress={uploadProgress}
                 handleFileUpload={handleFileUpload}
@@ -218,7 +209,16 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
                 setFieldValue={setFieldValue}
               />
             )}
-            {step === 3 && <ReviewStep values={values} />}
+            {step === 3 && (
+              <ReviewStep
+                values={{
+                  ...values,
+                  images: values.images.filter(
+                    (img): img is { file: File; title: string } => !!img.file
+                  ),
+                }}
+              />
+            )}
             <div className='flex justify-end gap-2 mt-8'>
               {step > 0 && (
                 <button

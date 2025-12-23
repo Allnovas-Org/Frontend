@@ -1,6 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
-import { RatingStat } from "../../../types/review";
+import { RatingStat } from "../../../types";
 
 const stats: RatingStat[] = [
   { stars: 5, percentage: 85 },
