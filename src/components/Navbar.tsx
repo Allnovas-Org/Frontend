@@ -11,7 +11,7 @@ import ActivitiesDrawer from "../pages/applicants/ActivitiesDrawer";
 import UserDropdown from "../pages/applicants/UserDropdown";
 
 const headerLinks = [
-	{ title: "Find Freelancers", url: "#finalCTASection" },
+{ title: "Find Freelancers", url: "/applicants/find-jobs", type: "route" },
 	{ title: "Services", url: "#nichesSection" },
 	{ title: "Resources", url: "#resourcesSection" },
 	{ title: "About Us", url: "#missionSection" },
@@ -20,9 +20,9 @@ const headerLinks = [
 
 const loggedInLinks = [
 	{ title: "Find Jobs", url: "/jobs", type: "route" },
-	{ title: "Work History", url: "#", type: "route" },
+	{ title: "Work History", url: "/work-history", type: "route" },
 	{ title: "Saved Jobs", url: "/saved-jobs", type: "route" },
-	{ title: "Messages", url: "#", type: "route" },
+	{ title: "Messages", url: "/message", type: "route" },
 	{ title: "Community", url: "#", type: "route" },
 ];
 
