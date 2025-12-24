@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Formik, Form, Field, FieldArray } from "formik";
 import * as Yup from "yup";
 import { ArrowRight, X } from "lucide-react";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "../modals/PersonalInfoEditModal";
 import AppButton from "../../../components/button/GlobalButton";
 import StepTracker from "./StepTracker";
 import { Step } from "../../../types";
@@ -107,7 +107,6 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
   ): void => {
     setUploading((prev) => prev.map((u, i) => (i === idx ? true : u)));
     setUploadProgress((prev) => prev.map((p, i) => (i === idx ? 25 : p)));
-    // Simulate upload
     let progress = 25;
     const interval = setInterval(() => {
       progress += 15;
@@ -154,7 +153,6 @@ const ProjectModalSteps: React.FC<ProjectModalStepsProps> = ({
       title={`STEP ${step + 1} OF 4`}
       subtitle=''
     >
-      {/* Step indicator and tracker */}
       <div className='mb-4'>
         <StepTracker steps={steps} currentStep={step + 1} />
       </div>

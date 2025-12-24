@@ -51,7 +51,6 @@ const ProjectDetail: React.FC<{ data: ProjectData }> = ({ data }) => {
         </div>
       </div>
 
-      {/* Right Column: Media */}
       <div className='w-full md:w-80 space-y-10'>
         <figure>
           <img

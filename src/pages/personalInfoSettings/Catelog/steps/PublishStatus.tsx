@@ -97,6 +97,7 @@ const PublishStatus: React.FC<PublishStatusProps> = ({
               <input
                 type='checkbox'
                 className='mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-0'
+                checked={agreed[item.id as keyof typeof agreed]}
                 onChange={() =>
                   setAgreed((prev) => ({
                     ...prev,

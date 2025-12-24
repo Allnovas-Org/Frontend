@@ -39,7 +39,7 @@ const GigPreviewHeader = ({ seller }: GigPreviewHeaderProps) => {
           <span className='text-sm text-gray-500'>
             ({seller.recommendations} recommendations)
           </span>
-          <button className='px-5 py-2 rounded-full text-sm font-medium bg-red-500 text-white hover:bg-red-600 transition'>
+          <button className='px-5 py-2 rounded-full text-sm font-medium bg-primary text-white hover:bg-primary transition'>
             Hire now
           </button>
         </div>

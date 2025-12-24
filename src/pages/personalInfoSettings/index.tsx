@@ -1,34 +1,3 @@
-// import React from "react";
-// import BannerSection from "./BannerSection";
-// import BasicInfoSection from "./BasicInfo/BasicInfoSection";
-// import AboutMeSection from "./About/AboutMeSection";
-// import WorkExperienceSection from "./WorkExperience/WorkExperienceSection";
-// import SkillsSection from "./Skills/SkillsSection";
-// import ToolsSection from "./Tools/ToolsSection";
-// import CatelogSection from "./Catelog/CatelogSection";
-// import ProjectsSection from "./Project/ProjectsSection";
-
-// const ProfileSettings = () => {
-//   return (
-//     <div className='min-h-screen bg-white'>
-//       <BannerSection />
-//       <div className='flex gap-8 px-20 pb-12'>
-//         <BasicInfoSection />
-//         <div className='w-4/5 flex flex-col gap-2'>
-//           <AboutMeSection />
-//           <WorkExperienceSection />
-//           <SkillsSection />
-//           <ToolsSection />
-//           <CatelogSection />
-//           <ProjectsSection />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ProfileSettings;
-
 import React, { useState, lazy, Suspense } from "react";
 const ReviewSection = lazy(() => import("./Review/ReviewSection"));
 import TabNav from "./TabNav";
@@ -103,13 +72,11 @@ const ProfileSettings: React.FC = () => {
   const [showCreateCatalogue, setShowCreateCatalogue] = useState(false);
   const [showCatalogueEdit, setShowCatalogueEdit] = useState(false);
 
-  // Callback to trigger project edit mode from CatelogSection (for modal logic only)
   const handleEditCatalogue = () => {
     setShowCreateCatalogue(true);
     setShowProjectEdit(true);
   };
 
-  // Button text mapping
   const tabButtonText: Record<TabType, string> = {
     Profile: "Edit Profile",
     Portfolio: "Edit Project",
@@ -117,7 +84,6 @@ const ProfileSettings: React.FC = () => {
     Review: "Edit Review",
   };
 
-  // Reset edit mode when tab changes
   React.useEffect(() => {
     setShowProfileEdit(false);
     setShowProjectEdit(false);
@@ -186,14 +152,14 @@ const ProfileSettings: React.FC = () => {
             <div className='flex-1'>
               {activeTab === "Profile" && (
                 <>
-                  <div className='flex lg:flex-row gap-4 lg:gap-3'>
-                    <AboutMeSection showEdit={showProfileEdit} />
-                    <div className='w-full lg:w-auto'>
+                  <div className='flex flex-col-reverse lg:flex-row gap-4 lg:gap-3'>
+                    <div className='w-full lg:w-auto order-1 lg:order-2'>
                       <TipsSidebar
                         title={TAB_DATA[activeTab].title}
                         tips={TAB_DATA[activeTab].tips}
                       />
                     </div>
+                    <AboutMeSection showEdit={showProfileEdit} />
                   </div>
                   <div className='mt-6'>
                     <SkillsSection showEdit={showProfileEdit} />
@@ -204,20 +170,26 @@ const ProfileSettings: React.FC = () => {
                 </>
               )}
               {activeTab === "Portfolio" && (
-                <div className='flex flex-col lg:flex-row gap-6 mt-6'>
-                  <div className='flex-1'>
-                    <ProjectsSection showEdit={showProjectEdit} />
-                  </div>
-                  <div className='w-full lg:w-auto'>
+                <div className='flex flex-col-reverse lg:flex-row gap-6 mt-6'>
+                  <div className='w-full lg:w-auto order-1 lg:order-2'>
                     <TipsSidebar
                       title={TAB_DATA[activeTab].title}
                       tips={TAB_DATA[activeTab].tips}
                     />
                   </div>
+                  <div className='flex-1'>
+                    <ProjectsSection showEdit={showProjectEdit} />
+                  </div>
                 </div>
               )}
               {activeTab === "Catalogue" && (
-                <div className='flex flex-col lg:flex-row gap-6 mt-6'>
+                <div className='flex flex-col-reverse lg:flex-row gap-6 mt-6'>
+                  <div className='w-full lg:w-auto order-1 lg:order-2'>
+                    <TipsSidebar
+                      title={TAB_DATA[activeTab].title}
+                      tips={TAB_DATA[activeTab].tips}
+                    />
+                  </div>
                   <div className='flex-1'>
                     <CatelogSection
                       setShowCreateCatalogue={setShowCreateCatalogue}
@@ -225,19 +197,21 @@ const ProfileSettings: React.FC = () => {
                       showEdit={showCatalogueEdit}
                     />
                   </div>
-                  <div className='w-full lg:w-auto'>
+                </div>
+              )}
+              {activeTab === "Review" && (
+                <div className='flex flex-col-reverse lg:flex-row gap-6 mt-6'>
+                  <div className='w-full lg:w-auto order-1 lg:order-2'>
                     <TipsSidebar
                       title={TAB_DATA[activeTab].title}
                       tips={TAB_DATA[activeTab].tips}
                     />
                   </div>
-                </div>
-              )}
-              {activeTab === "Review" && (
-                <div className='mt-6'>
-                  <Suspense fallback={<div>Loading reviews...</div>}>
-                    <ReviewSection />
-                  </Suspense>
+                  <div className='flex-1'>
+                    <Suspense fallback={<div>Loading reviews...</div>}>
+                      <ReviewSection />
+                    </Suspense>
+                  </div>
                 </div>
               )}
             </div>

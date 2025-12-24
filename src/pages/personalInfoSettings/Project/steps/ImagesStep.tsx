@@ -31,7 +31,7 @@ interface ImagesStepProps {
 
 const ImagesStep = ({
   values,
-  errors,
+  // errors,
   uploading,
   uploadProgress,
   handleFileUpload,

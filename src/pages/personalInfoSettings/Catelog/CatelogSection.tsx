@@ -11,6 +11,7 @@ import ToolBadge from "./ToolBadge";
 import ReviewSection from "./ReviewSection";
 import PortfolioSection from "./PortfolioSection";
 import OtherCatalogues from "./OtherCatalogues";
+import GigExtras from "./GigExtras";
 
 const SERVICES_DATA: Service[] = [
   {
@@ -59,6 +60,7 @@ const gigDetails = {
       designSystem: false,
       mockup: false,
       price: 200,
+      features: ["Up to 3 pages", "1 revision", "Responsive design"],
     },
     {
       name: "Standard",
@@ -70,6 +72,13 @@ const gigDetails = {
       designSystem: true,
       mockup: false,
       price: 400,
+      features: [
+        "Up to 5 pages",
+        "2 revisions",
+        "Responsive design",
+        "Includes plugins",
+        "Design system",
+      ],
     },
     {
       name: "Premium",
@@ -81,6 +90,14 @@ const gigDetails = {
       designSystem: true,
       mockup: true,
       price: 800,
+      features: [
+        "Up to 10 pages",
+        "5 revisions",
+        "Responsive design",
+        "Includes plugins",
+        "Design system",
+        "Mockup included",
+      ],
     },
   ],
 };
@@ -92,6 +109,29 @@ const seller = {
   avatarUrl: "/images/applicants/avatar2.png",
   isAvailable: true,
   recommendations: 50,
+};
+
+const extrasData = {
+  requirements: [
+    "Get me your login details and let’s get started",
+    "I will need your Portfolio link",
+    "I want to be able to view your link",
+  ],
+  specificRequirements: ["Figma Login", "Brand Style"],
+  workflow: [
+    "Have a little chat with you on the project",
+    "Ask insightful questions and try to understand what you want",
+    "Give you ideas on what we have discussed",
+    "Allow you ask questions",
+    "I start the work",
+  ],
+  faqs: [
+    {
+      question: "How long before the project is done?",
+      answer:
+        "I am dedicated freelancer with 5 years of experience in Product designer, using different product design tools to deliver quality works to my clients. I have dedicated my time to improve my skills, by learning from various platforms in order to get better and stay up to date in my field.",
+    },
+  ],
 };
 const images = [
   "/images/applicants/preview1.png",
@@ -175,7 +215,12 @@ const CatelogSection: React.FC<CatelogSectionProps> = ({
             >
               &times;
             </button>
-            <GigPreviewHeader seller={seller} />
+            <GigPreviewHeader
+              seller={{
+                ...seller,
+                gigTitle: selectedService.title,
+              }}
+            />
             <ImageCarousel images={images} />
             <section className='mt-10'>
               <h2 className='text-lg font-semibold mb-2'>Gig Details</h2>
@@ -186,6 +231,7 @@ const CatelogSection: React.FC<CatelogSectionProps> = ({
                 ))}
               </div>
               <PricingTable tiers={gigDetails.pricing} />
+              <GigExtras data={extrasData} />
               <div className='mt-12'>
                 <ReviewSection />
               </div>
@@ -199,7 +245,7 @@ const CatelogSection: React.FC<CatelogSectionProps> = ({
           </div>
         </div>
       )}
-      {/* Pagination (bottom left) */}
+      {/* Pagination */}
       <div className='flex justify-start mt-4'>
         <Pagination current={page} total={total} onPageChange={setPage} />
       </div>

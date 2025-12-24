@@ -8,10 +8,10 @@ const BasicInfoSection: React.FC = () => (
         <p className='text-xs text-gray-500'>Location</p>
         <p className='text-sm text-gray-900 font-medium'>Nigeria</p>
       </div>
-      <button className='bg-gray-100 rounded-full p-2 text-gray-400 hover:text-gray-600 transition-colors'>
+      {/* <button className='bg-gray-100 rounded-full p-2 text-gray-400 hover:text-gray-600 transition-colors'>
         <span className='sr-only'>Edit Basic Info</span>
         <Pencil size={14} />
-      </button>
+      </button> */}
     </div>
     <div className='mb-4'>
       <p className='text-xs text-gray-500'>Language</p>

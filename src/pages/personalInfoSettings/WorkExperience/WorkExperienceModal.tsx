@@ -1,9 +1,8 @@
 import React from "react";
 import { Plus, Trash2 } from "lucide-react";
-import AppButton from "../../../components/button/GlobalButton";
 import { Formik, Form, Field, FieldArray } from "formik";
 import { workExperienceValidationSchema } from "./workExperienceValidation";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "../modals/PersonalInfoEditModal";
 import { WorkExperience } from "../../../types";
 
 const months = [

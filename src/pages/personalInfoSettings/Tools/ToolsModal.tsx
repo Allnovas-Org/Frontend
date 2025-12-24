@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import AppButton from "../../../components/button/GlobalButton";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "../modals/PersonalInfoEditModal";
 import { X, Plus, Pencil } from "lucide-react";
 
 const allTools = [

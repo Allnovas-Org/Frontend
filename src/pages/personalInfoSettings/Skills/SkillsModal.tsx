@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import AppButton from "../../../components/button/GlobalButton";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "../modals/PersonalInfoEditModal";
 import { X, Plus, Pencil } from "lucide-react";
 
 const allSkills = [
@@ -118,7 +117,6 @@ const SkillsModal: React.FC<SkillsModalProps> = ({
           ))}
         </div>
       </div>
-      {/* Input and Add Skill */}
       <div className='flex items-center gap-2 mb-4 relative'>
         <input
           type='text'
@@ -150,7 +148,6 @@ const SkillsModal: React.FC<SkillsModalProps> = ({
         >
           <Plus className='w-4 h-4' /> Add
         </button>
-        {/* Dropdown */}
         {dropdown.length > 0 && (
           <div className='absolute left-0 top-12 w-full bg-white border border-gray-200 rounded-lg shadow z-10'>
             {dropdown.map((skill) => (
@@ -181,9 +178,7 @@ const SkillsModal: React.FC<SkillsModalProps> = ({
           ))}
         </div>
       </div>
-      {/* Save Button */}
       <div className='flex justify-end mt-8'>
-        {/* Add a Save button */}
         <button
           className='bg-primary rounded-lg px-3 py-2 text-white font-semibold '
           onClick={handleSave}

@@ -334,13 +334,13 @@ export const CreateCatalogue: React.FC<CreateCatalogueProps> = ({
               </button>
               {currentStep === 5 ? (
                 <div className='flex gap-4'>
-                  <button
+                  {/* <button
                     type='button'
                     onClick={handleSaveDraft}
                     className='px-8 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-100'
                   >
                     Save as Draft
-                  </button>
+                  </button> */}
                   <button
                     type='submit'
                     disabled={
@@ -357,7 +357,7 @@ export const CreateCatalogue: React.FC<CreateCatalogueProps> = ({
                 <button
                   type='button'
                   onClick={() => setCurrentStep((prev) => prev + 1)}
-                  className='px-8 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600'
+                  className='px-8 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary'
                 >
                   Next →
                 </button>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pencil, MoveUpRight } from "lucide-react";
 import Pagination from "../../../components/Pagination";
 import ProjectModalSteps from "./ProjectModalSteps";
-import ProfileModal from "../ProfileModal";
+import ProfileModal from "../modals/PersonalInfoEditModal";
 import ProjectDetail from "./ProjectDetail";
 import { ProjectData } from "../../../types";
 
@@ -60,7 +60,7 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ showEdit }) => {
         onClose={() => setOpen(false)}
         onSave={(_project) => {}}
       />
-      <div className='grid grid-cols-2 gap-4'>
+      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {MOCK_PROJECTS.map((project, i) => (
           <div
             key={i}

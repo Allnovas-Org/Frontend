@@ -24,7 +24,6 @@ const BannerSection: React.FC = () => (
             alt='Profile'
             className='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white object-cover shadow'
           />
-          {/* Verified Icon */}
           <span className='absolute bottom-2 right-2'>
             <img
               src='/images/applicants/verified.svg'
