@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import SideBar from './SideBar';
+import Sidebar from './Sidebar';
 import WorkHistoryList from './WorkHistoryList';
 import WorkHistoryDetails from './WorkHistoryDetails';
 
@@ -15,7 +15,7 @@ const WorkHistory: React.FC = () => {
         path="/" 
         element={
           <div className="flex min-h-screen bg-gray-50">
-            <SideBar />
+            <Sidebar />
             <WorkHistoryList />
           </div>
         } 

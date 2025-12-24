@@ -11,7 +11,7 @@ import ActivitiesDrawer from "../pages/applicants/ActivitiesDrawer";
 import UserDropdown from "../pages/applicants/UserDropdown";
 
 const headerLinks = [
-{ title: "Find Freelancers", url: "/applicants/find-jobs", type: "route" },
+	{ title: "Find Freelancers", url: "#finalCTASection" },
 	{ title: "Services", url: "#nichesSection" },
 	{ title: "Resources", url: "#resourcesSection" },
 	{ title: "About Us", url: "#missionSection" },

@@ -17,7 +17,7 @@ const WorkHistoryList: React.FC = () => {
       {/* Project Cards */}
       <div className="space-y-6">
         {sampleProjects.map((project) => (
-          <WorkHistoryCard key={project.id} {...project} />
+          <WorkHistoryCard key={project.id} {...project} tools={[...project.tools]} />
         ))}
       </div>
     </div>
