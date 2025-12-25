@@ -44,7 +44,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<header className="bg-white p-4 w-full flex justify-center">
+			<header className="bg-white max-md:px-2 p-4 w-full flex justify-center">
 				{/* Desktop Navigation */}
 				<nav className="max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between">
 					<Link to="/" className="w-[10%]">

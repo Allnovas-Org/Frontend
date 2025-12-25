@@ -13,6 +13,10 @@ import OffshoreContact from "./pages/offshoreContact.tsx";
 import ProfileCompletion from "./pages/auth/ProfileCompletion/ProfileCompletion.tsx";
 import SettingsLayout from "./layout/SettingsLayout.tsx";
 import MainLayout from "./layout/MainLayout.tsx";
+import ProfileSettings from "./pages/settings/ProfileSettings.tsx";
+import PreferencesSettings from "./pages/settings/PreferencesSettings.tsx";
+import NotificationsSettings from "./pages/settings/NotificationsSettings.tsx";
+import SecuritySettings from "./pages/settings/SecuritySettings.tsx";
 
 function App() {
 	return (
@@ -24,20 +28,11 @@ function App() {
 					<Route path="profile-completion" element={<ProfileCompletion />} />
 					<Route path="about" element={<About />} />
 					<Route path="settings" element={<SettingsLayout />}>
-						<Route index element={<div>Profile Settings Page</div>} />
-						<Route
-							path="notifications"
-							element={<div>Notifications Settings Page</div>}
-						/>
-						<Route
-							path="security"
-							element={<div>Security Settings Page</div>}
-						/>
+						<Route index element={<ProfileSettings />} />
+						<Route path="notifications" element={<NotificationsSettings />} />
+						<Route path="security" element={<SecuritySettings />} />
 						<Route path="billing" element={<div>Billing Settings Page</div>} />
-						<Route
-							path="preferences"
-							element={<div>Preferences Settings Page</div>}
-						/>
+						<Route path="preferences" element={<PreferencesSettings />} />
 						<Route
 							path="withdraw"
 							element={<div>Withdraw Settings Page</div>}
