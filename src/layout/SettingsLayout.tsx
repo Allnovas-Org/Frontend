@@ -1,10 +1,10 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import SettingsSidebar from "../pages/settings/SettingsSidebar";
+import SettingsSidebar from "../pages/settings/components/SettingsSidebar";
 
 const SettingsLayout: React.FC = () => {
 	return (
-		<div className="w-full max-w-[1032px] mx-auto px-4 py-8">
+		<div className="w-full max-w-[1032px] mx-auto max-md:px-2 px-4 py-8">
 			<div className="flex flex-col gap-8">
 				{/* Header */}
 				<div>
@@ -12,7 +12,7 @@ const SettingsLayout: React.FC = () => {
 						Account Settings
 					</h1>
 					<p className="text-gray-500 text-base">
-						Manage your preferences, notification and account security here
+						Manage your preferences, notifications, and account security here
 					</p>
 				</div>
 
@@ -24,7 +24,7 @@ const SettingsLayout: React.FC = () => {
 					</div>
 
 					{/* Main Content */}
-					<div className="w-full max-w-[948px] bg-white z-10 h-[400px] rounded-lg lg:border border-gray-300 p-3">
+					<div className="w-full max-w-[948px] bg-white z-10 max-h-[65vh] max-lg:shadow-sm overflow-auto rounded-lg lg:border border-gray-300 p-3">
 						<Outlet />
 					</div>
 				</div>
