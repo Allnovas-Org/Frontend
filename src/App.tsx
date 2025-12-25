@@ -2,17 +2,19 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 
 import Navbar from "./components/Navbar.tsx";
+import MainLayout from "./layout/MainLayout.tsx";
+
 import Home from "./pages/home.tsx";
 import { About } from "./pages/about.tsx";
 
 // Offshore Pages
 import Offshore from "./pages/offshore.tsx";
-import OffshoreNavbar from "./components/offshore/OffshoreNavbar.tsx";
+import OffshoreNavbar from "./pages/offshore/OffshoreNavbar.tsx";
 import OffshoreServices from "./pages/offshoreServices.tsx";
 import OffshoreContact from "./pages/offshoreContact.tsx";
 import ProfileCompletion from "./pages/auth/ProfileCompletion/ProfileCompletion.tsx";
 import SettingsLayout from "./layout/SettingsLayout.tsx";
-import MainLayout from "./layout/MainLayout.tsx";
+
 import ProfileSettings from "./pages/settings/ProfileSettings.tsx";
 import PreferencesSettings from "./pages/settings/PreferencesSettings.tsx";
 import NotificationsSettings from "./pages/settings/NotificationsSettings.tsx";

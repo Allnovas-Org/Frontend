@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
-import ActivitiesDrawer from "./Applicants/ActivitiesDrawer";
+import ActivitiesDrawer from "../pages/applicants/ActivitiesDrawer";
 import { NavLink } from "react-router-dom";
 import { Bell, UserRound, Plane, Settings } from "lucide-react";
 import Logo from "../assets/AllNova black 2 (1).png";
 import user from "../assets/applicants/user.png";
-import UserDropdown from "./Applicants/UserDropdown";
+import UserDropdown from "../pages/applicants/UserDropdown";
 
 const navLinks = [
   { name: "Find Jobs", path: "/applicants/find-jobs" },

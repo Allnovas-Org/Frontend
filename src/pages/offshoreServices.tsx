@@ -1,8 +1,8 @@
 import React from "react";
-import Hero from "../components/offshore/services/Hero";
-import OurServices from "../components/offshore/services/OurServices";
-import FAQ from "../components/offshore/Faq";
-import IndustryServe from "../components/offshore/IndustryServe";
+import Hero from "../pages/offshore/services/Hero";
+import OurServices from "../pages/offshore/services/OurServices";
+import FAQ from "../pages/offshore/Faq";
+import IndustryServe from "../pages/offshore/IndustryServe";
 
 
 const OffshoreServices = () => {
