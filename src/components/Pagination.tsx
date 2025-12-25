@@ -2,7 +2,7 @@ import React from "react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
-} from "../../assets/applicants/customIcons";
+} from "../assets/applicants/customIcons";
 
 export interface PaginationProps {
   current: number;
