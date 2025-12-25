@@ -13,6 +13,7 @@ import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion"
 import FindJobs from "./pages/applicants/findJobs";
 import SavedJobs from "./pages/applicants/savedJobs";
 import WorkHistory from "./pages/applicants/WorkHistory";
+import EditProfile from "./pages/personalInfoSettings/index.tsx";
 // import Messages from "./pages/applicants/Messages";
 
 // Offshore pages
@@ -29,10 +30,13 @@ function App() {
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="profile-completion" element={<ProfileCompletion />} />
+        <Route path="jobs" element={<FindJobs />} />
+        <Route path="saved-jobs" element={<SavedJobs />} />
+        <Route path="profile" element={<EditProfile />} />
       </Route>
 
       {/* ================= APPLICANTS DASHBOARD ================= */}
-      <Route path="applicants" element={<ApplicantsLayout />}>
+      <Route path="applicants" element={<ApplicantsLayout children={undefined} />}>
         <Route path="find-jobs" element={<FindJobs />} />
         <Route path="saved-jobs" element={<SavedJobs />} />
         <Route path="work-history/*" element={<WorkHistory />} />
