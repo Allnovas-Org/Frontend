@@ -15,7 +15,6 @@ import OffshoreContact from "./pages/offshoreContact.tsx";
 import ProfileCompletion from "./components/ProfileCompletion/ProfileCompletion.tsx";
 import FindJobs from "./pages/applicants/findJobs.tsx";
 import SavedJobs from "./pages/applicants/savedJobs.tsx";
-import EditProfile from "./pages/personalInfoSettings/index.tsx";
 
 function App() {
 	return (
@@ -28,7 +27,6 @@ function App() {
 					<Route path="about" element={<About />} />
 					<Route path="jobs" element={<FindJobs />} />
 					<Route path="saved-jobs" element={<SavedJobs />} />
-					<Route path="profile" element={<EditProfile />} />
 				</Route>
 
 				{/* Offshore Layout (shows ONLY Offshore Navbar) */}

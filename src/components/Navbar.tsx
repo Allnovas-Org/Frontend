@@ -40,8 +40,7 @@ const Navbar = () => {
 	const isMainContent =
 		location.pathname === "/jobs" ||
 		location.pathname === "/saved-jobs" ||
-		location.pathname === "/settings" ||
-		location.pathname === "/profile";
+		location.pathname === "/settings";
 
 	const toggleMobileNav = () => {
 		setOpenMobileNav(!openMobileNav);

@@ -8,7 +8,7 @@ import {
 } from "../../assets/applicants/customIcons";
 import { SavedJobsProvider } from "../../store/SavedJobsProvider";
 
-import Pagination from "../../components/Pagination";
+import Pagination from "./Pagination";
 import FilterDropdown from "./FilterDropdown";
 import JobCard from "./JobCard";
 import { Job } from "../../types";
