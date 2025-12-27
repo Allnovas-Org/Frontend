@@ -1,10 +1,16 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import SettingsSidebar from "../pages/settings/components/SettingsSidebar";
 
 const SettingsLayout: React.FC = () => {
 	return (
 		<div className="w-full max-w-[1032px] mx-auto max-md:px-2 px-4 py-8">
+			<Link
+				to="/jobs"
+				className="text-sm text-gray-500 hover:underline mb-6 inline-block"
+			>
+				← Back to Jobs
+			</Link>
 			<div className="flex flex-col gap-8">
 				{/* Header */}
 				<div>
