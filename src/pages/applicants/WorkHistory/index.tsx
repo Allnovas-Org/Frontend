@@ -1,27 +1,27 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import WorkHistoryList from './WorkHistoryList';
-import WorkHistoryDetails from './WorkHistoryDetails';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import WorkHistorySideBar from "./WorkHistorySideBar";
+import WorkHistoryList from "./WorkHistoryList";
+import WorkHistoryDetails from "./WorkHistoryDetails";
 
 const WorkHistory: React.FC = () => {
-  return (
-    <Routes>
-      {/* Details page route */}
-      <Route path=":id" element={<WorkHistoryDetails />} />
-      
-      {/* List page route (default) */}
-      <Route 
-        path="/" 
-        element={
-          <div className="flex min-h-screen bg-gray-50">
-            <Sidebar />
-            <WorkHistoryList />
-          </div>
-        } 
-      />
-    </Routes>
-  );
+	return (
+		<Routes>
+			{/* Details page route */}
+			<Route path=":id" element={<WorkHistoryDetails />} />
+
+			{/* List page route (default) */}
+			<Route
+				path="/"
+				element={
+					<div className="flex min-h-screen bg-gray-50">
+						<WorkHistorySideBar />
+						<WorkHistoryList />
+					</div>
+				}
+			/>
+		</Routes>
+	);
 };
 
 export default WorkHistory;
