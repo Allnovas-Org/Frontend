@@ -41,13 +41,6 @@ function App() {
 				<Route index element={<Home />} />
 				<Route path="about" element={<About />} />
 				<Route path="profile-completion" element={<ProfileCompletion />} />
-			</Route>
-
-			{/* ================= APPLICANTS DASHBOARD ================= */}
-			<Route
-				path="applicants"
-				element={<ApplicantsLayout children={undefined} />}
-			>
 				<Route path="find-jobs" element={<FindJobs />} />
 				<Route path="saved-jobs" element={<SavedJobs />} />
 				<Route path="work-history/*" element={<WorkHistory />} />
@@ -63,6 +56,13 @@ function App() {
 					<Route path="preferences" element={<PreferencesSettings />} />
 					<Route path="withdraw" element={<div>Withdraw Settings Page</div>} />
 				</Route>
+			</Route>
+
+			{/* ================= APPLICANTS DASHBOARD ================= */}
+			<Route
+				path="applicants"
+				element={<ApplicantsLayout children={undefined} />}
+			>
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}
