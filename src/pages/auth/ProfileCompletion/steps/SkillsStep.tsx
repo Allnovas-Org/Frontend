@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
-import { profileCompletionsSkills } from "../../../utils/profile-completion-data";
+import { profileCompletionsSkills } from "../../../../utils/profile-completion-data";
 
 const SkillsStep = () => {
 	const [selectedSkill, setSelectedSkill] = useState("");
