@@ -14,7 +14,7 @@ import FindJobs from "./pages/applicants/findJobs";
 import SavedJobs from "./pages/applicants/savedJobs";
 import WorkHistory from "./pages/applicants/WorkHistory";
 import EditProfile from "./pages/personalInfoSettings/index.tsx";
-// import Messages from "./pages/applicants/Messages";
+import Messages from "./pages/applicants/messages";
 
 // Offshore pages
 import Offshore from "./pages/offshore";
@@ -40,6 +40,7 @@ function App() {
         <Route path="find-jobs" element={<FindJobs />} />
         <Route path="saved-jobs" element={<SavedJobs />} />
         <Route path="work-history/*" element={<WorkHistory />} />
+        <Route path="messages/*" element={<Messages />} />
       </Route>
 
       {/* ================= OFFSHORE PAGES ================= */}
