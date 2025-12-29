@@ -7,11 +7,11 @@ const SettingsLayout: React.FC = () => {
 		<div className="w-full max-w-[1032px] mx-auto max-md:px-2 px-4 py-8">
 			<Link
 				to="/jobs"
-				className="text-sm text-gray-500 hover:underline mb-6 inline-block"
+				className="text-sm text-gray-500 hover:underline mb-2 inline-block"
 			>
 				← Back to Jobs
 			</Link>
-			<div className="flex flex-col gap-8">
+			<div className="flex flex-col gap-6">
 				{/* Header */}
 				<div>
 					<h1 className="text-3xl font-semibold text-gray-900 mb-2">

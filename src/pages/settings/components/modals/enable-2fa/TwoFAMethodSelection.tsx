@@ -67,6 +67,7 @@ const TwoFAMethodSelection: React.FC<TwoFAMethodSelectionProps> = ({
 				<RadioGroup
 					value={selectedMethod}
 					onChange={(e) => setSelectedMethod(e.target.value as TwoFAMethod)}
+					className="space-y-2"
 				>
 					{/* Authenticator App */}
 					<div
