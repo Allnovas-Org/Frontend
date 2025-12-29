@@ -32,6 +32,7 @@ import NotificationsSettings from "./pages/settings/NotificationsSettings.tsx";
 import SecuritySettings from "./pages/settings/SecuritySettings.tsx";
 import BillingSettings from "./pages/settings/BillingSettings.tsx";
 import PaymentMethods from "./pages/settings/PaymentMethods.tsx";
+import WithdrawSettings from "./pages/settings/WithdrawalSettings.tsx";
 
 function App() {
 	return (
@@ -54,7 +55,7 @@ function App() {
 					<Route path="billing" element={<BillingSettings />} />
 					<Route path="billing/payment-methods" element={<PaymentMethods />} />
 					<Route path="preferences" element={<PreferencesSettings />} />
-					<Route path="withdraw" element={<div>Withdraw Settings Page</div>} />
+					<Route path="withdraw" element={<WithdrawSettings />} />
 				</Route>
 			</Route>
 
@@ -62,8 +63,7 @@ function App() {
 			<Route
 				path="applicants"
 				element={<ApplicantsLayout children={undefined} />}
-			>
-			</Route>
+			></Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}
 			<Route
