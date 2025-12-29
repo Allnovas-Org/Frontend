@@ -1,91 +1,92 @@
 @import "tailwindcss";
 
 body {
-	font-family: "Inter", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .mali-font {
-	font-family: "Mali", cursive;
+  font-family: "Mali", cursive;
 }
 @media (max-width: 640px) {
-	.mobile-font {
-		font-family: "Mali", cursive;
-	}
+  .mobile-font {
+    font-family: "Mali", cursive;
+  }
 }
 
 /* h1 { */
-	/* color: var(--typography-heading-1-h-1, #0f0f0f); */
-	/* WEB/Display/Small/SemiBold */
+/* color: var(--typography-heading-1-h-1, #0f0f0f); */
+/* WEB/Display/Small/SemiBold */
 
-	/* font-size: 48px;
+/* font-size: 48px;
 	font-style: normal;
 	font-weight: 600; */
-	/* line-height: 120%; 57.6px */
+/* line-height: 120%; 57.6px */
 /* } */
 
 @keyframes slideInRight {
-	from {
-		transform: translateX(100%);
-	}
-	to {
-		transform: translateX(0);
-	}
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes slideOutRight {
-	from {
-		transform: translateX(0);
-	}
-	to {
-		transform: translateX(100%);
-	}
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 .animate-slideInRight {
-	animation: slideInRight 0.3s ease;
+  animation: slideInRight 0.3s ease;
 }
 .animate-slideOutRight {
-	animation: slideOutRight 0.3s ease;
+  animation: slideOutRight 0.3s ease;
 }
 
 @keyframes fadeIn {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 @keyframes fadeOut {
-	from {
-		opacity: 1;
-	}
+  from {
+    opacity: 1;
+  }
 
-	to {
-		opacity: 0;
-	}
+  to {
+    opacity: 0;
+  }
 }
 .animate-fadeIn {
-	animation: fadeIn 1s ease;
+  animation: fadeIn 1s ease;
 }
 .animate-fadeOut {
-	animation: fadeOut 5s ease;
+  animation: fadeOut 5s ease;
 }
 
 button {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 @theme {
-	--color-primary: #f05658;
-	--color-input: #d2d6db;
-	--color-gray-light: #f3f4f6;
-	--color-gray-lighter: #e5e7eb;
-	--color-gray-dark: #4d5761;
-	--color-gray-darker: #171717;
-	--color-heading: #0f0f0f;
-	--color-text: #4b4b4b;
-	--color-icon: #6a0dad;
-	--color-filter: #f05658;
-	--color-purple: #6a0dad;
-	--color-green: #37b04c;
-	--color-light-green: #e5f7eb;
+  --color-primary: #f05658;
+  --color-input: #d2d6db;
+  --color-gray-light: #f3f4f6;
+  --color-gray-lighter: #e5e7eb;
+  --color-gray-dark-20: #65656b;
+  --color-gray-dark: #4d5761;
+  --color-gray-darker: #171717;
+  --color-heading: #0f0f0f;
+  --color-text: #4b4b4b;
+  --color-icon: #6a0dad;
+  --color-filter: #f05658;
+  --color-purple: #6a0dad;
+  --color-green: #37b04c;
+  --color-light-green: #e5f7eb;
 }
