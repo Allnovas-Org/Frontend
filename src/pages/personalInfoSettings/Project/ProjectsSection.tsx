@@ -42,8 +42,10 @@ const ProjectsSection: React.FC<ProjectsSectionProps> = ({ showEdit }) => {
     <div>
       <div className='flex items-center justify-between mb-4'>
         <div>
-          <h3 className='text-base font-semibold text-gray-800'>Project</h3>
-          <p className='text-xs text-input'>Projects from Ajayi Samuel</p>
+          <h3 className='text-base font-semibold text-gray-darker'>Project</h3>
+          <p className='text-xs text-gray-dark-20'>
+            Projects from Ajayi Samuel
+          </p>
         </div>
         {showEdit && (
           <button

@@ -12,9 +12,15 @@ body {
   }
 }
 
-button {
-  cursor: pointer;
-}
+/* h1 { */
+/* color: var(--typography-heading-1-h-1, #0f0f0f); */
+/* WEB/Display/Small/SemiBold */
+
+/* font-size: 48px;
+	font-style: normal;
+	font-weight: 600; */
+/* line-height: 120%; 57.6px */
+/* } */
 
 @keyframes slideInRight {
   from {
@@ -64,11 +70,16 @@ button {
   animation: fadeOut 5s ease;
 }
 
+button {
+  cursor: pointer;
+}
+
 @theme {
   --color-primary: #f05658;
   --color-input: #d2d6db;
   --color-gray-light: #f3f4f6;
   --color-gray-lighter: #e5e7eb;
+  --color-gray-dark-20: #65656b;
   --color-gray-dark: #4d5761;
   --color-gray-darker: #171717;
   --color-heading: #0f0f0f;
@@ -76,8 +87,6 @@ button {
   --color-icon: #6a0dad;
   --color-filter: #f05658;
   --color-purple: #6a0dad;
-  --color-light-purple: #e682f3;
-  --color-dark-purple: #6a0dad;
   --color-green: #37b04c;
   --color-light-green: #e5f7eb;
 }

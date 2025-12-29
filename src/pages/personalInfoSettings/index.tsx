@@ -118,7 +118,7 @@ const EditProfile: React.FC = () => {
 							)}
 						</div>
 						<button
-							className="bg-transparent text-purple px-4 py-2 rounded-lg font-medium border border-purple transition mt-4 sm:mt-0"
+							className={`bg-transparent text-purple px-4 py-2 rounded-lg font-medium border border-purple transition mt-4 sm:mt-0 ${activeTab === "Review" ? "hidden" : ""}`}
 							onClick={() => {
 								if (activeTab === "Profile") setShowProfileEdit((v) => !v);
 								if (activeTab === "Portfolio") setShowProjectEdit((v) => !v);

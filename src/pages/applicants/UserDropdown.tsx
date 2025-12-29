@@ -120,6 +120,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 					<DropdownButton
 						icon={<Settings className="w-5 h-5 text-gray-dark" />}
 						label="Account Settings"
+						onClick={() => {
+							navigate("/settings");
+							onClose();
+						}}
 					/>
 				</div>
 			),

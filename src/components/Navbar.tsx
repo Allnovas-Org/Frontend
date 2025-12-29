@@ -4,8 +4,8 @@ import user from "../assets/applicants/user.png";
 import { Drawer } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Bell } from "lucide-react";
-import SignupModal from "./SignupFlow/SignupModal";
-import SignInModal from "./SignInFlow/SignInModal";
+import SignupModal from "../pages/auth/SignupFlow/SignupModal";
+import SignInModal from "../pages/auth/SignInFlow/SignInModal";
 import { Link, useLocation } from "react-router-dom";
 import ActivitiesDrawer from "../pages/applicants/ActivitiesDrawer";
 import UserDropdown from "../pages/applicants/UserDropdown";
@@ -158,7 +158,7 @@ const Navbar = () => {
 
 	return (
 		<>
-			<header className="bg-white p-4 w-full flex justify-center">
+			<header className="bg-white max-md:px-2 p-4 w-full flex justify-center">
 				{/* Desktop Navigation */}
 				<nav className="max-w-6xl max-lg:text-xs w-full max-md:hidden inline-flex items-center justify-between">
 					<Link to="/" className="w-[10%]">
@@ -305,7 +305,7 @@ const Navbar = () => {
 					)}
 				</nav>
 
-				{/* Mobile Drawer (Home Only) */}
+				{/* Mobile Drawer - only show on home page */}
 				{isHomePage && (
 					<Drawer anchor="left" open={openMobileNav} onClose={toggleMobileNav}>
 						<div className="w-64 p-4 flex flex-col justify-between h-full pb-8">
@@ -316,29 +316,16 @@ const Navbar = () => {
 								>
 									<img src={logo} alt="AllNova Logo" className="w-full" />
 								</button>
-
 								{headerLinks.map((link) => (
-									<li key={link.title} className="cursor-pointer">
-										{link.type === "route" ? (
-											<Link
-												to={link.url}
-												onClick={() => setOpenMobileNav(false)}
-												className="text-black font-medium hover:text-gray-500 transition"
-											>
-												{link.title}
-											</Link>
-										) : (
-											<span
-												onClick={() => handleNavClick(link.url)}
-												className="text-black font-medium hover:text-gray-500 transition"
-											>
-												{link.title}
-											</span>
-										)}
+									<li
+										key={link.title}
+										onClick={() => handleNavClick(link.url)}
+										className="text-black font-medium hover:text-gray-500 transition cursor-pointer"
+									>
+										{link.title}
 									</li>
 								))}
 							</ul>
-
 							<div className="flex flex-col gap-y-3">
 								<button
 									onClick={() => {
@@ -349,7 +336,6 @@ const Navbar = () => {
 								>
 									Sign in
 								</button>
-
 								<button
 									onClick={() => {
 										setIsSignupModalOpen(true);
@@ -365,12 +351,13 @@ const Navbar = () => {
 				)}
 			</header>
 
-			{/* Modals */}
+			{/* Signup Modal */}
 			<SignupModal
 				isOpen={isSignupModalOpen}
 				onClose={() => setIsSignupModalOpen(false)}
 			/>
 
+			{/* SignIn Modal */}
 			<SignInModal
 				isOpen={isSignInModalOpen}
 				onClose={() => setIsSignInModalOpen(false)}
