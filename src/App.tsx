@@ -45,6 +45,7 @@ function App() {
 				<Route path="saved-jobs" element={<SavedJobs />} />
 				<Route path="work-history/*" element={<WorkHistory />} />
 				<Route path="jobs" element={<FindJobs />} />
+				<Route path="messages/*" element={<Messages />} />
 				<Route path="profile" element={<EditProfile />} />
 
 				<Route path="settings" element={<SettingsLayout />}>
@@ -60,10 +61,11 @@ function App() {
 
 			{/* ================= APPLICANTS DASHBOARD ================= */}
 			<Route path="applicants" element={<ApplicantsLayout />}>
-				<Route path="find-jobs" element={<FindJobs />} />
+				<Route index element={<FindJobs />} />
 				<Route path="saved-jobs" element={<SavedJobs />} />
 				<Route path="work-history/*" element={<WorkHistory />} />
 				<Route path="messages/*" element={<Messages />} />
+				<Route path="community/*" element={<>Community</>} />
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}

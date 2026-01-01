@@ -22,7 +22,7 @@ const loggedInLinks = [
 	{ title: "Find Jobs", url: "/jobs", type: "route" },
 	{ title: "Work History", url: "/work-history", type: "route" },
 	{ title: "Saved Jobs", url: "/saved-jobs", type: "route" },
-	{ title: "Messages", url: "/message", type: "route" },
+	{ title: "Messages", url: "/applicants/messages", type: "route" },
 	{ title: "Community", url: "#", type: "route" },
 ];
 
@@ -40,7 +40,8 @@ const Navbar = () => {
 	const isMainContent =
 		location.pathname === "/jobs" ||
 		location.pathname === "/saved-jobs" ||
-		location.pathname === "/settings";
+		location.pathname === "/settings" ||
+		location.pathname === "/work-history";
 
 	const toggleMobileNav = () => {
 		setOpenMobileNav(!openMobileNav);
