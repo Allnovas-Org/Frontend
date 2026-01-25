@@ -28,17 +28,17 @@ const ArticleHero: React.FC<ArticleHeroProps> = ({ onSearch }) => {
 
   return (
     <section className='w-full py-20 md:py-20 lg:py-32 px-4 md:px-6 bg-white'>
-      <div className='max-w-4xl mx-auto text-center space-y-4 md:space-y-6 relative'>
+      <div className='max-w-4xl mx-auto text-center space-y-0 md:space-y-6 relative'>
         <img
           src='/images/newspaper-ads.png'
           alt=''
           aria-hidden
-          className='absolute left-1/2 -translate-x-1/2 -top-10 md:-top-14 w-40 md:w- opacity-100 pointer-events-none'
+          className='absolute left-1/2 -translate-x-1/2 -top-10 md:-top-12 w-40 md:w-96 opacity-100 pointer-events-none'
         />
-        <h1 className='text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900'>
+        <h1 className='text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 mb-0 md:mb-0'>
           Articles
         </h1>
-        <p className='text-sm md:text-base text-gray-600'>
+        <p className='text-sm md:text-base text-gray-600 mb-6 md:mb-12'>
           Read, Learn and Earn
         </p>
 

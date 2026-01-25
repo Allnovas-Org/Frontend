@@ -27,11 +27,11 @@ const HelpHero: React.FC<HelpHeroProps> = ({ onSearch }) => {
 
   return (
     <section className='w-full py-20 md:py-20 lg:py-32 px-4 md:px-6 bg-white'>
-      <div className='max-w-4xl mx-auto text-center space-y-4 md:space-y-6'>
-        <h1 className='text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900'>
+      <div className='max-w-4xl mx-auto text-center space-y-4 md:space-y-0'>
+        <h1 className='text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-900 mb-0 md:mb-0'>
           How can we help you?
         </h1>
-        <p className='text-sm md:text-base text-gray-600'>
+        <p className='text-sm md:text-base text-gray-600 mb-6 md:mb-12'>
           We have all the help you might need
         </p>
 
