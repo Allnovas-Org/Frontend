@@ -9,8 +9,8 @@ import { Link } from "react-router-dom";
 
 const clientHeaderLinks = [
 	{ title: "Messages", url: "#resourcesSection" },
-	{ title: "Post a Job", url: "/clients/post-a-job" },
-	{ title: "Projects", url: "/clients/projects" },
+	{ title: "Post a Job", url: "/post-a-job" },
+	{ title: "Projects", url: "#missionSection" },
 	{ title: "Spotlight Talents", url: "/clients" },
 ];
 
@@ -43,7 +43,9 @@ const ClientNavbar: React.FC = () => {
 						))}
 					</ul>
 
-					<div className="inline-flex gap-4 items-center"></div>
+					<div className="inline-flex gap-4 items-center">
+						
+					</div>
 				</nav>
 
 				{/* Mobile Navigation */}

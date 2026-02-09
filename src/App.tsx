@@ -35,6 +35,10 @@ import NotificationsSettings from "./pages/settings/NotificationsSettings";
 import SecuritySettings from "./pages/settings/SecuritySettings";
 import BillingSettings from "./pages/settings/BillingSettings";
 import PaymentMethods from "./pages/settings/PaymentMethods";
+import ClientsLayout from "./layout/ClientsLayout";
+import SpotlightTalents from "./pages/clients/SpotlightTalents/SpotlightTalents";
+import Notifications from "./pages/clients/Notifications/Notifications";
+import SavedTalents from "./pages/clients/SpotlightTalents/SavedTalents";
 
 // Client pages
 import Projects from "./pages/projects";
@@ -77,6 +81,12 @@ function App() {
 				<Route path="articles" element={<ArticlesPage />} />
 				<Route path="help" element={<HelpPage />} />
 				<Route path="community/*" element={<>Community</>} />
+			</Route>
+			{/* ================= CLIENTS DASHBOARD ================= */}
+			<Route path="clients" element={<ClientsLayout />}>
+				<Route index element={<SpotlightTalents />} />
+				<Route path="notifications" element={<Notifications />} />
+				<Route path="saved-talents" element={<SavedTalents />} />
 			</Route>
 
 			{/* ================= CLIENTS DASHBOARD ================= */}
