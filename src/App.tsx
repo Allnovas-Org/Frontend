@@ -32,6 +32,10 @@ import NotificationsSettings from "./pages/settings/NotificationsSettings";
 import SecuritySettings from "./pages/settings/SecuritySettings";
 import BillingSettings from "./pages/settings/BillingSettings";
 import PaymentMethods from "./pages/settings/PaymentMethods";
+import ClientsLayout from "./layout/ClientsLayout";
+import SpotlightTalents from "./pages/clients/SpotlightTalents/SpotlightTalents";
+import Notifications from "./pages/clients/Notifications/Notifications";
+import SavedTalents from "./pages/clients/SpotlightTalents/SavedTalents";
 
 function App() {
 	return (
@@ -66,6 +70,12 @@ function App() {
 				<Route path="work-history/*" element={<WorkHistory />} />
 				<Route path="messages/*" element={<Messages />} />
 				<Route path="community/*" element={<>Community</>} />
+			</Route>
+			{/* ================= CLIENTS DASHBOARD ================= */}
+			<Route path="clients" element={<ClientsLayout />}>
+				<Route index element={<SpotlightTalents />} />
+				<Route path="notifications" element={<Notifications />} />
+				<Route path="saved-talents" element={<SavedTalents />} />
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}
