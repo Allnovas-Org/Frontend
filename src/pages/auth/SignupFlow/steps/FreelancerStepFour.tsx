@@ -1,101 +1,128 @@
-import React, { useState } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import React, { useState, useRef, useCallback } from "react";
+import { ArrowLeft } from "lucide-react";
 
-interface FreelancerStepFourProps {
+interface StepFourProps {
 	onNext: () => void;
 	onBack: () => void;
+	onResend?: () => void;
 }
 
-const FreelancerStepFour: React.FC<FreelancerStepFourProps> = ({
-	onNext,
-	onBack,
-}) => {
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
-	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const StepFour: React.FC<StepFourProps> = ({ onNext, onBack, onResend }) => {
+	const [code, setCode] = useState(["", "", "", ""]);
+	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-	const handleContinue = () => {
-		if (password && confirmPassword && password === confirmPassword) {
+	const handleChange = useCallback((index: number, value: string) => {
+		// Only allow single digit
+		if (value.length > 1) return;
+		
+		// Only allow numbers
+		if (value && !/^\d$/.test(value)) return;
+
+		const newCode = [...code];
+		newCode[index] = value;
+		setCode(newCode);
+
+		// Auto-focus next input
+		if (value && index < 3) {
+			inputRefs.current[index + 1]?.focus();
+		}
+	}, [code]);
+
+	const handleKeyDown = useCallback((index: number, e: React.KeyboardEvent) => {
+		if (e.key === "Backspace" && !code[index] && index > 0) {
+			inputRefs.current[index - 1]?.focus();
+		}
+	}, [code]);
+
+	const handlePaste = useCallback((e: React.ClipboardEvent) => {
+		e.preventDefault();
+		const pastedData = e.clipboardData.getData("text").slice(0, 4);
+		
+		if (!/^\d+$/.test(pastedData)) return;
+
+		const newCode = pastedData.split("").concat(["", "", "", ""]).slice(0, 4);
+		setCode(newCode);
+
+		// Focus the next empty input or last input
+		const nextEmptyIndex = newCode.findIndex(digit => !digit);
+		const focusIndex = nextEmptyIndex === -1 ? 3 : nextEmptyIndex;
+		inputRefs.current[focusIndex]?.focus();
+	}, []);
+
+	const handleVerify = () => {
+		if (isValid) {
 			onNext();
 		}
 	};
 
-	const isValid = password && confirmPassword && password === confirmPassword;
+	const handleResend = () => {
+		setCode(["", "", "", ""]);
+		inputRefs.current[0]?.focus();
+		onResend?.();
+	};
+
+	const isValid = code.every((digit) => digit !== "");
 
 	return (
 		<div className="flex flex-col h-full">
 			<button
 				onClick={onBack}
 				className="flex items-center gap-2 text-gray-700 mb-6 hover:text-gray-900 transition w-fit"
+				aria-label="Go back"
 			>
 				<ArrowLeft size={20} />
 				<span>Back</span>
 			</button>
 
-			<h1 className="text-3xl font-bold mb-8">Create a Secure Password</h1>
+			<h1 className="text-3xl font-bold mb-2">
+				Great, Let's verify your email
+			</h1>
+			<p className="text-gray-600 mb-8">
+				We’ve sent a verification code to your email. Please enter the code below to continue.
+			</p>
 
-			<div className="space-y-6 mb-8">
-				{/* Password Field */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Password
-					</label>
-					<div className="relative">
-						<input
-							type={showPassword ? "text" : "password"}
-							value={password}
-							onChange={(e) => setPassword(e.target.value)}
-							placeholder="Enter your Password"
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
-						/>
-						<button
-							type="button"
-							onClick={() => setShowPassword(!showPassword)}
-							className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-						>
-							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-						</button>
-					</div>
-				</div>
-
-				{/* Confirm Password Field */}
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">
-						Confirm Password
-					</label>
-					<div className="relative">
-						<input
-							type={showConfirmPassword ? "text" : "password"}
-							value={confirmPassword}
-							onChange={(e) => setConfirmPassword(e.target.value)}
-							placeholder="Re-enter your Password"
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
-						/>
-						<button
-							type="button"
-							onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-							className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-						>
-							{showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-						</button>
-					</div>
-				</div>
+			{/* OTP Input */}
+			<div className="flex gap-4 justify-center mb-8">
+				{code.map((digit, index) => (
+					<input
+						key={index}
+						ref={(el) => { inputRefs.current[index] = el; }}
+						type="text"
+						inputMode="numeric"
+						maxLength={1}
+						value={digit}
+						onChange={(e) => handleChange(index, e.target.value)}
+						onKeyDown={(e) => handleKeyDown(index, e)}
+						onPaste={handlePaste}
+						className="w-16 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent transition"
+						aria-label={`Digit ${index + 1}`}
+					/>
+				))}
 			</div>
 
 			<button
-				onClick={handleContinue}
+				onClick={handleVerify}
 				disabled={!isValid}
-				className={`w-full py-4 rounded-full font-semibold transition-all ${
+				className={`w-full py-4 rounded-full font-semibold transition-all mb-4 ${
 					isValid
 						? "bg-[#6A0DAD] text-white hover:bg-[#5a0b92] cursor-pointer"
 						: "bg-gray-200 text-gray-400 cursor-not-allowed"
 				}`}
 			>
-				Continue
+				Verify
 			</button>
+
+			<p className="text-center text-sm text-gray-600">
+				Did not receive code?{" "}
+				<button 
+					onClick={handleResend}
+					className="text-[#6A0DAD] font-semibold hover:underline"
+				>
+					Resend
+				</button>
+			</p>
 		</div>
 	);
 };
 
-export default FreelancerStepFour;
+export default StepFour;
