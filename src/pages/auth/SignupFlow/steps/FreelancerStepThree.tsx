@@ -1,87 +1,81 @@
-import React, { useState, useRef } from "react";
-import { ArrowLeft } from "lucide-react";
+import React, { useState } from "react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 
-interface FreelancerStepThreeProps {
+interface StepThreeProps {
 	onNext: () => void;
 	onBack: () => void;
 }
 
-const FreelancerStepThree: React.FC<FreelancerStepThreeProps> = ({
-	onNext,
-	onBack,
-}) => {
-	const [code, setCode] = useState(["", "", "", ""]);
-	const inputRefs = [
-		useRef<HTMLInputElement>(null),
-		useRef<HTMLInputElement>(null),
-		useRef<HTMLInputElement>(null),
-		useRef<HTMLInputElement>(null),
-	];
+const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
 
-	const handleChange = (index: number, value: string) => {
-		if (value.length > 1) return;
-
-		const newCode = [...code];
-		newCode[index] = value;
-		setCode(newCode);
-
-		// Auto-focus next input
-		if (value && index < 3) {
-			inputRefs[index + 1].current?.focus();
-		}
-	};
-
-	const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-		if (e.key === "Backspace" && !code[index] && index > 0) {
-			inputRefs[index - 1].current?.focus();
-		}
-	};
-
-	const handleVerify = () => {
-		const fullCode = code.join("");
-		if (fullCode.length === 4) {
+	const handleContinue = () => {
+		if (email && password) {
 			onNext();
 		}
 	};
 
-	const isValid = code.every((digit) => digit !== "");
+	const isValid = email.length > 0 && password.length > 0;
 
 	return (
 		<div className="flex flex-col h-full">
 			<button
 				onClick={onBack}
 				className="flex items-center gap-2 text-gray-700 mb-6 hover:text-gray-900 transition w-fit"
+				aria-label="Go back"
 			>
 				<ArrowLeft size={20} />
 				<span>Back</span>
 			</button>
 
-			<h1 className="text-3xl font-bold mb-2">
-				Great, Let's verify your email
+			<h1 className="text-3xl font-bold mb-8">
+				Welcome! How would you like to join?
 			</h1>
-			<p className="text-gray-600 mb-8">
-				We've sent a verification code to your email Please check enter the code
-				below to continue.
-			</p>
 
-			{/* OTP Input */}
-			<div className="flex gap-4 justify-center mb-8">
-				{code.map((digit, index) => (
+			<div className="space-y-6 mb-8">
+				{/* Email Field */}
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Email
+					</label>
 					<input
-						key={index}
-						ref={inputRefs[index]}
-						type="text"
-						maxLength={1}
-						value={digit}
-						onChange={(e) => handleChange(index, e.target.value)}
-						onKeyDown={(e) => handleKeyDown(index, e)}
-						className="w-16 h-16 text-center text-2xl font-bold border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
+						type="email"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						placeholder="Enter your Email"
+						className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
 					/>
-				))}
+				</div>
+
+				{/* Password Field */}
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">
+						Password
+					</label>
+					<div className="relative">
+						<input
+							type={showPassword ? "text" : "password"}
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							placeholder="Enter your Password"
+							className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
+						/>
+						<button
+							type="button"
+							onClick={() => setShowPassword(!showPassword)}
+							className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+							aria-label={showPassword ? "Hide password" : "Show password"}
+						>
+							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+						</button>
+					</div>
+				</div>
 			</div>
 
 			<button
-				onClick={handleVerify}
+				onClick={handleContinue}
 				disabled={!isValid}
 				className={`w-full py-4 rounded-full font-semibold transition-all mb-4 ${
 					isValid
@@ -89,17 +83,17 @@ const FreelancerStepThree: React.FC<FreelancerStepThreeProps> = ({
 						: "bg-gray-200 text-gray-400 cursor-not-allowed"
 				}`}
 			>
-				Verify
+				Continue
 			</button>
 
 			<p className="text-center text-sm text-gray-600">
-				Did not receive code?{" "}
+				Already have an account?{" "}
 				<button className="text-[#6A0DAD] font-semibold hover:underline">
-					Resend
+					Sign in
 				</button>
 			</p>
 		</div>
 	);
 };
 
-export default FreelancerStepThree;
+export default StepThree;
