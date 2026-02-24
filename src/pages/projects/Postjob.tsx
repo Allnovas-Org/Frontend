@@ -1,12 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { ProjectCategory } from "../../types";
-import ActionConfirmModal from "./modal/ActionConfirmModal";
-import ActionResultModal from "./modal/ActionResultModal";
 
 import { useFormik } from "formik";
-import { ArrowLeft, Plus, Minus } from "lucide-react";
+import { ArrowLeft, Plus, Minus, CircleCheck, X, Bookmark } from "lucide-react";
 import { postJobSchema } from "./postJobSchema";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
 import { getProjectById, updateProject } from "./store/project.store";
 
 interface PostJobFormValues {
@@ -29,8 +27,7 @@ const FieldError = ({ error }: { error?: string }) => {
 
 const PostJob = () => {
   const { jobId } = useParams();
-  const [showEditConfirm, setShowEditConfirm] = useState(false);
-  const [showEditReadyModal, setShowEditReadyModal] = useState(false);
+  const [showPostSuccessAlert, setShowPostSuccessAlert] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [skillInput, setSkillInput] = useState("");
@@ -38,6 +35,8 @@ const PostJob = () => {
   // Autofill support for reuse
   const reuseProject = location.state?.reuseProject;
   const isEditMode = Boolean(jobId);
+  const isReuseMode = Boolean(reuseProject) && !isEditMode;
+  const isEditableFlow = isEditMode || isReuseMode;
 
   const addSkill = (skill: string) => {
     if (!skill.trim()) return;
@@ -59,25 +58,6 @@ const PostJob = () => {
     return getProjectById(jobId);
   }, [jobId, reuseProject]);
 
-  const handleConfirmEditSave = () => {
-    if (!jobId) {
-      setShowEditConfirm(false);
-      return;
-    }
-
-    updateProject(jobId, {
-      title: formik.values.title,
-      description: formik.values.description,
-      categories: formik.values.category ? [formik.values.category] : [],
-      skills: formik.values.skills,
-      budget: Number(formik.values.totalBudget),
-      duration: formik.values.duration,
-    });
-
-    setShowEditConfirm(false);
-    setShowEditReadyModal(true);
-  };
-
   const formik = useFormik<PostJobFormValues>({
     enableReinitialize: true,
 
@@ -93,7 +73,7 @@ const PostJob = () => {
       experienceLevel: "",
     },
 
-    validationSchema: postJobSchema,
+    validationSchema: isEditableFlow ? undefined : postJobSchema,
 
     onSubmit: (values) => {
       if (isEditMode && jobId) {
@@ -105,14 +85,29 @@ const PostJob = () => {
           budget: Number(values.totalBudget),
           duration: values.duration,
         });
+        setShowPostSuccessAlert(true);
+        return;
+      }
 
-        setShowEditReadyModal(true);
+      if (isReuseMode && formik.dirty) {
+        setShowPostSuccessAlert(true);
         return;
       }
 
       navigate("/applicants/projects", { state: { newJob: values } });
     },
   });
+
+  const hasStartedEditing = formik.dirty;
+  const secondaryButtonLabel =
+    isEditableFlow && !hasStartedEditing ? "Cancel" : "Save as draft";
+  const primaryButtonLabel = isEditableFlow
+    ? hasStartedEditing
+      ? "Post Job"
+      : isEditMode
+        ? "Save changes"
+        : "Continue"
+    : "Post Job";
 
   return (
     <section className='mx-auto max-w-4xl py-20 md:py-20 lg:py-32 px-4 md:px-6'>
@@ -135,6 +130,33 @@ const PostJob = () => {
             : "Your go-to platform to post jobs and connect with exceptional talent and visionary creatives!"}
         </p>
       </header>
+
+      {showPostSuccessAlert && (
+        <div className='mb-4 flex items-start justify-between gap-3 rounded-lg border border-input p-3 bg-green-100'>
+          <div className='flex items-start gap-2 '>
+            <CircleCheck className='mt-0.5 h-5 w-5 text-green-600' />
+            <p className='text-xs text-gray-dark'>
+              Your new job post is now live and visible to freelancers. Get
+              ready to receive proposals from skilled hands!{" "}
+              <Link
+                to='/applicants/projects'
+                className='font-medium text-primary underline'
+              >
+                job posting dashboard
+              </Link>
+            </p>
+          </div>
+
+          <button
+            type='button'
+            onClick={() => setShowPostSuccessAlert(false)}
+            aria-label='Close success alert'
+            className='text-gray-dark'
+          >
+            <X className='h-4 w-4' />
+          </button>
+        </div>
+      )}
 
       {/* Form */}
       <form
@@ -369,43 +391,28 @@ const PostJob = () => {
         <div className='mt-8 flex justify-end gap-3 border-t border-input pt-4'>
           <button
             type='button'
-            className='rounded-lg text-gray-dark border border-input px-4 py-2 text-sm'
+            onClick={
+              secondaryButtonLabel === "Cancel" ? () => navigate(-1) : undefined
+            }
+            className='rounded-lg text-gray-dark border border-input px-4 py-2 text-sm inline-flex items-center gap-2'
           >
-            Save as draft
+            {secondaryButtonLabel === "Save as draft" && <Bookmark size={16} />}
+            {secondaryButtonLabel}
           </button>
 
           <button
-            type={isEditMode ? "button" : "submit"}
+            type='submit'
             disabled={
-              isEditMode
+              isEditableFlow && hasStartedEditing
                 ? formik.isSubmitting
                 : !formik.isValid || formik.isSubmitting
             }
-            onClick={isEditMode ? () => setShowEditConfirm(true) : undefined}
             className='rounded-lg bg-primary px-4 py-2 text-sm text-white disabled:opacity-50'
           >
-            {isEditMode ? "Save changes" : "Post job"}
+            {primaryButtonLabel}
           </button>
         </div>
       </form>
-      <ActionConfirmModal
-        open={showEditConfirm}
-        title='Edit job post'
-        description='Are you sure you want to update this job post?'
-        cancelLabel='Cancel'
-        onCancel={() => setShowEditConfirm(false)}
-        onConfirm={handleConfirmEditSave}
-      />
-
-      <ActionResultModal
-        open={showEditReadyModal}
-        title='Your job post update is now live!'
-        description='Your job post was successfully updated. Get ready to attract the perfect candidates. Cheers!'
-        secondaryLabel='Go to job postings'
-        primaryLabel='Post new job'
-        onSecondaryClick={() => navigate("/applicants/projects")}
-        onPrimaryClick={() => navigate("/applicants/projects/post-job")}
-      />
     </section>
   );
 };

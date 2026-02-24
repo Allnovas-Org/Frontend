@@ -152,10 +152,10 @@ const Projects = () => {
 export default Projects;
 
 // Routes used while working
-{
-  /* <Route path='projects' element={<Projects />} />
-<Route path='projects/post-job' element={<PostJob />} />
-<Route path='projects/edit-job/:jobId' element={<PostJob />} />
-<Route path='projects/:projectId' element={<ProjectDetails />} />
-<Route path='projects/hire/:candidateId' element={<OfferFlow />} /> */
-}
+// {
+//   <Route path='projects' element={<Projects />} />
+// <Route path='projects/post-job' element={<PostJob />} />
+// <Route path='projects/edit-job/:jobId' element={<PostJob />} />
+// <Route path='projects/:projectId' element={<ProjectDetails />} />
+// <Route path='projects/hire/:candidateId' element={<OfferFlow />} />
+// }
