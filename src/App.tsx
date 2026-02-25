@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import MainLayout from "./layout/MainLayout";
 import ApplicantsLayout from "./layout/ApplicantsLayout";
+import ClientsLayout from "./layout/ClientsLayout";
 
 // Public pages
 import Home from "./pages/home";
@@ -34,6 +35,12 @@ import NotificationsSettings from "./pages/settings/NotificationsSettings";
 import SecuritySettings from "./pages/settings/SecuritySettings";
 import BillingSettings from "./pages/settings/BillingSettings";
 import PaymentMethods from "./pages/settings/PaymentMethods";
+
+// Client pages
+import Projects from "./pages/projects";
+import PostJob from "./pages/projects/Postjob";
+import ProjectDetails from "./pages/projects/ProjectDetails";
+import OfferFlow from "./pages/projects/projectDetails/hire";
 
 function App() {
 	return (
@@ -70,6 +77,15 @@ function App() {
 				<Route path="articles" element={<ArticlesPage />} />
 				<Route path="help" element={<HelpPage />} />
 				<Route path="community/*" element={<>Community</>} />
+			</Route>
+
+			{/* ================= CLIENTS DASHBOARD ================= */}
+			<Route path="clients" element={<ClientsLayout />}>
+				<Route path="projects" element={<Projects />} />
+				<Route path="post-a-job" element={<PostJob />} />
+				<Route path="edit-job/:jobId" element={<PostJob />} />
+				<Route path="projects/:projectId" element={<ProjectDetails />} />
+				<Route path="hire/:candidateId" element={<OfferFlow />} />
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}
