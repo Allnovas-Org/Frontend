@@ -45,6 +45,12 @@ import PostJob from "./pages/projects/Postjob";
 import ProjectDetails from "./pages/projects/ProjectDetails";
 import OfferFlow from "./pages/projects/projectDetails/hire";
 
+// Client pages
+import Projects from "./pages/projects";
+import PostJob from "./pages/projects/Postjob";
+import ProjectDetails from "./pages/projects/ProjectDetails";
+import OfferFlow from "./pages/projects/projectDetails/hire";
+
 function App() {
 	return (
 		<Routes>
@@ -86,6 +92,15 @@ function App() {
 				<Route index element={<SpotlightTalents />} />
 				<Route path="notifications" element={<Notifications />} />
 				<Route path="saved-talents" element={<SavedTalents />} />
+			</Route>
+
+			{/* ================= CLIENTS DASHBOARD ================= */}
+			<Route path="clients" element={<ClientsLayout />}>
+				<Route path="projects" element={<Projects />} />
+				<Route path="post-a-job" element={<PostJob />} />
+				<Route path="edit-job/:jobId" element={<PostJob />} />
+				<Route path="projects/:projectId" element={<ProjectDetails />} />
+				<Route path="hire/:candidateId" element={<OfferFlow />} />
 			</Route>
 
 			{/* ================= CLIENTS DASHBOARD ================= */}
