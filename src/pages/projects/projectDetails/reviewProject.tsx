@@ -326,7 +326,7 @@ export const ReviewProject: React.FC = () => {
             icon={<BriefcaseBusiness size={16} className='text-input' />}
             actionLabel='Post a job'
             onAction={() => {
-              navigate("/applicants/projects/post-job");
+              navigate("/clients/post-a-job");
             }}
           />
         ) : (

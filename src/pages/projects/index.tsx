@@ -54,7 +54,7 @@ const Projects = () => {
 
         <button
           className='rounded-lg bg-primary px-4 py-2 flex gap-2 text-sm text-white'
-          onClick={() => navigate("/applicants/projects/post-job")}
+          onClick={() => navigate("/clients/post-a-job")}
         >
           <Plus className='w-4 h-4' /> Post New Job
         </button>
@@ -133,7 +133,7 @@ const Projects = () => {
             title='Oops! you don’t have a job post relating to this category.'
             description='You have no job posting on web development so far. Not to worry, you can put one up and get to work with the varieties of talents over the globe!'
             actionLabel='Post New Job'
-            onAction={() => navigate("/applicants/projects/post-job")}
+            onAction={() => navigate("/clients/post-a-job")}
           />
         ) : (
           filteredProjects.map((project) => (
@@ -153,7 +153,7 @@ export default Projects;
 
 // Routes used while working
 // {
-//   <Route path='projects' element={<Projects />} />
+// <Route path='projects' element={<Projects />} />
 // <Route path='projects/post-job' element={<PostJob />} />
 // <Route path='projects/edit-job/:jobId' element={<PostJob />} />
 // <Route path='projects/:projectId' element={<ProjectDetails />} />

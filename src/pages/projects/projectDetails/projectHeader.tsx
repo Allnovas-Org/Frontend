@@ -18,7 +18,7 @@ export const ProjectHeader = ({ project }: Props) => {
       </div>
 
       <button
-        onClick={() => navigate("/applicants/projects/post-job")}
+        onClick={() => navigate("/clients/post-a-job")}
         className='rounded-lg bg-primary px-4 py-2 text-sm text-white flex items-center'
       >
         <Plus className='w-4 h-4 mr-1' /> Post New Job

@@ -19,8 +19,8 @@ interface Props {
 export const CandidateCard = ({ candidate, isHireView }: Props) => {
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
-  const hirePath = `/applicants/projects/hire/${candidate.id}`;
-  const messagePath = `/applicants/messages/${candidate.id}`;
+  const hirePath = `/clients/hire/${candidate.id}`;
+  const messagePath = `/clients/messages/${candidate.id}`;
   const visibleSkills = candidate.skills.slice(0, 2);
   const remainingSkillsCount = Math.max(
     candidate.skills.length - visibleSkills.length,
