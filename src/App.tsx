@@ -20,6 +20,8 @@ import Offshore from "./pages/offshore";
 import OffshoreNavbar from "./pages/offshore/OffshoreNavbar";
 import OffshoreServices from "./pages/offshoreServices";
 import OffshoreContact from "./pages/offshoreContact";
+import ArticlesPage from "./pages/articles";
+import HelpPage from "./pages/help";
 
 // Auth Pages
 import ProfileCompletion from "./pages/auth/ProfileCompletion/ProfileCompletion";
@@ -69,6 +71,8 @@ function App() {
 				<Route path="saved-jobs" element={<SavedJobs />} />
 				<Route path="work-history/*" element={<WorkHistory />} />
 				<Route path="messages/*" element={<Messages />} />
+				<Route path="articles" element={<ArticlesPage />} />
+				<Route path="help" element={<HelpPage />} />
 				<Route path="community/*" element={<>Community</>} />
 			</Route>
 			{/* ================= CLIENTS DASHBOARD ================= */}

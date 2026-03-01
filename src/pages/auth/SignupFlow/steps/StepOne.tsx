@@ -15,7 +15,7 @@ const StepOne: React.FC<StepOneProps> = ({ userType, setUserType, onNext }) => {
 	};
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex flex-col h-full mt-25">
 			<h1 className="text-3xl font-bold mb-2">Welcome to Allnovas</h1>
 			<p className="text-gray-600 mb-8">
 				Let's get you started with the right setup.
