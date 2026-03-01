@@ -23,7 +23,7 @@ const SignInStepOne: React.FC<SignInStepOneProps> = ({ onNext, onBack }) => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full mt-16">
       {/* Back Button */}
       <button
         onClick={onBack}
