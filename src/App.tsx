@@ -39,6 +39,17 @@ import SpotlightTalents from "./pages/clients/SpotlightTalents/SpotlightTalents"
 import Notifications from "./pages/clients/Notifications/Notifications";
 import SavedTalents from "./pages/clients/SpotlightTalents/SavedTalents";
 
+// Community pages
+import Dashboard from "./pages/community/Dashboard";
+import CommunityHub from "./pages/community/CommunityHub";
+import Followers from "./pages/community/Followers";
+import Categories from "./pages/community/categories/Categories";
+import CommunityPage from "./pages/community/CommunityPage";
+import CommunityLayout from "./layout/Community";
+import SavedPosts from "./pages/community/SavedPosts";
+import CategoryDetail from "./pages/community/categories/CategoryDetail";
+import PostDetail from "./pages/community/categories/PostDetail";
+
 function App() {
 	return (
 		<Routes>
@@ -80,6 +91,17 @@ function App() {
 				<Route index element={<SpotlightTalents />} />
 				<Route path="notifications" element={<Notifications />} />
 				<Route path="saved-talents" element={<SavedTalents />} />
+			</Route>
+			{/* COMMUNITY ROUTES */}
+			<Route path="/community" element={<CommunityLayout />}>
+				<Route index element={<CommunityPage />} />
+				<Route path="dashboard" element={<Dashboard />} />
+				<Route path="categories" element={<Categories />} />
+				<Route path="categories/:slug" element={<CategoryDetail />} />
+				<Route path="categories/:slug/post/:postId" element={<PostDetail />} />
+				<Route path="saved-posts" element={<SavedPosts />} />
+				<Route path="followers" element={<Followers />} />
+				<Route path="hub" element={<CommunityHub />} />
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}
