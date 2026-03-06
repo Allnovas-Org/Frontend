@@ -46,12 +46,6 @@ import ProjectDetails from "./pages/projects/projectDetails";
 import OfferFlow from "./pages/projects/projectDetails/hire";
 
 
-// Client pages
-import Projects from "./pages/projects";
-import PostJob from "./pages/projects/Postjob";
-import ProjectDetails from "./pages/projects/ProjectDetails";
-import OfferFlow from "./pages/projects/projectDetails/hire";
-
 function App() {
 	return (
 		<Routes>
