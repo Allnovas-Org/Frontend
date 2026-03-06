@@ -42,7 +42,7 @@ import SavedTalents from "./pages/clients/SpotlightTalents/SavedTalents";
 // Client pages
 import Projects from "./pages/projects";
 import PostJob from "./pages/projects/Postjob";
-import ProjectDetails from "./pages/projects/ProjectDetails";
+import ProjectDetails from "./pages/projects/projectDetails";
 import OfferFlow from "./pages/projects/projectDetails/hire";
 
 
