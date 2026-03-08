@@ -229,3 +229,112 @@ export interface HelpCategory {
   description: string;
   articleCount: number;
 }
+
+//Projects
+
+export type ProjectStatus = "Active" | "On hold" | "Completed";
+
+export type ProjectCategory =
+  | "Web Development"
+  | "Mobile App Development"
+  | "Writing & Translation"
+  | "Social Media Design & Management"
+  | "Presentation Design"
+  | "Video Editing &Animation";
+
+export interface ClientInfo {
+  country?: string;
+  city?: string;
+  localTime?: string;
+  rating?: number;
+  reviews?: number;
+  jobsPosted?: number;
+  hireRate?: string;
+  openJobs?: number;
+  identityVerified?: boolean;
+  paymentVerified?: boolean;
+  phoneVerified?: boolean;
+}
+
+export interface Project {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  budget: number;
+  budgetType?: string;
+  experienceLevel: string;
+  freelancersNeeded: number;
+  duration: string;
+  applications: number;
+  status: ProjectStatus;
+  categories: ProjectCategory[];
+  postedAt: string;
+  skills: string[];
+  location?: string;
+  qualifications: string[];
+  responsibilities?: string[];
+  client: ClientInfo;
+}
+
+export type ProjectTab = "overview" | "applications" | "hire";
+
+export type ApplicationStatus =
+  | "all"
+  | "shortlisted"
+  | "interviewed"
+  | "messaged"
+  | "hired";
+
+export interface Candidate {
+  id: string;
+  name: string;
+  title: string;
+  avatarUrl: string;
+  country: string;
+  rating: number;
+  hourlyRate: number;
+  successRate: number;
+  completedJobs: number;
+  totalHours: number;
+  earned: string;
+  skills: string[];
+  coverLetter: string;
+  bestMatch?: boolean;
+  hired?: boolean;
+  appliedAt: string;
+  status: ApplicationStatus;
+}
+
+export type OfferType = "fixed" | "milestone";
+
+// export interface Milestone {
+//   id: string;
+//   title: string;
+//   amount: number;
+//   dueDate: string;
+//   description: string;
+// }
+
+// types/payment.ts
+
+export type PaymentMethod = "card" | "bank" | "usdt";
+
+export interface Milestone {
+  id: string;
+  title: string;
+  amount: number;
+  duration: string;
+  description?: string;
+}
+
+export interface OfferSummary {
+  projectTitle: string;
+  freelancerName: string;
+  type: "fixed" | "milestone";
+  deliverables: string;
+  message: string;
+  duration: string;
+  budget: number;
+  milestones: Milestone[];
+}

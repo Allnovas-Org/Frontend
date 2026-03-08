@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import MainLayout from "./layout/MainLayout";
 import ApplicantsLayout from "./layout/ApplicantsLayout";
+import ClientsLayout from "./layout/ClientsLayout";
 
 // Public pages
 import Home from "./pages/home";
@@ -34,21 +35,16 @@ import NotificationsSettings from "./pages/settings/NotificationsSettings";
 import SecuritySettings from "./pages/settings/SecuritySettings";
 import BillingSettings from "./pages/settings/BillingSettings";
 import PaymentMethods from "./pages/settings/PaymentMethods";
-import ClientsLayout from "./layout/ClientsLayout";
 import SpotlightTalents from "./pages/clients/SpotlightTalents/SpotlightTalents";
 import Notifications from "./pages/clients/Notifications/Notifications";
 import SavedTalents from "./pages/clients/SpotlightTalents/SavedTalents";
 
-// Community pages
-import Dashboard from "./pages/community/Dashboard";
-import CommunityHub from "./pages/community/CommunityHub";
-import Followers from "./pages/community/Followers";
-import Categories from "./pages/community/categories/Categories";
-import CommunityPage from "./pages/community/CommunityPage";
-import CommunityLayout from "./layout/Community";
-import SavedPosts from "./pages/community/SavedPosts";
-import CategoryDetail from "./pages/community/categories/CategoryDetail";
-import PostDetail from "./pages/community/categories/PostDetail";
+// Client pages
+import Projects from "./pages/projects";
+import PostJob from "./pages/projects/Postjob";
+import ProjectDetails from "./pages/projects/projectDetails";
+import OfferFlow from "./pages/projects/projectDetails/hire";
+
 
 function App() {
 	return (
@@ -92,16 +88,23 @@ function App() {
 				<Route path="notifications" element={<Notifications />} />
 				<Route path="saved-talents" element={<SavedTalents />} />
 			</Route>
-			{/* COMMUNITY ROUTES */}
-			<Route path="/community" element={<CommunityLayout />}>
-				<Route index element={<CommunityPage />} />
-				<Route path="dashboard" element={<Dashboard />} />
-				<Route path="categories" element={<Categories />} />
-				<Route path="categories/:slug" element={<CategoryDetail />} />
-				<Route path="categories/:slug/post/:postId" element={<PostDetail />} />
-				<Route path="saved-posts" element={<SavedPosts />} />
-				<Route path="followers" element={<Followers />} />
-				<Route path="hub" element={<CommunityHub />} />
+
+			{/* ================= CLIENTS DASHBOARD ================= */}
+			<Route path="clients" element={<ClientsLayout />}>
+				<Route path="projects" element={<Projects />} />
+				<Route path="post-a-job" element={<PostJob />} />
+				<Route path="edit-job/:jobId" element={<PostJob />} />
+				<Route path="projects/:projectId" element={<ProjectDetails />} />
+				<Route path="hire/:candidateId" element={<OfferFlow />} />
+			</Route>
+
+			{/* ================= CLIENTS DASHBOARD ================= */}
+			<Route path="clients" element={<ClientsLayout />}>
+				<Route path="projects" element={<Projects />} />
+				<Route path="post-a-job" element={<PostJob />} />
+				<Route path="edit-job/:jobId" element={<PostJob />} />
+				<Route path="projects/:projectId" element={<ProjectDetails />} />
+				<Route path="hire/:candidateId" element={<OfferFlow />} />
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}
@@ -132,29 +135,6 @@ function App() {
 						<OffshoreNavbar />
 						<OffshoreContact />
 					</>
-				}
-			/>
-
-			{/* Not Found Page */}
-			<Route
-				path="*"
-				element={
-					<div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
-						<h1 className="text-9xl font-extrabold text-gray-300">404</h1>
-						<h2 className="text-3xl font-semibold text-gray-800 mt-4">
-							Page Not Found
-						</h2>
-						<p className="text-gray-500 mt-2 text-center max-w-md">
-							Sorry, the page you're looking for doesn't exist or has been
-							moved.
-						</p>
-						<button
-							onClick={() => window.history.back()}
-							className="mt-8 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-						>
-							Go Back
-						</button>
-					</div>
 				}
 			/>
 		</Routes>
