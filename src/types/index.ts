@@ -183,3 +183,49 @@ export interface PricingTier {
   features: string[];
   price: number;
 }
+
+export interface ArticleCategory {
+  id: string;
+  title: string;
+  subtitle: string;
+  count: number;
+  icon?: string;
+}
+
+export interface ArticleSection {
+  id: string;
+  title: string;
+  content: string;
+  subsections?: ArticleSubsection[];
+}
+
+export interface ArticleSubsection {
+  title: string;
+  content: string;
+}
+
+export interface Article {
+  id: string;
+  title: string;
+  readTime: number;
+  author: string;
+  description?: string;
+  image?: string;
+  category: string;
+  publishedDate?: Date;
+  sections?: ArticleSection[];
+  content?: string;
+  sidebarItems?: SidebarItem[];
+}
+
+export interface SidebarItem {
+  id: string;
+  label: string;
+}
+
+export interface HelpCategory {
+  id: string;
+  title: string;
+  description: string;
+  articleCount: number;
+}
