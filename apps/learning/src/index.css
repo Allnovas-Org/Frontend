@@ -14,15 +14,15 @@
   --color-border-subtle: rgba(79, 74, 82, 0.2);
   --color-border-strong: rgba(106, 13, 173, 0.35);
 
-  --font-sans: "DM Sans", "Segoe UI", sans-serif;
-  --font-display: "Outfit", "Avenir Next", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Inter", sans-serif;
 
   --shadow-soft: 0 16px 40px rgba(6, 6, 9, 0.08);
 }
 
 :root {
-  --font-sans: "DM Sans", "Segoe UI", sans-serif;
-  --font-display: "Outfit", "Avenir Next", sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Inter", sans-serif;
 
   font-family: var(--font-sans);
   line-height: 1.5;
