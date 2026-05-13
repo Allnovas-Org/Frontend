@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/useAuthStore";
 import user from "../../assets/applicants/user.png";
 import {
 	UserRound,
@@ -14,8 +16,6 @@ interface UserDropdownProps {
 	anchorRef: React.RefObject<HTMLButtonElement>;
 	onClose: () => void;
 }
-
-import { useNavigate } from "react-router-dom";
 
 const DropdownButton = ({
 	icon,
@@ -42,6 +42,14 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
+	const currentUser = useAuthStore((s) => s.user);
+	const logout = useAuthStore((s) => s.logout);
+
+	const userName = currentUser
+		? `${currentUser.firstName} ${currentUser.lastName}`
+		: "User";
+	const userType =
+		currentUser?.userType === "freelancer" ? "Freelancer" : "Client";
 	// Use fadeIn when open, fadeOut when closed
 	const dropdownClass = open
 		? "animate-fadeIn absolute right-0 top-12 w-72 bg-white shadow-xl rounded-lg border border-gray-200 z-10 transition-all duration-300"
@@ -73,15 +81,15 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 			content: (
 				<div className="flex items-center gap-3 px-5 py-4 border-b border-input">
 					<img
-						src={user}
-						alt="User"
+						src={currentUser?.avatar || user}
+						alt={userName}
 						className="w-9 h-9 rounded-full object-cover border border-gray-300"
 					/>
 					<div className="flex flex-col">
 						<span className="font-semibold text-gray-900 text-base">
-							John Doe
+							{userName}
 						</span>
-						<span className="text-xs text-gray-500">Freelancer</span>
+						<span className="text-xs text-gray-500">{userType}</span>
 					</div>
 				</div>
 			),
@@ -135,6 +143,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 					<DropdownButton
 						icon={<LogOut className="w-5 h-5 text-gray-dark" />}
 						label="Logout"
+						onClick={() => {
+							logout();
+							navigate("/");
+							onClose();
+						}}
 					/>
 				</div>
 			),

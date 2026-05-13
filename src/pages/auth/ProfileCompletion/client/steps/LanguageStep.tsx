@@ -1,17 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Plus, X } from "lucide-react";
+import { LanguageItem } from "../../../../../services/client-profile.service";
 
-interface Language {
-	id: string;
-	language: string;
-	proficiency: string;
+interface LanguageStepProps {
+	languages: LanguageItem[];
+	setLanguages: React.Dispatch<React.SetStateAction<LanguageItem[]>>;
 }
 
-const LanguageStep: React.FC = () => {
-	const [languages, setLanguages] = useState<Language[]>([
-		{ id: "1", language: "", proficiency: "" },
-	]);
-
+const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) => {
 	const proficiencyLevels = [
 		"Basic",
 		"Conversational",
@@ -37,24 +33,23 @@ const LanguageStep: React.FC = () => {
 	];
 
 	const handleAddLanguage = () => {
-		const newLanguage: Language = {
-			id: Date.now().toString(),
+		const newLanguage: LanguageItem = {
 			language: "",
-			proficiency: "",
+			proficiency_level: "",
 		};
 		setLanguages([...languages, newLanguage]);
 	};
 
-	const handleRemoveLanguage = (id: string) => {
+	const handleRemoveLanguage = (index: number) => {
 		if (languages.length > 1) {
-			setLanguages(languages.filter((lang) => lang.id !== id));
+			setLanguages(languages.filter((_, i) => i !== index));
 		}
 	};
 
-	const handleLanguageChange = (id: string, field: "language" | "proficiency", value: string) => {
+	const handleLanguageChange = (index: number, field: keyof LanguageItem, value: string) => {
 		setLanguages(
-			languages.map((lang) =>
-				lang.id === id ? { ...lang, [field]: value } : lang
+			languages.map((lang, i) =>
+				i === index ? { ...lang, [field]: value } : lang
 			)
 		);
 	};
@@ -83,7 +78,7 @@ const LanguageStep: React.FC = () => {
 				</div>
 
 				{languages.map((lang, index) => (
-					<div key={lang.id} className="grid grid-cols-2 gap-4">
+					<div key={index} className="grid grid-cols-2 gap-4">
 						{/* Language Dropdown */}
 						<div>
 							{index === 0 && (
@@ -94,7 +89,7 @@ const LanguageStep: React.FC = () => {
 							<div className="relative">
 								<select
 									value={lang.language}
-									onChange={(e) => handleLanguageChange(lang.id, "language", e.target.value)}
+									onChange={(e) => handleLanguageChange(index, "language", e.target.value)}
 									className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white appearance-none cursor-pointer"
 									style={{
 										backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
@@ -122,8 +117,8 @@ const LanguageStep: React.FC = () => {
 							)}
 							<div className="relative flex gap-2">
 								<select
-									value={lang.proficiency}
-									onChange={(e) => handleLanguageChange(lang.id, "proficiency", e.target.value)}
+									value={lang.proficiency_level}
+									onChange={(e) => handleLanguageChange(index, "proficiency_level", e.target.value)}
 									className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white appearance-none cursor-pointer"
 									style={{
 										backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
@@ -141,7 +136,7 @@ const LanguageStep: React.FC = () => {
 								</select>
 								{languages.length > 1 && (
 									<button
-										onClick={() => handleRemoveLanguage(lang.id)}
+										onClick={() => handleRemoveLanguage(index)}
 										className="p-3 text-gray-400 hover:text-red-500 transition"
 										aria-label="Remove language"
 									>

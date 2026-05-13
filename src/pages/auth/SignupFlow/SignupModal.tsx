@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import LeftSide from "./LeftSide";
 import RightSide from "./RightSide";
 import SuccessPopup from "./SuccessPopup";
+import { useSignupStore } from "../../../store/useSignupStore";
 
 interface SignupModalProps {
 	isOpen: boolean;
@@ -11,10 +12,15 @@ interface SignupModalProps {
 }
 
 const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
-	const [currentStep, setCurrentStep] = useState(1);
-	const [userType, setUserType] = useState<"freelancer" | "client" | null>(null);
+	// Use persisted state from store instead of local state
+	const currentStep = useSignupStore((s) => s.currentStep);
+	const setCurrentStep = useSignupStore((s) => s.setCurrentStep);
+	const userType = useSignupStore((s) => s.userType);
+	const setUserType = useSignupStore((s) => s.setUserType);
+	const userName = useSignupStore((s) => s.userName);
+	const resetSignupStore = useSignupStore((s) => s.reset);
+
 	const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-	const [userName, setUserName] = useState("");
 	const navigate = useNavigate();
 
 	if (!isOpen) return null;
@@ -23,31 +29,30 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
 		if (currentStep === 6) {
 			setShowSuccessPopup(true);
 		} else {
-			setCurrentStep((prev) => prev + 1);
+			setCurrentStep(currentStep + 1);
 		}
 	};
 
 	const handleBack = () => {
-		setCurrentStep((prev) => prev - 1);
+		// Clear any errors when going back
+		useSignupStore.getState().clearError();
+		setCurrentStep(currentStep - 1);
 	};
 
 	const handleClose = () => {
-		setCurrentStep(1);
-		setUserType(null);
 		setShowSuccessPopup(false);
+		resetSignupStore();
+		sessionStorage.removeItem("signup_password");
 		onClose();
 	};
 
 	const handleContinueToProfile = () => {
-		// Navigate with userType
-		navigate("/profile-completion", { 
-			state: { userType } 
+		navigate("/profile-completion", {
+			state: { userType },
 		});
-		
-		// Close everything
+
 		setShowSuccessPopup(false);
-		setCurrentStep(1);
-		setUserType(null);
+		resetSignupStore();
 		onClose();
 	};
 

@@ -1,13 +1,53 @@
 import React, { useState } from "react";
 import { User, Briefcase, Globe, ShieldCheck } from "lucide-react";
+import {
+	submitClientType,
+	submitCompanyInfo,
+	submitLanguages,
+	submitVerification,
+	LanguageItem,
+} from "../../../../services/client-profile.service";
 import ProfileTypeStep from "./steps/ProfileTypeStep";
 import BasicInfoStep from "./steps/BasicInfoStep";
 import LanguageStep from "./steps/LanguageStep";
 import VerificationStep from "./steps/VerificationStep";
 
+interface BasicInfoData {
+	companyName: string;
+	companySize: string;
+	industry: string;
+	companyWebsite: string;
+	companyDescription: string;
+}
+
+interface VerificationData {
+	profilePhoto: File | null;
+	govId: File | null;
+	addressVerification: File | null;
+	phone: string;
+}
+
 const ClientProfileCompletion = () => {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [profileType, setProfileType] = useState<"individual" | "company" | null>(null);
+	const [basicInfo, setBasicInfo] = useState<BasicInfoData>({
+		companyName: "",
+		companySize: "",
+		industry: "",
+		companyWebsite: "",
+		companyDescription: "",
+	});
+	const [languages, setLanguages] = useState<LanguageItem[]>([
+		{ language: "", proficiency_level: "" },
+	]);
+	const [verification, setVerification] = useState<VerificationData>({
+		profilePhoto: null,
+		govId: null,
+		addressVerification: null,
+		phone: "",
+	});
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [error, setError] = useState("");
 
 	const steps = [
 		{ id: 1, icon: User, label: "Profile Type" },
@@ -16,9 +56,89 @@ const ClientProfileCompletion = () => {
 		{ id: 4, icon: ShieldCheck, label: "Verification" },
 	];
 
-	const handleNext = () => {
-		if (currentStep < 4) {
-			setCurrentStep((prev) => prev + 1);
+	const handleNext = async () => {
+		setIsSubmitting(true);
+		setError("");
+
+		try {
+			// Submit current step data
+			if (currentStep === 1) {
+				if (!profileType) {
+					setError("Please select a client type");
+					setIsSubmitting(false);
+					return;
+				}
+				await submitClientType({ client_type: profileType });
+			} else if (currentStep === 2) {
+				// Validate company info
+				if (!basicInfo.companyName.trim()) {
+					setError("Company name is required");
+					setIsSubmitting(false);
+					return;
+				}
+				if (!basicInfo.companySize) {
+					setError("Company size is required");
+					setIsSubmitting(false);
+					return;
+				}
+				if (!basicInfo.industry) {
+					setError("Industry is required");
+					setIsSubmitting(false);
+					return;
+				}
+				if (!basicInfo.companyDescription.trim()) {
+					setError("Company description is required");
+					setIsSubmitting(false);
+					return;
+				}
+
+				await submitCompanyInfo({
+					company_name: basicInfo.companyName,
+					company_size: parseInt(basicInfo.companySize.split("-")[0]) || 0,
+					company_industry: basicInfo.industry,
+					company_website: basicInfo.companyWebsite,
+					company_description: basicInfo.companyDescription,
+				});
+			} else if (currentStep === 3) {
+				// Validate languages
+				const validLanguages = languages.filter(
+					(lang) => lang.language && lang.proficiency_level
+				);
+
+				if (validLanguages.length === 0) {
+					setError("Please add at least one language");
+					setIsSubmitting(false);
+					return;
+				}
+
+				await submitLanguages({ languages: validLanguages });
+			} else if (currentStep === 4) {
+				// Validate verification
+				if (!verification.phone.trim()) {
+					setError("Phone number is required");
+					setIsSubmitting(false);
+					return;
+				}
+
+				await submitVerification({
+					profile_photo: verification.profilePhoto || undefined,
+					gov_id: verification.govId || undefined,
+					add_ver: verification.addressVerification || undefined,
+					phone: verification.phone,
+				});
+			}
+
+			// Advance to next step
+			if (currentStep < 4) {
+				setCurrentStep((prev) => prev + 1);
+			}
+		} catch (err) {
+			const errorMessage =
+				(err as { message?: string })?.message ||
+				"Failed to save. Please try again.";
+			setError(errorMessage);
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -30,12 +150,12 @@ const ClientProfileCompletion = () => {
 
 	const handleSaveAndContinueLater = () => {
 		console.log("Saving progress...");
-		window.location.href = "/dashboard";
+		window.location.href = "/clients";
 	};
 
 	const handleComplete = () => {
 		console.log("Profile completed!");
-		window.location.href = "/dashboard";
+		window.location.href = "/clients";
 	};
 
 	const progressPercentage = (currentStep / steps.length) * 100;
@@ -91,22 +211,40 @@ const ClientProfileCompletion = () => {
 					</div>
 				</div>
 
+				{/* Error Display */}
+				{error && (
+					<div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+						{error}
+					</div>
+				)}
+
 				{/* Step Content */}
 				<div className="mb-8">
 					{currentStep === 1 && (
-						<ProfileTypeStep 
-							onNext={handleNext}
+						<ProfileTypeStep
 							setProfileType={setProfileType}
 							selectedType={profileType}
 						/>
 					)}
 					{currentStep === 2 && (
-						<BasicInfoStep 
+						<BasicInfoStep
 							profileType={profileType}
+							data={basicInfo}
+							setData={setBasicInfo}
 						/>
 					)}
-					{currentStep === 3 && <LanguageStep />}
-					{currentStep === 4 && <VerificationStep />}
+					{currentStep === 3 && (
+						<LanguageStep
+							languages={languages}
+							setLanguages={setLanguages}
+						/>
+					)}
+					{currentStep === 4 && (
+						<VerificationStep
+							data={verification}
+							setData={setVerification}
+						/>
+					)}
 				</div>
 
 				{/* Navigation Buttons */}
@@ -149,16 +287,18 @@ const ClientProfileCompletion = () => {
 						{currentStep === 4 ? (
 							<button
 								onClick={handleComplete}
-								className="px-4 md:px-5 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition flex items-center gap-2 text-xs md:text-sm"
+								disabled={isSubmitting}
+								className="px-4 md:px-5 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition flex items-center gap-2 text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Complete Profile
+								{isSubmitting ? "Submitting..." : "Complete Profile"}
 							</button>
 						) : (
 							<button
 								onClick={handleNext}
-								className="px-4 md:px-5 py-2 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition flex items-center gap-2 text-xs md:text-sm"
+								disabled={isSubmitting}
+								className="px-4 md:px-5 py-2 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition flex items-center gap-2 text-xs md:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
 							>
-								Next
+								{isSubmitting ? "Saving..." : "Next"}
 								<svg
 									className="w-4 h-4"
 									fill="none"

@@ -2,24 +2,16 @@ import React from "react";
 import { User, Building2 } from "lucide-react";
 
 interface ProfileTypeStepProps {
-	onNext: () => void;
 	setProfileType: (type: "individual" | "company") => void;
 	selectedType: "individual" | "company" | null;
 }
 
 const ProfileTypeStep: React.FC<ProfileTypeStepProps> = ({
-	onNext,
 	setProfileType,
 	selectedType,
 }) => {
 	const handleSelect = (type: "individual" | "company") => {
 		setProfileType(type);
-	};
-
-	const handleNext = () => {
-		if (selectedType) {
-			onNext();
-		}
 	};
 
 	return (

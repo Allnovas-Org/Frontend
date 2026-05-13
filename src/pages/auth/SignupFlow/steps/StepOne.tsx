@@ -1,5 +1,6 @@
 import React from "react";
 import { Users, Briefcase } from "lucide-react";
+import { useSignupStore } from "../../../../store/useSignupStore";
 
 interface StepOneProps {
 	userType: "freelancer" | "client" | null;
@@ -10,6 +11,7 @@ interface StepOneProps {
 const StepOne: React.FC<StepOneProps> = ({ userType, setUserType, onNext }) => {
 	const handleContinue = () => {
 		if (userType) {
+			// userType is already stored in the persisted store via setUserType prop
 			onNext();
 		}
 	};
