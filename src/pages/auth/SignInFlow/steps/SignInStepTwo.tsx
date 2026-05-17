@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { login } from "../../../../services/auth.service";
+import { useAuthStore } from "../../../../store/useAuthStore";
+import { useUIStore } from "../../../../store/useUIStore";
 
 interface LoginStepTwoProps {
 	onNext: () => void;
@@ -9,7 +13,6 @@ interface LoginStepTwoProps {
 }
 
 const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
-	onNext,
 	onBack,
 	onJoin,
 	onForgotPassword,
@@ -19,11 +22,61 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 		password: "",
 	});
 	const [showPassword, setShowPassword] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const navigate = useNavigate();
+	const setAuth = useAuthStore((s) => s.setAuth);
+	const closeSigninModal = useUIStore((s) => s.closeSigninModal);
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (isFormValid) {
-			onNext();
+		if (!isFormValid || isLoading) return;
+
+		setError("");
+		setIsLoading(true);
+
+		try {
+			const response = await login({
+				username: formData.email,
+				password: formData.password,
+			});
+
+			// Determine user type from response
+			const userType = response.user.user_type;
+			const normalizedUserType =
+				userType?.toLowerCase() === "freelancer" ? "freelancer" : "client";
+
+			// Create user object for auth store
+			const user = {
+				id: response.user.id,
+				username: response.user.username,
+				firstName: response.user.first_name,
+				lastName: response.user.last_name,
+				email: response.user.email,
+				userType: normalizedUserType as "client" | "freelancer",
+				createdAt: response.user.created_at,
+			};
+
+			// Store authentication data
+			setAuth(user, response.token);
+
+			// Close the signin modal
+			closeSigninModal();
+
+			// Redirect to appropriate dashboard
+			const dashboardRoute =
+				normalizedUserType === "freelancer" ? "/applicants" : "/clients";
+			navigate(dashboardRoute);
+		} catch (err) {
+			const errorMessage =
+				(err as { response?: { data?: { message?: string } }; message?: string })
+					?.response?.data?.message ||
+				(err as { message?: string })?.message ||
+				"Login failed. Please check your credentials and try again.";
+			setError(errorMessage);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -63,6 +116,13 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				</h1>
 			</div>
 
+			{/* Error Message */}
+			{error && (
+				<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+					{error}
+				</div>
+			)}
+
 			{/* Form */}
 			<form onSubmit={handleSubmit} className="flex-1 flex flex-col">
 				<div className="flex-1 space-y-6">
@@ -79,6 +139,7 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 							}
 							className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent text-gray-700 placeholder:text-gray-400"
 							placeholder="Enter your Email"
+							disabled={isLoading}
 							required
 						/>
 					</div>
@@ -97,6 +158,7 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 								}
 								className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent text-gray-700 placeholder:text-gray-400 pr-12"
 								placeholder="Enter your Password"
+								disabled={isLoading}
 								required
 							/>
 							<button
@@ -127,14 +189,15 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				<div className="mt-8 space-y-4">
 					<button
 						type="submit"
-						disabled={!isFormValid}
-						className={`w-full py-4 rounded-full font-semibold text-white transition-all ${
-							isFormValid
+						disabled={!isFormValid || isLoading}
+						className={`w-full py-4 rounded-full font-semibold text-white transition-all flex items-center justify-center gap-2 ${
+							isFormValid && !isLoading
 								? "bg-[#6A0DAD] hover:bg-[#5a0b92]"
 								: "bg-gray-300 cursor-not-allowed"
 						}`}
 					>
-						Sign in
+						{isLoading && <Loader2 size={18} className="animate-spin" />}
+						{isLoading ? "Signing in..." : "Sign in"}
 					</button>
 
 					{/* Join Link */}

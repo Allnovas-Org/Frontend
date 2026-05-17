@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { User, Wrench, GraduationCap, Globe, CreditCard, ShieldCheck } from "lucide-react";
+import {
+	User,
+	Wrench,
+	GraduationCap,
+	Globe,
+	CreditCard,
+	ShieldCheck,
+} from "lucide-react";
 import SkillsStep from "./steps/SkillsStep";
 import ToolsStep from "./steps/ToolsStep";
 import EducationStep from "./steps/EducationStep";
@@ -33,12 +40,12 @@ const FreelancerProfileCompletion = () => {
 
 	const handleSaveAndContinueLater = () => {
 		console.log("Saving progress...");
-		window.location.href = "/dashboard";
+		window.location.href = "/applicants";
 	};
 
 	const handleComplete = () => {
 		console.log("Profile completed!");
-		window.location.href = "/dashboard";
+		window.location.href = "/applicants";
 	};
 
 	const progressPercentage = (currentStep / steps.length) * 100;

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
+import { useAuthStore } from "./store/useAuthStore";
 
 import MainLayout from "./layout/MainLayout";
 import ApplicantsLayout from "./layout/ApplicantsLayout";
@@ -47,6 +48,16 @@ import OfferFlow from "./pages/projects/projectDetails/hire";
 
 
 function App() {
+	const fetchUser = useAuthStore((s) => s.fetchUser);
+
+	// Fetch user data on app initialization if token exists
+	useEffect(() => {
+		const token = localStorage.getItem("auth-token");
+		if (token) {
+			fetchUser();
+		}
+	}, [fetchUser]);
+
 	return (
 		<Routes>
 			{/* ================= PUBLIC WEBSITE ================= */}
