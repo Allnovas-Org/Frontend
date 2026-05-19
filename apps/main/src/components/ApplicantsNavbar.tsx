@@ -5,6 +5,7 @@ import { Bell, UserRound, Plane, Settings } from "lucide-react";
 import Logo from "../assets/AllNova black 2 (1).png";
 import user from "../assets/applicants/user.png";
 import UserDropdown from "../pages/applicants/UserDropdown";
+import { useAuthStore } from "../store/useAuthStore";
 
 const navLinks = [
 	{ name: "Find Jobs", path: "/applicants" },
@@ -15,6 +16,7 @@ const navLinks = [
 ];
 
 const ApplicantsNavbar: React.FC = () => {
+	const currentUser = useAuthStore((s) => s.user);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -205,8 +207,12 @@ const ApplicantsNavbar: React.FC = () => {
 						style={{ position: "relative", zIndex: 51 }}
 					>
 						<img
-							src={user}
-							alt="User"
+							src={currentUser?.avatar || user}
+							alt={
+								currentUser
+									? `${currentUser.firstName} ${currentUser.lastName}`
+									: "User"
+							}
 							className="w-8 h-8 rounded-full object-cover border border-gray-300"
 						/>
 					</button>

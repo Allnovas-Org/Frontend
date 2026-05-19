@@ -1,25 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
+
+interface BasicInfoData {
+	companyName: string;
+	companySize: string;
+	industry: string;
+	companyWebsite: string;
+	companyDescription: string;
+}
 
 interface BasicInfoStepProps {
 	profileType: "individual" | "company" | null;
+	data: BasicInfoData;
+	setData: React.Dispatch<React.SetStateAction<BasicInfoData>>;
 }
 
-const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
-	const [formData, setFormData] = useState({
-		// Individual fields
-		professionalTitle: "",
-		website: "",
-		about: "",
-		// Company fields
-		companyName: "",
-		companySize: "",
-		industry: "",
-		companyWebsite: "",
-		companyDescription: "",
-	});
-
-	const handleChange = (field: string, value: string) => {
-		setFormData((prev) => ({ ...prev, [field]: value }));
+const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType, data, setData }) => {
+	const handleChange = (field: keyof BasicInfoData, value: string) => {
+		setData((prev) => ({ ...prev, [field]: value }));
 	};
 
 	// Render Individual Client Form
@@ -37,45 +34,11 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
 
 				<div className="space-y-5">
 					{/* Professional Title */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Professional Title
-						</label>
-						<input
-							type="text"
-							value={formData.professionalTitle}
-							onChange={(e) => handleChange("professionalTitle", e.target.value)}
-							placeholder="e.g., Entrepreneur, Marketing Director"
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-						/>
-					</div>
-
-					{/* Personal/Business Website */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							Personal/Business Website <span className="text-gray-400">(optional)</span>
-						</label>
-						<input
-							type="url"
-							value={formData.website}
-							onChange={(e) => handleChange("website", e.target.value)}
-							placeholder="https://www.yourbsite.com"
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-						/>
-					</div>
-
-					{/* About You */}
-					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
-							About You
-						</label>
-						<textarea
-							value={formData.about}
-							onChange={(e) => handleChange("about", e.target.value)}
-							placeholder="Tell freelancers about yourself, and what you are looking to achieve..."
-							rows={6}
-							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
-						/>
+					{/* Note: Individual client profile is not implemented yet */}
+					<div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+						<p className="text-sm text-gray-600">
+							Individual client profile form will be implemented soon.
+						</p>
 					</div>
 				</div>
 			</div>
@@ -102,9 +65,9 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
 					</label>
 					<input
 						type="text"
-						value={formData.companyName}
+						value={data.companyName}
 						onChange={(e) => handleChange("companyName", e.target.value)}
-						placeholder="e.g., Entrepreneur, Marketing Director"
+						placeholder="e.g., Tech Innovations Inc."
 						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
 					/>
 				</div>
@@ -116,7 +79,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
 							Company Size
 						</label>
 						<select
-							value={formData.companySize}
+							value={data.companySize}
 							onChange={(e) => handleChange("companySize", e.target.value)}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white appearance-none cursor-pointer"
 							style={{
@@ -140,7 +103,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
 							Industry
 						</label>
 						<select
-							value={formData.industry}
+							value={data.industry}
 							onChange={(e) => handleChange("industry", e.target.value)}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white appearance-none cursor-pointer"
 							style={{
@@ -171,7 +134,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
 					</label>
 					<input
 						type="url"
-						value={formData.companyWebsite}
+						value={data.companyWebsite}
 						onChange={(e) => handleChange("companyWebsite", e.target.value)}
 						placeholder="https://www.yourbsite.com"
 						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
@@ -184,7 +147,7 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType }) => {
 						Company Description
 					</label>
 					<textarea
-						value={formData.companyDescription}
+						value={data.companyDescription}
 						onChange={(e) => handleChange("companyDescription", e.target.value)}
 						placeholder="Tell freelancers about your company, mission, and what you do..."
 						rows={6}
