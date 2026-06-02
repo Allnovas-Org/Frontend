@@ -16,11 +16,12 @@ jobs:
           npm install
           npm run build
 
-      - name: Deploy to Server
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy files via SFTP
+        uses: wlixcc/SFTP-Deploy-action@v1.2.4
         with:
           server: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.PASSWORD }}
-          local-dir: ./dist/
+          port: 22
+          local-dir: ./dist/*
           server-dir: /var/www/167.86.67.107/
