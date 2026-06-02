@@ -23,5 +23,5 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          local-dir: ./dist/*
-          server-dir: /var/www/167.86.67.107/
+          local_path: './dist/*'
+          remote_path: '/var/www/167.86.67.107/'
