@@ -22,5 +22,5 @@ jobs:
           server: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.PASSWORD }}
-          local-dir: ./build/
+          local-dir: ./dist/
           server-dir: /var/www/167.86.67.107/
