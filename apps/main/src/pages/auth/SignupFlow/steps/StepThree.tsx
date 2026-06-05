@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useSignupStore } from "../../../../store/useSignupStore";
+import { signupWithEmail } from "../../../../services/auth.service";
 
 interface StepThreeProps {
 	onNext: () => void;
@@ -7,13 +9,53 @@ interface StepThreeProps {
 }
 
 const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
-	const [email, setEmail] = useState("");
+	const {
+		email: storedEmail,
+		userType,
+		setEmail: storeEmail,
+		isLoading,
+		setLoading,
+		error,
+		setError,
+		clearError,
+	} = useSignupStore();
+
+	// Restore email from store if it exists (for persistence across refresh)
+	const [email, setEmail] = useState(storedEmail || "");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 
-	const handleContinue = () => {
-		if (email && password) {
+	const handleContinue = async () => {
+		if (!email || !password || !userType) return;
+
+		clearError();
+		setLoading(true);
+
+		try {
+			// Convert userType to API format (capitalize first letter)
+			const apiUserType = userType === "freelancer" ? "Freelancer" : "Client";
+
+			const response = await signupWithEmail({
+				email,
+				user_type: apiUserType,
+			});
+
+			// Store email for the verify step
+			storeEmail(email);
+
+			// Password is held locally — will be sent in StepFive
+			// Store it temporarily in sessionStorage so StepFive can use it
+			sessionStorage.setItem("signup_password", password);
+
+			console.log("Signup email response:", response.message);
 			onNext();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			setError(
+				err.message || "Failed to send verification email. Please try again.",
+			);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -34,6 +76,12 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 				Welcome! How would you like to join?
 			</h1>
 
+			{error && (
+				<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+					{error}
+				</div>
+			)}
+
 			<div className="space-y-6 mb-8">
 				{/* Email Field */}
 				<div>
@@ -46,6 +94,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 						onChange={(e) => setEmail(e.target.value)}
 						placeholder="Enter your Email"
 						className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
+						disabled={isLoading}
 					/>
 				</div>
 
@@ -61,6 +110,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 							onChange={(e) => setPassword(e.target.value)}
 							placeholder="Enter your Password"
 							className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
+							disabled={isLoading}
 						/>
 						<button
 							type="button"
@@ -76,14 +126,15 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 
 			<button
 				onClick={handleContinue}
-				disabled={!isValid}
-				className={`w-full py-4 rounded-full font-semibold transition-all mb-4 ${
-					isValid
+				disabled={!isValid || isLoading}
+				className={`w-full py-4 rounded-full font-semibold transition-all mb-4 flex items-center justify-center gap-2 ${
+					isValid && !isLoading
 						? "bg-[#6A0DAD] text-white hover:bg-[#5a0b92] cursor-pointer"
 						: "bg-gray-200 text-gray-400 cursor-not-allowed"
 				}`}
 			>
-				Continue
+				{isLoading && <Loader2 size={18} className="animate-spin" />}
+				{isLoading ? "Sending verification..." : "Continue"}
 			</button>
 
 			<p className="text-center text-sm text-gray-600">

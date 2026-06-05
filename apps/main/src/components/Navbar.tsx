@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import logo from "../assets/allnova-logo-black.png";
 import user from "../assets/applicants/user.png";
 import { Drawer } from "@mui/material";
@@ -9,6 +9,9 @@ import SignInModal from "../pages/auth/SignInFlow/SignInModal";
 import { Link, useLocation } from "react-router-dom";
 import ActivitiesDrawer from "../pages/applicants/ActivitiesDrawer";
 import UserDropdown from "../pages/applicants/UserDropdown";
+import { useUIStore } from "../store/useUIStore";
+import { useSignupStore } from "../store/useSignupStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 const headerLinks = [
 	{ title: "Find Freelancers", url: "#finalCTASection" },
@@ -27,8 +30,18 @@ const loggedInLinks = [
 ];
 
 const Navbar = () => {
-	const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
-	const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+	// Use UI store for modal state
+	const isSignupModalOpen = useUIStore((s) => s.isSignupModalOpen);
+	const openSignupModal = useUIStore((s) => s.openSignupModal);
+	const closeSignupModal = useUIStore((s) => s.closeSignupModal);
+	const isSignInModalOpen = useUIStore((s) => s.isSigninModalOpen);
+	const openSigninModal = useUIStore((s) => s.openSigninModal);
+	const closeSigninModal = useUIStore((s) => s.closeSigninModal);
+
+	// Check for persisted signup data
+	const signupStore = useSignupStore();
+	const currentUser = useAuthStore((s) => s.user);
+
 	const [openMobileNav, setOpenMobileNav] = useState(false);
 	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -37,6 +50,19 @@ const Navbar = () => {
 
 	const location = useLocation();
 	const isHomePage = location.pathname === "/";
+
+	// Auto-reopen signup modal if signup is in progress
+	useEffect(() => {
+		// Check if there's persisted signup data (user was in the middle of signup)
+		const hasSignupInProgress =
+			signupStore.currentStep > 1 ||
+			signupStore.email ||
+			signupStore.userType;
+
+		if (hasSignupInProgress && !isSignupModalOpen) {
+			openSignupModal();
+		}
+	}, []); // Run only once on mount
 	const isMainContent =
 		location.pathname === "/jobs" ||
 		location.pathname === "/saved-jobs" ||
@@ -192,13 +218,13 @@ const Navbar = () => {
 
 							<div className="inline-flex gap-x-4 items-center">
 								<button
-									onClick={() => setIsSignInModalOpen(true)}
+									onClick={openSigninModal}
 									className="bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition"
 								>
 									Sign in
 								</button>
 								<button
-									onClick={() => setIsSignupModalOpen(true)}
+									onClick={openSignupModal}
 									className="bg-primary text-white px-[1.2rem] py-[0.45rem] rounded-full hover:bg-primary/70 transition"
 								>
 									Join
@@ -252,8 +278,12 @@ const Navbar = () => {
 									style={{ position: "relative", zIndex: 51 }}
 								>
 									<img
-										src={user}
-										alt="User"
+										src={currentUser?.avatar || user}
+										alt={
+											currentUser
+												? `${currentUser.firstName} ${currentUser.lastName}`
+												: "User"
+										}
 										className="w-8 h-8 rounded-full object-cover border border-gray-300"
 									/>
 								</button>
@@ -296,7 +326,7 @@ const Navbar = () => {
 
 					{isHomePage ? (
 						<button
-							onClick={() => setIsSignupModalOpen(true)}
+							onClick={openSignupModal}
 							className="bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition"
 						>
 							Join
@@ -330,7 +360,7 @@ const Navbar = () => {
 							<div className="flex flex-col gap-y-3">
 								<button
 									onClick={() => {
-										setIsSignInModalOpen(true);
+										openSigninModal();
 										setOpenMobileNav(false);
 									}}
 									className="bg-transparent text-primary px-[1.2rem] py-[0.45rem] rounded-md hover:text-primary/80 transition border border-primary"
@@ -339,7 +369,7 @@ const Navbar = () => {
 								</button>
 								<button
 									onClick={() => {
-										setIsSignupModalOpen(true);
+										openSignupModal();
 										setOpenMobileNav(false);
 									}}
 									className="bg-primary text-white px-[1.2rem] py-[0.45rem] rounded-full hover:bg-primary/70 transition"
@@ -355,13 +385,13 @@ const Navbar = () => {
 			{/* Signup Modal */}
 			<SignupModal
 				isOpen={isSignupModalOpen}
-				onClose={() => setIsSignupModalOpen(false)}
+				onClose={closeSignupModal}
 			/>
 
 			{/* SignIn Modal */}
 			<SignInModal
 				isOpen={isSignInModalOpen}
-				onClose={() => setIsSignInModalOpen(false)}
+				onClose={closeSigninModal}
 			/>
 		</>
 	);

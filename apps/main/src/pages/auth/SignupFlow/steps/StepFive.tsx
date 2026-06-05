@@ -1,5 +1,7 @@
 import React, { useState, useCallback } from "react";
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useSignupStore } from "../../../../store/useSignupStore";
+import { createPassword } from "../../../../services/auth.service";
 
 interface StepFiveProps {
 	onNext: () => void;
@@ -7,18 +9,45 @@ interface StepFiveProps {
 }
 
 const StepFive: React.FC<StepFiveProps> = ({ onNext, onBack }) => {
-	const [password, setPassword] = useState("");
-	const [confirmPassword, setConfirmPassword] = useState("");
+	// Pre-fill with password from StepThree if available
+	const storedPassword = sessionStorage.getItem("signup_password") || "";
+
+	const [password, setPassword] = useState(storedPassword);
+	const [confirmPassword, setConfirmPassword] = useState(storedPassword);
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-	const handleContinue = useCallback(() => {
-		if (password && confirmPassword && password === confirmPassword) {
-			onNext();
-		}
-	}, [password, confirmPassword, onNext]);
+	const { isLoading, setLoading, error, setError, clearError } =
+		useSignupStore();
 
-	const isValid = password.length > 0 && confirmPassword.length > 0 && password === confirmPassword;
+	const handleContinue = useCallback(async () => {
+		if (!password || !confirmPassword || password !== confirmPassword) return;
+
+		clearError();
+		setLoading(true);
+
+		try {
+			await createPassword({
+				password,
+				confirm_password: confirmPassword,
+			});
+
+			// Clean up temporary password storage
+			sessionStorage.removeItem("signup_password");
+
+			onNext();
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (err: any) {
+			setError(err.message || "Failed to set password. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	}, [password, confirmPassword, onNext, clearError, setLoading, setError]);
+
+	const isValid =
+		password.length > 0 &&
+		confirmPassword.length > 0 &&
+		password === confirmPassword;
 
 	return (
 		<div className="flex flex-col h-full">
@@ -31,9 +60,13 @@ const StepFive: React.FC<StepFiveProps> = ({ onNext, onBack }) => {
 				<span>Back</span>
 			</button>
 
-			<h1 className="text-3xl font-bold mb-8">
-				Create a Secure Password
-			</h1>
+			<h1 className="text-3xl font-bold mb-8">Create a Secure Password</h1>
+
+			{error && (
+				<div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+					{error}
+				</div>
+			)}
 
 			<div className="space-y-6 mb-8">
 				{/* Password Field */}
@@ -48,6 +81,7 @@ const StepFive: React.FC<StepFiveProps> = ({ onNext, onBack }) => {
 							onChange={(e) => setPassword(e.target.value)}
 							placeholder="Enter your Password"
 							className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
+							disabled={isLoading}
 						/>
 						<button
 							type="button"
@@ -72,29 +106,36 @@ const StepFive: React.FC<StepFiveProps> = ({ onNext, onBack }) => {
 							onChange={(e) => setConfirmPassword(e.target.value)}
 							placeholder="Re-enter your Password"
 							className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent pr-12"
+							disabled={isLoading}
 						/>
 						<button
 							type="button"
 							onClick={() => setShowConfirmPassword(!showConfirmPassword)}
 							className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
-							aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+							aria-label={
+								showConfirmPassword ? "Hide password" : "Show password"
+							}
 						>
 							{showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
 						</button>
 					</div>
+					{password && confirmPassword && password !== confirmPassword && (
+						<p className="mt-1 text-xs text-red-500">Passwords do not match</p>
+					)}
 				</div>
 			</div>
 
 			<button
 				onClick={handleContinue}
-				disabled={!isValid}
-				className={`w-full py-4 rounded-full font-semibold transition-all ${
-					isValid
+				disabled={!isValid || isLoading}
+				className={`w-full py-4 rounded-full font-semibold transition-all flex items-center justify-center gap-2 ${
+					isValid && !isLoading
 						? "bg-[#6A0DAD] text-white hover:bg-[#5a0b92] cursor-pointer"
 						: "bg-gray-200 text-gray-400 cursor-not-allowed"
 				}`}
 			>
-				Continue
+				{isLoading && <Loader2 size={18} className="animate-spin" />}
+				{isLoading ? "Setting password..." : "Continue"}
 			</button>
 		</div>
 	);
