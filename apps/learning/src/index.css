@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #6A0DAD;
+  --color-secondary: #4F4A52;
+
+  --color-neutral-900: #191A20;
+  --color-neutral-950: #060609;
+  --color-neutral-975: #0B0013;
+  --color-neutral-980: #1A1B1F;
+  --color-surface: #FBFBFB;
+  --color-surface-soft: #FEF4E7;
+  --color-surface-elevated: #ffffff;
+  --color-border-subtle: rgba(79, 74, 82, 0.2);
+  --color-border-strong: rgba(106, 13, 173, 0.35);
+
+  --font-sans: "DM Sans", "Segoe UI", sans-serif;
+  --font-display: "Outfit", "Avenir Next", sans-serif;
+
+  --shadow-soft: 0 16px 40px rgba(6, 6, 9, 0.08);
+}
+
+:root {
+  --font-sans: "DM Sans", "Segoe UI", sans-serif;
+  --font-display: "Outfit", "Avenir Next", sans-serif;
+
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--color-neutral-900);
+  background: "#ffffff";
+  font-family: "Inter", "sans-serif";
+  /* background:
+    radial-gradient(circle at 0% 0%, rgba(106, 13, 173, 0.08), transparent 40%),
+    radial-gradient(circle at 100% 100%, rgba(254, 244, 231, 1), transparent 35%),
+    var(--color-surface); */
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@keyframes partner-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.partner-marquee {
+  overflow: hidden;
+}
+
+.partner-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: partner-scroll 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-marquee-track {
+    animation: none;
+  }
+}

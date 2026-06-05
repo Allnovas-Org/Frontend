@@ -1,19 +1,13 @@
 {
-  "name": "repo",
+  "name": "@repo/main",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": [
-    "apps/*"
-  ],
   "scripts": {
-    "dev": "npm run dev --workspace=apps/main",
-    "dev:main": "npm run dev --workspace=apps/main",
-    "dev:learning": "npm run dev --workspace=apps/learning",
-    "build": "npm run build --workspaces",
-    "build:main": "npm run build --workspace=apps/main",
-    "build:learning": "npm run build --workspace=apps/learning",
-    "lint": "npm run lint --workspaces"
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -23,7 +17,7 @@
     "@mui/material": "^7.3.5",
     "@tanstack/react-query": "^5.91.3",
     "@tanstack/react-query-devtools": "^5.91.3",
-    "axios": "^1.15.1",
+    "axios": "^1.13.6",
     "formik": "^2.4.9",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.547.0",
