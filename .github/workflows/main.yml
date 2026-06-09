@@ -15,7 +15,7 @@ jobs:
       VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
       
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0 
 
@@ -31,5 +31,5 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          local_path: './dist/*'
+          local_path: './apps/main/dist/*'
           remote_path: '/var/www/167.86.67.107/'
