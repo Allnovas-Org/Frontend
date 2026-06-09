@@ -31,5 +31,5 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          local_path: './apps/main/learning/*'
+          local_path: './apps/learning/dist/*'
           remote_path: '/var/www/learn/'
