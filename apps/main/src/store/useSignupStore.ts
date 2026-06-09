@@ -34,7 +34,14 @@ export const useSignupStore = create<SignupState>()(
 			error: "",
 
 			setEmail: (email) => set({ email }),
-			setUserType: (type) => set({ userType: type }),
+			setUserType: (type) => {
+				if (type) {
+					localStorage.setItem("user-type", type);
+				} else {
+					localStorage.removeItem("user-type");
+				}
+				set({ userType: type });
+			},
 			setUserName: (name) => set({ userName: name }),
 			setCurrentStep: (step) => set({ currentStep: step }),
 			setLoading: (loading) => set({ isLoading: loading }),

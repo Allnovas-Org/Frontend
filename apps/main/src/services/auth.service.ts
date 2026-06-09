@@ -62,7 +62,7 @@ export interface LoginResponse {
 		first_name: string;
 		last_name: string;
 		created_at: string;
-		user_type?: "Client" | "Freelancer"; // Backend may include this
+		user_type?: "Client" | "Freelancer"; // TODO: backend must include this for correct dashboard routing
 	};
 	token: string;
 	expires_at: string;
