@@ -19,16 +19,9 @@ jobs:
         with:
           fetch-depth: 0 
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: ./apps/learning/package-lock.json
-
       - name: Install and Build
         run: |
-          npm ci # Uses package-lock.json strictly for cleaner, deterministic builds
+          npm install
           npm run build
 
       - name: Deploy files via SFTP
@@ -38,5 +31,5 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          local_path: './apps/learning/dist'
+          local_path: './apps/main/learning/*'
           remote_path: '/var/www/learn/'
