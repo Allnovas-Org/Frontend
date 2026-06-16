@@ -42,13 +42,8 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				password: formData.password,
 			});
 
-			// user_type is not returned by the login endpoint yet.
-			// Fall back to the value saved to localStorage during signup.
-			// TODO: remove fallback once backend includes user_type in the login response.
-			const savedUserType = localStorage.getItem("user-type") as "freelancer" | "client" | null;
-			const userType = response.user.user_type?.toLowerCase() ?? savedUserType ?? "freelancer";
 			const normalizedUserType: "freelancer" | "client" =
-				userType === "freelancer" ? "freelancer" : "client";
+				response.user_role === "Freelancer" ? "freelancer" : "client";
 
 			// Create user object for auth store
 			const user = {
@@ -61,9 +56,7 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				createdAt: response.user.created_at,
 			};
 
-			// Store authentication data and clear the signup-time type hint
 			setAuth(user, response.token);
-			localStorage.removeItem("user-type");
 
 			// Close the signin modal
 			closeSigninModal();
