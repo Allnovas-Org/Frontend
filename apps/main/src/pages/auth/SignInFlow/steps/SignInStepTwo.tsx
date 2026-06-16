@@ -42,10 +42,8 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				password: formData.password,
 			});
 
-			// Determine user type from response
-			const userType = response.user.user_type;
-			const normalizedUserType =
-				userType?.toLowerCase() === "freelancer" ? "freelancer" : "client";
+			const normalizedUserType: "freelancer" | "client" =
+				response.user_role === "Freelancer" ? "freelancer" : "client";
 
 			// Create user object for auth store
 			const user = {
@@ -58,7 +56,6 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				createdAt: response.user.created_at,
 			};
 
-			// Store authentication data
 			setAuth(user, response.token);
 
 			// Close the signin modal

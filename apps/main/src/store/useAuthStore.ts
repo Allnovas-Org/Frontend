@@ -68,7 +68,7 @@ export const useAuthStore = create<AuthState>()(
               firstName: userData.first_name,
               lastName: userData.last_name,
               email: userData.email,
-              userType: get().user?.userType || 'freelancer', // Keep existing or default
+              userType: userData.user_role === 'Freelancer' ? 'freelancer' : 'client',
               createdAt: userData.created_at,
             },
             isAuthenticated: true,

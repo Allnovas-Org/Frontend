@@ -45,6 +45,7 @@ export interface CurrentUserResponse {
 	first_name: string;
 	last_name: string;
 	created_at: string;
+	user_role: "Freelancer" | "Client";
 }
 
 // Logout
@@ -62,10 +63,11 @@ export interface LoginResponse {
 		first_name: string;
 		last_name: string;
 		created_at: string;
-		user_type?: "Client" | "Freelancer"; // Backend may include this
+		user_role: "Freelancer" | "Client";
 	};
 	token: string;
 	expires_at: string;
+	user_role: "Freelancer" | "Client";
 }
 
 // Signup
