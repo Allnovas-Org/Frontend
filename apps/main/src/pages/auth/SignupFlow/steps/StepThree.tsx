@@ -13,6 +13,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 		email: storedEmail,
 		userType,
 		setEmail: storeEmail,
+		setSignupToken,
 		isLoading,
 		setLoading,
 		error,
@@ -42,6 +43,11 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 
 			// Store email for the verify step
 			storeEmail(email);
+
+			// Store the numeric token for display in StepFour
+			if (response.token) {
+				setSignupToken(response.token);
+			}
 
 			// Password is held locally — will be sent in StepFive
 			// Store it temporarily in sessionStorage so StepFive can use it

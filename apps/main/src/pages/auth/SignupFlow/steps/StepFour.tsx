@@ -22,6 +22,8 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 	const {
 		email,
 		userType,
+		signupToken,
+		setSignupToken,
 		isLoading,
 		setLoading,
 		error,
@@ -105,7 +107,10 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 		inputRefs.current[0]?.focus();
 
 		try {
-			await signupWithEmail({ email, user_type: userType });
+			const response = await signupWithEmail({ email, user_type: userType });
+			if (response.token) {
+				setSignupToken(response.token);
+			}
 			setResendMessage("A new code has been sent to your email.");
 		} catch (err: any) {
 			setError(err.message || "Failed to resend code. Please try again.");
@@ -126,6 +131,13 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 				<ArrowLeft size={20} />
 				<span>Back</span>
 			</button>
+
+			{signupToken && (
+				<div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+					<p className="text-sm text-gray-600 mb-2">Temporary verification code:</p>
+					<p className="text-2xl font-bold text-blue-600 font-mono">{signupToken}</p>
+				</div>
+			)}
 
 			<h1 className="text-3xl font-bold mb-2">
 				Great, Let's verify your email

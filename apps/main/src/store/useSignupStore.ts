@@ -7,6 +7,7 @@ interface SignupState {
 	userType: "freelancer" | "client" | null;
 	userName: string;
 	currentStep: number;
+	signupToken: number | null;
 
 	// Loading & error state
 	isLoading: boolean;
@@ -17,6 +18,7 @@ interface SignupState {
 	setUserType: (type: "freelancer" | "client" | null) => void;
 	setUserName: (name: string) => void;
 	setCurrentStep: (step: number) => void;
+	setSignupToken: (token: number | null) => void;
 	setLoading: (loading: boolean) => void;
 	setError: (error: string) => void;
 	clearError: () => void;
@@ -30,6 +32,7 @@ export const useSignupStore = create<SignupState>()(
 			userType: null,
 			userName: "",
 			currentStep: 1,
+			signupToken: null,
 			isLoading: false,
 			error: "",
 
@@ -37,6 +40,7 @@ export const useSignupStore = create<SignupState>()(
 			setUserType: (type) => set({ userType: type }),
 			setUserName: (name) => set({ userName: name }),
 			setCurrentStep: (step) => set({ currentStep: step }),
+			setSignupToken: (token) => set({ signupToken: token }),
 			setLoading: (loading) => set({ isLoading: loading }),
 			setError: (error) => set({ error }),
 			clearError: () => set({ error: "" }),
@@ -46,6 +50,7 @@ export const useSignupStore = create<SignupState>()(
 					userType: null,
 					userName: "",
 					currentStep: 1,
+					signupToken: null,
 					isLoading: false,
 					error: "",
 				}),
