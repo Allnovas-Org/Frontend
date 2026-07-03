@@ -170,7 +170,7 @@ const ApplicantsNavbar: React.FC = () => {
 			{/* Desktop Navigation */}
 			<nav className="hidden lg:flex justify-between items-center px-6 lg:px-19 py-3">
 				{/* Logo */}
-				<div className="flex items-center">
+				<div className="flex items-center cursor-default">
 					<img src={Logo} alt="AllNova Logo" className="h-8 w-auto" />
 				</div>
 				{/* Center Nav Links */}
@@ -257,15 +257,23 @@ const ApplicantsNavbar: React.FC = () => {
 					></span>
 				</button>
 				{/* Logo - CENTER */}
-				<div className="absolute left-1/2 transform -translate-x-1/2">
+				<div className="absolute left-1/2 transform -translate-x-1/2 cursor-default">
 					<img src={Logo} alt="AllNova Logo" className="h-10 w-auto" />
 				</div>
 				{/* User - RIGHT */}
-				<img
-					src="/images/user-photo.jpg"
-					alt="User"
-					className="w-8 h-8 rounded-full object-cover"
-				/>
+				<button
+					type="button"
+					className="focus:outline-none"
+					ref={userBtnRef}
+					onClick={() => setIsDropdownOpen((v) => !v)}
+					aria-label="Open user menu"
+				>
+					<img
+						src={currentUser?.avatar || user}
+						alt={currentUser ? `${currentUser.firstName} ${currentUser.lastName}` : "User"}
+						className="w-8 h-8 rounded-full object-cover border border-gray-300"
+					/>
+				</button>
 			</nav>
 
 			{/* Mobile Menu Dropdown */}
