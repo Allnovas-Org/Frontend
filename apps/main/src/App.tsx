@@ -98,19 +98,7 @@ function App() {
 				<Route index element={<SpotlightTalents />} />
 				<Route path="notifications" element={<Notifications />} />
 				<Route path="saved-talents" element={<SavedTalents />} />
-			</Route>
-
-			{/* ================= CLIENTS DASHBOARD ================= */}
-			<Route path="clients" element={<ClientsLayout />}>
-				<Route path="projects" element={<Projects />} />
-				<Route path="post-a-job" element={<PostJob />} />
-				<Route path="edit-job/:jobId" element={<PostJob />} />
-				<Route path="projects/:projectId" element={<ProjectDetails />} />
-				<Route path="hire/:candidateId" element={<OfferFlow />} />
-			</Route>
-
-			{/* ================= CLIENTS DASHBOARD ================= */}
-			<Route path="clients" element={<ClientsLayout />}>
+				<Route path="messages/*" element={<Messages />} />
 				<Route path="projects" element={<Projects />} />
 				<Route path="post-a-job" element={<PostJob />} />
 				<Route path="edit-job/:jobId" element={<PostJob />} />
