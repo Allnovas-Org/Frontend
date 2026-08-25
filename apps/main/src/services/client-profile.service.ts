@@ -6,6 +6,12 @@ export interface ClientTypePayload {
 	client_type: "individual" | "company";
 }
 
+export interface IndividualInfoPayload {
+	title: string;
+	website: string;
+	about_you: string;
+}
+
 export interface CompanyInfoPayload {
 	company_name: string;
 	company_size: number;
@@ -44,15 +50,36 @@ export interface GenericSuccessResponse {
 export const submitClientType = async (
 	payload: ClientTypePayload,
 ): Promise<GenericSuccessResponse> => {
+	const formData = new FormData();
+	formData.append("client_type", payload.client_type);
+
 	const response = await api.post<GenericSuccessResponse>(
 		"/client/signin-flow/type-of-client/",
+		formData,
+		{
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		},
+	);
+	return response.data;
+};
+
+/**
+ * Step 2a: Submit individual client information
+ */
+export const submitIndividualInfo = async (
+	payload: IndividualInfoPayload,
+): Promise<GenericSuccessResponse> => {
+	const response = await api.post<GenericSuccessResponse>(
+		"/client/signin-flow/individual-info/",
 		payload,
 	);
 	return response.data;
 };
 
 /**
- * Step 2: Submit company/basic information
+ * Step 2b: Submit company/basic information
  */
 export const submitCompanyInfo = async (
 	payload: CompanyInfoPayload,

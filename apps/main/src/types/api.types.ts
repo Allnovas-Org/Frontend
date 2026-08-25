@@ -3,7 +3,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  userType: 'client' | 'freelancer';
+  userType: 'Client' | 'Freelancer';
   profilePhoto?: string;
   createdAt: string;
 }
@@ -18,7 +18,7 @@ export interface SignupData {
   name: string;
   email: string;
   password: string;
-  userType: 'client' | 'freelancer';
+  userType: 'Client' | 'Freelancer';
 }
 
 export interface AuthResponse {

@@ -5,9 +5,9 @@ import FreelancerProfileCompletion from "./freelancer/FreelancerProfileCompletio
 
 const ProfileCompletion: React.FC = () => {
 	const location = useLocation();
-	const userType = location.state?.userType as "client" | "freelancer" | null;
+	const userType = location.state?.userType as "Client" | "Freelancer" | null;
 
-	if (userType === "freelancer") {
+	if (userType === "Freelancer") {
 		return <FreelancerProfileCompletion />;
 	}
 

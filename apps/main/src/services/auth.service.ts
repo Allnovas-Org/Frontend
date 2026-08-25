@@ -105,7 +105,7 @@ export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
  * Logout current user
  */
 export const logoutUser = async (): Promise<LogoutResponse> => {
-	const response = await api.post<LogoutResponse>("/auth/logout/");
+	const response = await api.post<LogoutResponse>("/auth/logoutall/");
 	return response.data;
 };
 

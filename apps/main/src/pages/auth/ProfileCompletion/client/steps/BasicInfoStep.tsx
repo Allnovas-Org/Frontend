@@ -6,6 +6,9 @@ interface BasicInfoData {
 	industry: string;
 	companyWebsite: string;
 	companyDescription: string;
+	title: string;
+	website: string;
+	aboutYou: string;
 }
 
 interface BasicInfoStepProps {
@@ -33,12 +36,46 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ profileType, data, setDat
 				</div>
 
 				<div className="space-y-5">
-					{/* Professional Title */}
-					{/* Note: Individual client profile is not implemented yet */}
-					<div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-						<p className="text-sm text-gray-600">
-							Individual client profile form will be implemented soon.
-						</p>
+					{/* Title */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-2">
+							Title
+						</label>
+						<input
+							type="text"
+							value={data.title}
+							onChange={(e) => handleChange("title", e.target.value)}
+							placeholder="e.g., Product Manager, Freelance Designer"
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+						/>
+					</div>
+
+					{/* Website */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-2">
+							Website <span className="text-gray-400">(optional)</span>
+						</label>
+						<input
+							type="url"
+							value={data.website}
+							onChange={(e) => handleChange("website", e.target.value)}
+							placeholder="https://www.yourwebsite.com"
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
+						/>
+					</div>
+
+					{/* About You */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-2">
+							About You
+						</label>
+						<textarea
+							value={data.aboutYou}
+							onChange={(e) => handleChange("aboutYou", e.target.value)}
+							placeholder="Tell freelancers about yourself, your projects, and what you're looking for..."
+							rows={6}
+							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent resize-none"
+						/>
 					</div>
 				</div>
 			</div>

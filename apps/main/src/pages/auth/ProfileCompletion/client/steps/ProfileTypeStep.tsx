@@ -57,7 +57,7 @@ const ProfileTypeStep: React.FC<ProfileTypeStepProps> = ({
 								)}
 							</div>
 							<p className="text-xs text-gray-600 mb-2">
-								I'm an individual looking to hire freelancers for personal projects, side businesses, or small ventures.
+								I'm an Individual looking to hire freelancers for personal projects, side businesses, or small ventures.
 							</p>
 							<div className="flex flex-wrap gap-1.5">
 								<span className="px-2.5 py-0.5 bg-gray-100 text-gray-700 rounded-full text-[0.65rem] font-medium">
@@ -108,7 +108,7 @@ const ProfileTypeStep: React.FC<ProfileTypeStepProps> = ({
 								)}
 							</div>
 							<p className="text-xs text-gray-600 mb-2">
-								I represent a company, organization, or agency looking to hire freelancers for business projects.
+								I represent a Company, organization, or agency looking to hire freelancers for business projects.
 							</p>
 							<div className="flex flex-wrap gap-1.5">
 								<span className="px-2.5 py-0.5 bg-gray-100 text-gray-700 rounded-full text-[0.65rem] font-medium">

@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 interface SignupState {
 	// Collected data across steps
 	email: string;
-	userType: "freelancer" | "client" | null;
+	userType: "Freelancer" | "Client" | null;
 	userName: string;
 	currentStep: number;
 	signupToken: number | null;
@@ -15,7 +15,7 @@ interface SignupState {
 
 	// Actions
 	setEmail: (email: string) => void;
-	setUserType: (type: "freelancer" | "client" | null) => void;
+	setUserType: (type: "Freelancer" | "Client" | null) => void;
 	setUserName: (name: string) => void;
 	setCurrentStep: (step: number) => void;
 	setSignupToken: (token: number | null) => void;

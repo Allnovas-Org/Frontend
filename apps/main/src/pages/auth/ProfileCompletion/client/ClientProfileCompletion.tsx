@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { User, Briefcase, Globe, ShieldCheck } from "lucide-react";
 import {
 	submitClientType,
+	submitIndividualInfo,
 	submitCompanyInfo,
 	submitLanguages,
 	submitVerification,
@@ -18,6 +19,9 @@ interface BasicInfoData {
 	industry: string;
 	companyWebsite: string;
 	companyDescription: string;
+	title: string;
+	website: string;
+	aboutYou: string;
 }
 
 interface VerificationData {
@@ -36,6 +40,9 @@ const ClientProfileCompletion = () => {
 		industry: "",
 		companyWebsite: "",
 		companyDescription: "",
+		title: "",
+		website: "",
+		aboutYou: "",
 	});
 	const [languages, setLanguages] = useState<LanguageItem[]>([
 		{ language: "", proficiency_level: "" },
@@ -70,35 +77,52 @@ const ClientProfileCompletion = () => {
 				}
 				await submitClientType({ client_type: profileType });
 			} else if (currentStep === 2) {
-				// Validate company info
-				if (!basicInfo.companyName.trim()) {
-					setError("Company name is required");
-					setIsSubmitting(false);
-					return;
+				if (profileType === "individual") {
+					if (!basicInfo.title.trim()) {
+						setError("Title is required");
+						setIsSubmitting(false);
+						return;
+					}
+					if (!basicInfo.aboutYou.trim()) {
+						setError("About you is required");
+						setIsSubmitting(false);
+						return;
+					}
+					await submitIndividualInfo({
+						title: basicInfo.title,
+						website: basicInfo.website,
+						about_you: basicInfo.aboutYou,
+					});
+				} else {
+					// Validate company info
+					if (!basicInfo.companyName.trim()) {
+						setError("Company name is required");
+						setIsSubmitting(false);
+						return;
+					}
+					if (!basicInfo.companySize) {
+						setError("Company size is required");
+						setIsSubmitting(false);
+						return;
+					}
+					if (!basicInfo.industry) {
+						setError("Industry is required");
+						setIsSubmitting(false);
+						return;
+					}
+					if (!basicInfo.companyDescription.trim()) {
+						setError("Company description is required");
+						setIsSubmitting(false);
+						return;
+					}
+					await submitCompanyInfo({
+						company_name: basicInfo.companyName,
+						company_size: parseInt(basicInfo.companySize.split("-")[0]) || 0,
+						company_industry: basicInfo.industry,
+						company_website: basicInfo.companyWebsite,
+						company_description: basicInfo.companyDescription,
+					});
 				}
-				if (!basicInfo.companySize) {
-					setError("Company size is required");
-					setIsSubmitting(false);
-					return;
-				}
-				if (!basicInfo.industry) {
-					setError("Industry is required");
-					setIsSubmitting(false);
-					return;
-				}
-				if (!basicInfo.companyDescription.trim()) {
-					setError("Company description is required");
-					setIsSubmitting(false);
-					return;
-				}
-
-				await submitCompanyInfo({
-					company_name: basicInfo.companyName,
-					company_size: parseInt(basicInfo.companySize.split("-")[0]) || 0,
-					company_industry: basicInfo.industry,
-					company_website: basicInfo.companyWebsite,
-					company_description: basicInfo.companyDescription,
-				});
 			} else if (currentStep === 3) {
 				// Validate languages
 				const validLanguages = languages.filter(

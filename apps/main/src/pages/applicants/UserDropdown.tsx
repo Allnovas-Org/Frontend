@@ -48,8 +48,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 	const userName = currentUser
 		? `${currentUser.firstName} ${currentUser.lastName}`
 		: "User";
-	const userType =
-		currentUser?.userType === "freelancer" ? "Freelancer" : "Client";
+	const userType = currentUser?.userType ?? "Client";
 	// Use fadeIn when open, fadeOut when closed
 	const dropdownClass = open
 		? "animate-fadeIn absolute right-0 top-12 w-72 bg-white shadow-xl rounded-lg border border-gray-200 z-10 transition-all duration-300"
