@@ -3,7 +3,8 @@ import type {
   UpcomingEventSummary,
   TrendingTopic,
   SuggestedConnection,
-} from "../../../../shared/types/community";
+} from "@/shared/types/community";
+
 
 const author = {
   name: "Chisom Ibe . Freelancer",

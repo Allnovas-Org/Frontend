@@ -1,4 +1,5 @@
-import type { ShowcaseItem } from "../../../../../shared/types/community";
+import type { ShowcaseItem } from "@/shared/types/community";
+
 
 export const editorsPicks = [
   {
@@ -6,21 +7,21 @@ export const editorsPicks = [
     imageUrl: "https://images.unsplash.com/photo-1607346256330-dee7af15f7c5?w=400",
     title: "Fintech Dashboard Redesign",
     authorName: "Chisom Ibe",
-    likeCount: "1.2k",
+    likeCount: 1200,
   },
   {
     id: "ep2",
     imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400",
     title: "Brand Identity for StartupXYZ",
     authorName: "Amara Folake",
-    likeCount: "894",
+    likeCount: 894,
   },
   {
     id: "ep3",
     imageUrl: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400",
     title: "Mobile Banking App",
     authorName: "Tunde Nwosu",
-    likeCount: "743",
+    likeCount: 743,
   },
 ];
 
@@ -33,8 +34,8 @@ export const featuredShowcaseItem: ShowcaseItem = {
   authorName: "Chisom Ibe",
   authorInitials: "CI",
   authorColorClass: "bg-violet-100 text-[#7800B3]",
-  likeCount: "1.2k",
-  viewCount: "8.4k",
+  likeCount: 1200,
+  viewCount: 8400,
 };
 
 export const showcaseGridItems: ShowcaseItem[] = [
@@ -45,7 +46,7 @@ export const showcaseGridItems: ShowcaseItem[] = [
     authorName: "Amara F.",
     authorInitials: "AF",
     authorColorClass: "bg-emerald-100 text-emerald-700",
-    likeCount: "894",
+    likeCount: 894,
   },
   {
     id: "grid-2",
@@ -54,7 +55,7 @@ export const showcaseGridItems: ShowcaseItem[] = [
     authorName: "Tunde N.",
     authorInitials: "TN",
     authorColorClass: "bg-orange-100 text-orange-700",
-    likeCount: "743",
+    likeCount: 743,
   },
   {
     id: "grid-3",
@@ -64,7 +65,7 @@ export const showcaseGridItems: ShowcaseItem[] = [
     authorName: "Kemi A.",
     authorInitials: "KA",
     authorColorClass: "bg-blue-100 text-blue-700",
-    likeCount: "621",
+    likeCount: 621,
   },
   {
     id: "grid-4",
@@ -74,7 +75,7 @@ export const showcaseGridItems: ShowcaseItem[] = [
     authorName: "Obinna E.",
     authorInitials: "OE",
     authorColorClass: "bg-rose-100 text-rose-700",
-    likeCount: "512",
+    likeCount: 512,
   },
 ];
 

@@ -6,7 +6,7 @@ interface EditorsPick {
   imageUrl: string;
   title: string;
   authorName: string;
-  likeCount: string;
+  likeCount: number;
 }
 
 interface EditorsPicksSectionProps {
@@ -28,7 +28,7 @@ export function EditorsPicksSection({ picks }: EditorsPicksSectionProps) {
             imageUrl={pick.imageUrl}
             title={pick.title}
             authorName={pick.authorName}
-            likeCount={pick.likeCount}
+            likeCount={String(pick.likeCount)}
           />
         ))}
       </div>
