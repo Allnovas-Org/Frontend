@@ -4,6 +4,7 @@ import { User, Briefcase, Globe, ShieldCheck } from "lucide-react";
 import {
   submitClientType,
   submitCompanyInfo,
+  submitIndividualInfo,
   submitLanguages,
   submitVerification,
   LanguageItem,
@@ -19,6 +20,9 @@ interface BasicInfoData {
   industry: string;
   companyWebsite: string;
   companyDescription: string;
+  professionalTitle: string;
+  personalWebsite: string;
+  aboutYou: string;
 }
 
 interface VerificationData {
@@ -39,6 +43,9 @@ const ClientProfileCompletion = () => {
     industry: "",
     companyWebsite: "",
     companyDescription: "",
+    professionalTitle: "",
+    personalWebsite: "",
+    aboutYou: "",
   });
   const [languages, setLanguages] = useState<LanguageItem[]>([
     { language: "", proficiency_level: "" },
@@ -75,35 +82,55 @@ const ClientProfileCompletion = () => {
         }
         await submitClientType({ client_type: profileType });
       } else if (currentStep === 2) {
-        // Validate company info
-        if (!basicInfo.companyName.trim()) {
-          setError("Company name is required");
-          setIsSubmitting(false);
-          return;
-        }
-        if (!basicInfo.companySize) {
-          setError("Company size is required");
-          setIsSubmitting(false);
-          return;
-        }
-        if (!basicInfo.industry) {
-          setError("Industry is required");
-          setIsSubmitting(false);
-          return;
-        }
-        if (!basicInfo.companyDescription.trim()) {
-          setError("Company description is required");
-          setIsSubmitting(false);
-          return;
-        }
+        if (profileType === "individual") {
+          // Validate individual info
+          if (!basicInfo.professionalTitle.trim()) {
+            setError("Professional title is required");
+            setIsSubmitting(false);
+            return;
+          }
+          if (!basicInfo.aboutYou.trim()) {
+            setError("Please tell us about yourself");
+            setIsSubmitting(false);
+            return;
+          }
 
-        await submitCompanyInfo({
-          company_name: basicInfo.companyName,
-          company_size: parseInt(basicInfo.companySize.split("-")[0]) || 0,
-          company_industry: basicInfo.industry,
-          company_website: basicInfo.companyWebsite,
-          company_description: basicInfo.companyDescription,
-        });
+          await submitIndividualInfo({
+            professional_title: basicInfo.professionalTitle,
+            personal_website: basicInfo.personalWebsite,
+            about_you: basicInfo.aboutYou,
+          });
+        } else {
+          // Validate company info
+          if (!basicInfo.companyName.trim()) {
+            setError("Company name is required");
+            setIsSubmitting(false);
+            return;
+          }
+          if (!basicInfo.companySize) {
+            setError("Company size is required");
+            setIsSubmitting(false);
+            return;
+          }
+          if (!basicInfo.industry) {
+            setError("Industry is required");
+            setIsSubmitting(false);
+            return;
+          }
+          if (!basicInfo.companyDescription.trim()) {
+            setError("Company description is required");
+            setIsSubmitting(false);
+            return;
+          }
+
+          await submitCompanyInfo({
+            company_name: basicInfo.companyName,
+            company_size: parseInt(basicInfo.companySize.split("-")[0]) || 0,
+            company_industry: basicInfo.industry,
+            company_website: basicInfo.companyWebsite,
+            company_description: basicInfo.companyDescription,
+          });
+        }
       } else if (currentStep === 3) {
         // Validate languages
         const validLanguages = languages.filter(
