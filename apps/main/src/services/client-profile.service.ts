@@ -14,6 +14,12 @@ export interface CompanyInfoPayload {
 	company_description: string;
 }
 
+export interface IndividualInfoPayload {
+	professional_title: string;
+	personal_website: string;
+	about_you: string;
+}
+
 export interface LanguageItem {
 	language: string;
 	proficiency_level: string;
@@ -52,13 +58,26 @@ export const submitClientType = async (
 };
 
 /**
- * Step 2: Submit company/basic information
+ * Step 2 (company path): Submit company/basic information
  */
 export const submitCompanyInfo = async (
 	payload: CompanyInfoPayload,
 ): Promise<GenericSuccessResponse> => {
 	const response = await api.post<GenericSuccessResponse>(
 		"/client/signin-flow/company-info/",
+		payload,
+	);
+	return response.data;
+};
+
+/**
+ * Step 2 (individual path): Submit individual basic information
+ */
+export const submitIndividualInfo = async (
+	payload: IndividualInfoPayload,
+): Promise<GenericSuccessResponse> => {
+	const response = await api.post<GenericSuccessResponse>(
+		"/client/signin-flow/individual-info/",
 		payload,
 	);
 	return response.data;
