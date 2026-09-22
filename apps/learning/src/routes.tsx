@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { DashboardLayout } from './layout/DashboardLayout.tsx'
 import { PublicLayout } from './layout/PublicLayout.tsx'
 
@@ -31,7 +31,7 @@ export const appRouter = createBrowserRouter([
           Component: (await import('./pages/HowItWorksPage.tsx')).HowItWorksPage,
         }),
       },
-      
+
       {
         path: 'about',
         lazy: async () => ({
@@ -77,30 +77,123 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         lazy: async () => ({
-          Component:
-            (await import('./pages/dashboard/DashboardOverviewPage.tsx'))
-              .DashboardOverviewPage,
+          Component: (await import('./pages/dashboard/overview/index.tsx'))
+            .DashboardOverviewPage,
         }),
       },
       {
-        path: 'my-courses',
+        path: 'career-map',
         lazy: async () => ({
-          Component:
-            (await import('./pages/dashboard/MyCoursesPage.tsx')).MyCoursesPage,
+          Component: (await import('./pages/dashboard/career-map/index.tsx'))
+            .CareerMapPage,
         }),
       },
       {
-        path: 'progress',
+        path: 'course',
         lazy: async () => ({
-          Component:
-            (await import('./pages/dashboard/ProgressPage.tsx')).ProgressPage,
+          Component: (await import('./pages/dashboard/course/index.tsx'))
+            .CoursePage,
+        }),
+      },
+      {
+        path: 'bookmark',
+        lazy: async () => ({
+          Component: (await import('./pages/dashboard/bookmark/index.tsx'))
+            .BookmarkPage,
+        }),
+      },
+      {
+        path: 'community',
+        lazy: async () => ({
+          Component: (await import('./pages/dashboard/community/CommunityLayout.tsx'))
+            .CommunityLayout,
+        }),
+        children: [
+          { index: true, element: <Navigate to="feed" replace /> },
+          {
+            path: 'feed',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/feed/index.tsx'))
+                .CommunityFeedPage,
+            }),
+          },
+          {
+            path: 'trending',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/trending/index.tsx'))
+                .CommunityTrendingPage,
+            }),
+          },
+          {
+            path: 'opportunities',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/opportunities/index.tsx'))
+                .CommunityOpportunitiesPage,
+            }),
+          },
+          {
+            path: 'showcase',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/showcase/index.tsx'))
+                .CommunityShowcasePage,
+            }),
+          },
+          {
+            path: 'saved',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/saved/index.tsx'))
+                .CommunitySavedPage,
+            }),
+          },
+          {
+            path: 'events',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/events/index.tsx'))
+                .CommunityEventsPage,
+            }),
+          },
+          {
+            path: 'mentorship',
+            lazy: async () => ({
+              Component: (await import('./pages/dashboard/community/mentorship/index.tsx'))
+                .CommunityMentorshipPage,
+            }),
+          },
+        ],
+      },
+      {
+        path: 'internship',
+        lazy: async () => ({
+          Component: (await import('./pages/dashboard/internship/index.tsx'))
+            .InternshipPage,
+        }),
+      },
+      {
+        path: 'earning',
+        lazy: async () => ({
+          Component: (await import('./pages/dashboard/earning/index.tsx'))
+            .EarningPage,
+        }),
+      },
+      {
+        path: 'message',
+        lazy: async () => ({
+          Component: (await import('./pages/dashboard/message/index.tsx'))
+            .MessagePage,
+        }),
+      },
+      {
+        path: 'profile',
+        lazy: async () => ({
+          Component: (await import('./pages/dashboard/profile/index.tsx'))
+            .ProfilePage,
         }),
       },
       {
         path: 'settings',
         lazy: async () => ({
-          Component:
-            (await import('./pages/dashboard/SettingsPage.tsx')).SettingsPage,
+          Component: (await import('./pages/dashboard/settings/index.tsx'))
+            .SettingsPage,
         }),
       },
     ],

@@ -6,18 +6,18 @@ export interface ClientTypePayload {
 	client_type: "individual" | "company";
 }
 
-export interface IndividualInfoPayload {
-	title: string;
-	website: string;
-	about_you: string;
-}
-
 export interface CompanyInfoPayload {
 	company_name: string;
 	company_size: number;
 	company_industry: string;
 	company_website: string;
 	company_description: string;
+}
+
+export interface IndividualInfoPayload {
+	professional_title: string;
+	personal_website: string;
+	about_you: string;
 }
 
 export interface LanguageItem {
@@ -66,26 +66,26 @@ export const submitClientType = async (
 };
 
 /**
- * Step 2a: Submit individual client information
- */
-export const submitIndividualInfo = async (
-	payload: IndividualInfoPayload,
-): Promise<GenericSuccessResponse> => {
-	const response = await api.post<GenericSuccessResponse>(
-		"/client/signin-flow/individual-info/",
-		payload,
-	);
-	return response.data;
-};
-
-/**
- * Step 2b: Submit company/basic information
+ * Step 2 (company path): Submit company/basic information
  */
 export const submitCompanyInfo = async (
 	payload: CompanyInfoPayload,
 ): Promise<GenericSuccessResponse> => {
 	const response = await api.post<GenericSuccessResponse>(
 		"/client/signin-flow/company-info/",
+		payload,
+	);
+	return response.data;
+};
+
+/**
+ * Step 2 (individual path): Submit individual basic information
+ */
+export const submitIndividualInfo = async (
+	payload: IndividualInfoPayload,
+): Promise<GenericSuccessResponse> => {
+	const response = await api.post<GenericSuccessResponse>(
+		"/client/signin-flow/individual-info/",
 		payload,
 	);
 	return response.data;
