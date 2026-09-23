@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import logo from "../assets/allnova-logo-black.png";
 import { Drawer } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -6,6 +6,10 @@ import { Bell } from "lucide-react";
 import SignupModal from "../pages/auth/SignupFlow/SignupModal";
 import SignInModal from "../pages/auth/SignInFlow/SignInModal";
 import { Link } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import UserDropdown from "../pages/applicants/UserDropdown";
+import NotificationModal from "../pages/clients/Notifications/modals/NotificationModal";
+import user from "../assets/applicants/user.png";
 
 const clientHeaderLinks = [
 	{ title: "Messages", url: "/clients/messages" },
@@ -16,6 +20,10 @@ const clientHeaderLinks = [
 
 const ClientNavbar: React.FC = () => {
 	const [openMobileNav, setOpenMobileNav] = useState(false);
+	const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+	const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+	const userBtnRef = useRef<HTMLButtonElement>(null);
+	const currentUser = useAuthStore((s) => s.user);
 
 	const toggleMobileNav = () => {
 		setOpenMobileNav(!openMobileNav);
@@ -43,8 +51,37 @@ const ClientNavbar: React.FC = () => {
 						))}
 					</ul>
 
-					<div className="inline-flex gap-4 items-center">
-						
+					<div className="inline-flex gap-4 items-center relative">
+						<button
+							type="button"
+							className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 focus:outline-none"
+							aria-label="Open notifications"
+							onClick={() => setIsNotificationOpen(true)}
+						>
+							<Bell className="w-4 h-4 text-gray-500" />
+						</button>
+						<button
+							type="button"
+							className="focus:outline-none"
+							ref={userBtnRef}
+							onClick={() => setIsDropdownOpen((v) => !v)}
+							aria-label="Open user menu"
+						>
+							<img
+								src={currentUser?.avatar || user}
+								alt={
+									currentUser
+										? `${currentUser.firstName} ${currentUser.lastName}`
+										: "User"
+								}
+								className="w-8 h-8 rounded-full object-cover border border-gray-300"
+							/>
+						</button>
+						<UserDropdown
+							open={isDropdownOpen}
+							anchorRef={userBtnRef}
+							onClose={() => setIsDropdownOpen(false)}
+						/>
 					</div>
 				</nav>
 
@@ -61,6 +98,33 @@ const ClientNavbar: React.FC = () => {
 
 					<div className="cursor-default">
 						<img src={logo} alt="AllNova Logo" className="w-[120px]" />
+					</div>
+
+					<div className="inline-flex gap-3 items-center relative">
+						<button
+							type="button"
+							className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 focus:outline-none"
+							aria-label="Open notifications"
+							onClick={() => setIsNotificationOpen(true)}
+						>
+							<Bell className="w-4 h-4 text-gray-500" />
+						</button>
+						<button
+							type="button"
+							className="focus:outline-none"
+							onClick={() => setIsDropdownOpen((v) => !v)}
+							aria-label="Open user menu"
+						>
+							<img
+								src={currentUser?.avatar || user}
+								alt={
+									currentUser
+										? `${currentUser.firstName} ${currentUser.lastName}`
+										: "User"
+								}
+								className="w-8 h-8 rounded-full object-cover border border-gray-300"
+							/>
+						</button>
 					</div>
 				</nav>
 
@@ -85,6 +149,12 @@ const ClientNavbar: React.FC = () => {
 						</ul>
 					</div>
 				</Drawer>
+
+				{/* Notifications */}
+				<NotificationModal
+					open={isNotificationOpen}
+					onClose={() => setIsNotificationOpen(false)}
+				/>
 			</header>
 		</>
 	);

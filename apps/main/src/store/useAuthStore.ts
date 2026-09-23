@@ -8,7 +8,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
-  userType: 'client' | 'freelancer';
+  userType: 'Client' | 'Freelancer';
   avatar?: string;
   createdAt?: string;
 }
@@ -68,7 +68,7 @@ export const useAuthStore = create<AuthState>()(
               firstName: userData.first_name,
               lastName: userData.last_name,
               email: userData.email,
-              userType: userData.user_role === 'Freelancer' ? 'freelancer' : 'client',
+              userType: userData.user_role,
               createdAt: userData.created_at,
             },
             isAuthenticated: true,

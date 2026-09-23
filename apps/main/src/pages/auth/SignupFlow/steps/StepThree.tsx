@@ -23,22 +23,19 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 
 	// Restore email from store if it exists (for persistence across refresh)
 	const [email, setEmail] = useState(storedEmail || "");
-	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
+	// const [password, setPassword] = useState("");
+	// const [showPassword, setShowPassword] = useState(false);
 
 	const handleContinue = async () => {
-		if (!email || !password || !userType) return;
+		if (!email || !userType) return;
 
 		clearError();
 		setLoading(true);
 
 		try {
-			// Convert userType to API format (capitalize first letter)
-			const apiUserType = userType === "freelancer" ? "Freelancer" : "Client";
-
 			const response = await signupWithEmail({
 				email,
-				user_type: apiUserType,
+				user_type: userType,
 			});
 
 			// Store email for the verify step
@@ -51,11 +48,11 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 
 			// Password is held locally — will be sent in StepFive
 			// Store it temporarily in sessionStorage so StepFive can use it
-			sessionStorage.setItem("signup_password", password);
+			// sessionStorage.setItem("signup_password", password);
 
 			console.log("Signup email response:", response.message);
 			onNext();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (err: any) {
 			setError(
 				err.message || "Failed to send verification email. Please try again.",
@@ -65,7 +62,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 		}
 	};
 
-	const isValid = email.length > 0 && password.length > 0;
+	// const isValid = email.length > 0 && password.length > 0;
 
 	return (
 		<div className="flex flex-col h-full">
@@ -105,7 +102,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 				</div>
 
 				{/* Password Field */}
-				<div>
+				{/* <div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">
 						Password
 					</label>
@@ -127,14 +124,14 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 							{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
 						</button>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
 			<button
 				onClick={handleContinue}
-				disabled={!isValid || isLoading}
+				disabled={isLoading}
 				className={`w-full py-4 rounded-full font-semibold transition-all mb-4 flex items-center justify-center gap-2 ${
-					isValid && !isLoading
+					!isLoading
 						? "bg-[#6A0DAD] text-white hover:bg-[#5a0b92] cursor-pointer"
 						: "bg-gray-200 text-gray-400 cursor-not-allowed"
 				}`}

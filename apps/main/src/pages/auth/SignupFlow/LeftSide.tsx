@@ -8,8 +8,8 @@ import StepSix from "./steps/StepSix";
 
 interface LeftSideProps {
 	currentStep: number;
-	userType: "freelancer" | "client" | null;
-	setUserType: (type: "freelancer" | "client" | null) => void;
+	userType: "Freelancer" | "Client" | null;
+	setUserType: (type: "Freelancer" | "Client" | null) => void;
 	onNext: () => void;
 	onBack: () => void;
 }

@@ -42,9 +42,6 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				password: formData.password,
 			});
 
-			const normalizedUserType: "freelancer" | "client" =
-				response.user_role === "Freelancer" ? "freelancer" : "client";
-
 			// Create user object for auth store
 			const user = {
 				id: response.user.id,
@@ -52,7 +49,7 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 				firstName: response.user.first_name,
 				lastName: response.user.last_name,
 				email: response.user.email,
-				userType: normalizedUserType as "client" | "freelancer",
+				userType: response.user_role as "Client" | "Freelancer",
 				createdAt: response.user.created_at,
 			};
 
@@ -63,7 +60,7 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 
 			// Redirect to appropriate dashboard
 			const dashboardRoute =
-				normalizedUserType === "freelancer" ? "/applicants" : "/clients";
+				response.user_role === "Freelancer" ? "/applicants" : "/clients";
 			navigate(dashboardRoute);
 		} catch (err) {
 			const errorMessage =

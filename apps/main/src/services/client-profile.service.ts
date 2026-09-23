@@ -50,9 +50,17 @@ export interface GenericSuccessResponse {
 export const submitClientType = async (
 	payload: ClientTypePayload,
 ): Promise<GenericSuccessResponse> => {
+	const formData = new FormData();
+	formData.append("client_type", payload.client_type);
+
 	const response = await api.post<GenericSuccessResponse>(
 		"/client/signin-flow/type-of-client/",
-		payload,
+		formData,
+		{
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		},
 	);
 	return response.data;
 };
