@@ -18,6 +18,23 @@ const getFreelancerStats = (list: typeof freelancers) => [
   },
 ];
 
+type Freelancer = {
+  id: number;
+  name: string;
+  email: string;
+  skill: string;
+  projects: number;
+  status: string;
+  phone?: string;
+  location?: string;
+  jobTitle?: string;
+  experience?: string;
+  hourlyRate?: string;
+  availability?: string;
+  skills?: string[];
+  bio?: string;
+  photo?: string | null;
+};
 const freelancers = [
   {
     id: 1,
@@ -70,7 +87,7 @@ export default function Freelancers() {
   
 const [selectedFreelancerId, setSelectedFreelancerId] = useState<number | null>(null);
 
-const [freelancerList, setFreelancerList] = useState(freelancers);
+const [freelancerList, setFreelancerList] = useState<Freelancer[]>(freelancers);
 const [showAddFreelancer, setShowAddFreelancer] = useState(false);
 const [showPostProject, setShowPostProject] = useState(false);
 const [newProject, setNewProject] = useState({
@@ -107,12 +124,22 @@ const [newFreelancer, setNewFreelancer] = useState({
   name: "",
   email: "",
   skill: "",
+  phone: "",
+location: "",
+jobTitle: "",
+experience: "",
+hourlyRate: "",
+availability: "Full Time",
+skills: [] as string[],
+bio: "",
 });
+ const [freelancerPhoto, setFreelancerPhoto] = useState<string | null>(null);
+
 const handleAddFreelancer = () => {
-  if (
+ if (  
     !newFreelancer.name.trim() ||
     !newFreelancer.email.trim() ||
-    !newFreelancer.skill.trim()
+    newFreelancer.skills.length === 0
   ) {
     alert("Please fill in all fields.");
     return;
@@ -124,18 +151,35 @@ const handleAddFreelancer = () => {
       id: Date.now(),
       name: newFreelancer.name.trim(),
       email: newFreelancer.email.trim(),
-      skill: newFreelancer.skill.trim(),
+      skill: newFreelancer.skills.join(", "),
+      phone: newFreelancer.phone.trim(),
+location: newFreelancer.location.trim(),
+jobTitle: newFreelancer.jobTitle.trim(),
+experience: newFreelancer.experience.trim(),
+hourlyRate: newFreelancer.hourlyRate.trim(),
+availability: newFreelancer.availability,
+skills: newFreelancer.skills,
+bio: newFreelancer.bio.trim(),
+photo: freelancerPhoto,
       projects: 0,
       status: "Pending",
     },
   ]);
 
-  setNewFreelancer({
-    name: "",
-    email: "",
-    skill: "",
-  });
-
+ setNewFreelancer({
+  name: "",
+  email: "",
+  skill: "",
+  phone: "",
+  location: "",
+  jobTitle: "",
+  experience: "",
+  hourlyRate: "",
+  availability: "Full Time",
+  skills: [] as string[],
+  bio: "",
+});
+setFreelancerPhoto(null);
   setShowAddFreelancer(false);
 };
 
@@ -561,7 +605,7 @@ if (!matchesCategory) {
 })()}
 {showAddFreelancer && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-    <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+    <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-gray-900">
           Add Freelancer
@@ -581,6 +625,36 @@ if (!matchesCategory) {
       </p>
 
       <div className="mt-6 space-y-4">
+        <div className="mb-4">
+  <label className="block text-sm font-semibold text-gray-800">
+    Profile Picture
+  </label>
+  <label className="mt-3 inline-block cursor-pointer rounded-lg bg-purple-700 px-5 py-3 text-sm font-medium text-white">
+  + Upload Photo
+  <input
+    type="file"
+    accept="image/png,image/jpeg,image/gif"
+    className="hidden"
+    onChange={(e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setFreelancerPhoto(URL.createObjectURL(file));
+      }
+    }}
+  />
+</label>
+{freelancerPhoto && (
+  <img
+    src={freelancerPhoto}
+    alt="Freelancer profile preview"
+    className="mt-3 h-24 w-24 rounded-full border border-gray-300 object-cover"
+  />
+)}
+</div>
+        <h3 className="mt-6 mb-4 text-base font-semibold text-gray-900">
+  Personal Information
+</h3>
+       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <input
           type="text"
           placeholder="Full name"
@@ -600,7 +674,82 @@ onChange={(e) =>
 }
           className="w-full rounded-lg border border-gray-300 p-3"
         />
+        </div>
 
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <input
+    type="tel"
+    placeholder="Phone number"
+    value={newFreelancer.phone}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, phone: e.target.value })
+    }
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+
+  <input
+    type="text"
+    placeholder="Location"
+    value={newFreelancer.location}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, location: e.target.value })
+    }
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+</div>
+<h3 className="mt-6 mb-4 text-base font-semibold text-gray-900">
+  Professional Information
+</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <input
+    type="text"
+    placeholder="Job title"
+    value={newFreelancer.jobTitle}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, jobTitle: e.target.value })
+    }
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+
+  <input
+    type="text"
+    placeholder="Years of experience"
+    value={newFreelancer.experience}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, experience: e.target.value })
+    }
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+</div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <input
+    type="text"
+    placeholder="Hourly rate (USD)"
+    value={newFreelancer.hourlyRate}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, hourlyRate: e.target.value })
+    }
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+
+  <select
+    value={newFreelancer.availability}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, availability: e.target.value })
+    }
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+  >
+    <option value="Full Time">Full Time</option>
+    <option value="Part Time">Part Time</option>
+    <option value="Internship">Internship</option>
+    <option value="Contract">Contract</option>
+    <option value="Freelance">Freelance</option>
+  </select>
+</div>
+        <h3 className="mt-6 mb-3 text-sm font-semibold text-gray-900">
+  Skills
+</h3>
+        <div className="flex items-center gap-3">
         <input
           type="text"
           placeholder="Skill"
@@ -610,6 +759,60 @@ onChange={(e) =>
 }
           className="w-full rounded-lg border border-gray-300 p-3"
         />
+        <button
+  type="button"
+  onClick={() => {
+    const skill = newFreelancer.skill.trim();
+    if (!skill || newFreelancer.skills.includes(skill)) return;
+
+    setNewFreelancer({
+      ...newFreelancer,
+      skills: [...newFreelancer.skills, skill],
+      skill: "",
+    });
+  }}
+  className="rounded-lg bg-purple-700 px-5 py-3 text-white"
+>
+  Add
+</button>
+</div>
+<div className="mt-3 flex flex-wrap gap-2">
+  {newFreelancer.skills.map((skill) => (
+    <span
+      key={skill}
+      className="inline-flex items-center gap-2 rounded-lg bg-purple-100 px-3 py-2 text-sm text-purple-700"
+    >
+      {skill}
+      <button
+        type="button"
+        onClick={() =>
+          setNewFreelancer({
+            ...newFreelancer,
+            skills: newFreelancer.skills.filter((item) => item !== skill),
+          })
+        }
+        className="font-bold text-purple-700"
+        aria-label={`Remove ${skill}`}
+      >
+        ×
+      </button>
+    </span>
+  ))}
+</div>
+<div className="mt-6">
+  <label className="mb-2 block text-sm font-medium text-gray-800">
+    Bio
+  </label>
+  <textarea
+    placeholder="Tell us about yourself..."
+    value={newFreelancer.bio}
+    onChange={(e) =>
+      setNewFreelancer({ ...newFreelancer, bio: e.target.value })
+    }
+    rows={4}
+    className="w-full resize-y rounded-lg border border-gray-300 px-4 py-3"
+  />
+</div>
 
         <div className="flex justify-end gap-3">
           <button
@@ -634,7 +837,7 @@ onChange={(e) =>
 )}
     {showPostProject && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+    <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
       <h2 className="text-xl font-bold text-gray-900">
         {editingProjectId !== null ? "Edit Project" : "Post New Project"}
       </h2>
@@ -644,33 +847,118 @@ onChange={(e) =>
   ? "Update the details of this project."
   : "Enter the details of the new project."}
       </p>
+      <h3 className="mt-6 mb-4 text-base font-semibold text-gray-900">
+  Project Details
+</h3>
+      <label className="mb-2 block text-sm font-medium text-gray-700">
+  Project Title *
+</label>
       <input
   type="text"
-  placeholder="Project title"
+  placeholder="e.g., Mobile App UI/UX Design"
   value={newProject.title}
 onChange={(e) =>
   setNewProject({ ...newProject, title: e.target.value })
 }
   className="mt-5 w-full rounded-lg border border-gray-300 px-4 py-3"
 />
+<div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div>
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Company Name
+  </label>
+  <input
+    type="text"
+    placeholder="Your company name"
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+</div>
+<div>
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Category *
+  </label>
+  <select
+    defaultValue=""
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+  >
+    <option value="" disabled>Select category</option>
+    <option value="Designer">Designer</option>
+    <option value="Developer">Developer</option>
+    <option value="Content Writer">Content Writer</option>
+    <option value="Web Designer">Web Designer</option>
+    <option value="Mobile Designer">Mobile Designer</option>
+    <option value="Brand Designer">Brand Designer</option>
+    <option value="Freelance">Freelance</option>
+  </select>
+</div>
+</div>
+<h3 className="mt-8 mb-4 text-base font-semibold text-gray-900">
+  Budget &amp; Timeline
+</h3>
+<div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div>
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Budget Type *
+  </label>
+  <select
+    defaultValue="Fixed price"
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+  >
+    <option value="Fixed price">Fixed price</option>
+    <option value="Hourly rate">Hourly rate</option>
+  </select>
+</div>
+<div>
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Budget Amount (USD) *
+  </label>
+  <input
+    type="number"
+    min="0"
+    placeholder="$5,000"
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+</div>
+</div>
+<div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+  <div>
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Project Duration
+  </label>
+  <input
+    type="text"
+    placeholder="e.g., 2-3 months"
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+</div>
+<div>
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Location Preference
+  </label>
+  <select
+    defaultValue=""
+    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+  >
+    <option value="" disabled>
+      Select location preference
+    </option>
+    <option value="Remote">Remote</option>
+    <option value="Hybrid">Hybrid</option>
+    <option value="On-site">On-site</option>
+  </select>
+</div>
+</div>
+<label className="mt-6 mb-2 block text-sm font-medium text-gray-700">
+  Project Description *
+</label>
 <textarea
-  placeholder="Project description"
+  placeholder="Describe your project in detail. What are you looking to achieve? What is the scope of work?"
   value={newProject.description}
 onChange={(e) =>
   setNewProject({ ...newProject, description: e.target.value })
 }
   rows={4}
   className="mt-4 w-full rounded-lg border border-gray-300 px-4 py-3"
-/>
-<input
-  type="number"
-  placeholder="Project budget ($)"
-  min="0"
-  className="mt-4 w-full rounded-lg border border-gray-300 px-4 py-3"
-  value={newProject.budget}
-onChange={(e) =>
-  setNewProject({ ...newProject, budget: e.target.value })
-}
 />
 <div className="mt-4">
   <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -687,12 +975,70 @@ onChange={(e) =>
   />
 </div>
 
+<div className="mt-6">
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Requirements
+  </label>
+  <div className="flex items-center gap-2">
+  <input
+    type="text"
+    placeholder="Add a requirement (press Enter)"
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+  />
+<button
+  type="button"
+  className="rounded-lg bg-gray-100 px-5 py-3 text-gray-700"
+>
+  + Add
+</button>
+</div>
+</div>
+      <div className="mt-6">
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Required Skills
+  </label>
+  <div className="flex items-center gap-2">
+    <input
+      type="text"
+      placeholder="Add required skills (press Enter)"
+      className="w-full rounded-lg border border-gray-300 px-4 py-3"
+    />
+    <button
+      type="button"
+      className="rounded-lg bg-gray-100 px-5 py-3 text-gray-700"
+    >
+      Add
+    </button>
+  </div>
+</div>
+<div className="mt-8">
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Attachments (Optional)
+  </label>
+
+  <label className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 py-10 text-center">
+    <span className="text-3xl text-gray-400">↑</span>
+    <span className="mt-2 text-sm text-gray-600">
+      Click to upload a file
+    </span>
+    <span className="mt-1 text-xs text-gray-400">
+      PDF, DOC, DOCX, PNG, JPG (max 10MB)
+    </span>
+    <input
+      type="file"
+      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+      className="hidden"
+    />
+  </label>
+</div>
+      <div className="mt-6 flex flex-wrap justify-end gap-3">
       <button
         type="button"
         onClick={() => setShowPostProject(false)}
-        className="mt-6 rounded-lg bg-purple-700 px-5 py-2 text-white"
+        className="mt-6 rounded-lg border border-gray-300 bg-white px-5 py-2 text-gray-700"
       >
-        Close
+        Cancel
+        
       </button>
       <button
   type="button"
@@ -742,6 +1088,7 @@ onChange={(e) =>
 </button>
     </div>
   </div>
+</div>
 )}
     </div>
   );
