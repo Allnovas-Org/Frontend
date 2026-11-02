@@ -1,12 +1,21 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 
 
 const getFreelancerStats = (list: typeof freelancers) => [
-  { title: "Total Freelancers", value: list.length.toLocaleString() },
-  { title: "Active Freelancers", value: list.filter((f) => f.status === "Active").length.toLocaleString() },
-  { title: "Pending Verification", value: list.filter((f) => f.status === "Pending").length.toLocaleString() },
-  { title: "Suspended Freelancers", value: list.filter((f) => f.status === "Suspended").length.toLocaleString() },
+  {
+    title: "Active freelancer",
+    value: list.filter((f) => f.status === "Active").length.toLocaleString(),
+  },
+  {
+    title: "Ongoing projects",
+    value: "48",
+  },
+  {
+    title: "Freelancer earning",
+    value: "1,240",
+  },
 ];
 
 const freelancers = [
@@ -57,22 +66,120 @@ export default function Freelancers() {
   const [searchTerm, setSearchTerm] = useState("");
   
   const [statusFilter, setStatusFilter] = useState("All");
+  const [categoryFilter, setCategoryFilter] = useState("All");
   
 const [selectedFreelancerId, setSelectedFreelancerId] = useState<number | null>(null);
 
 const [freelancerList, setFreelancerList] = useState(freelancers);
+const [showAddFreelancer, setShowAddFreelancer] = useState(false);
+const [showPostProject, setShowPostProject] = useState(false);
+const [newProject, setNewProject] = useState({
+  title: "",
+  description: "",
+  budget: "",
+  deadline: "",
+});
+const [projectList, setProjectList] = useState<
+  {
+    id: number;
+    title: string;
+    description: string;
+    budget: string;
+    deadline: string;
+  }[]
+>(() => {
+  try {
+    const saved = localStorage.getItem("allnova_admin_projects");
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+});
+const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+useEffect(() => {
+  localStorage.setItem(
+    "allnova_admin_projects",
+    JSON.stringify(projectList)
+  );
+}, [projectList]);
+const [newFreelancer, setNewFreelancer] = useState({
+    
+  name: "",
+  email: "",
+  skill: "",
+});
+const handleAddFreelancer = () => {
+  if (
+    !newFreelancer.name.trim() ||
+    !newFreelancer.email.trim() ||
+    !newFreelancer.skill.trim()
+  ) {
+    alert("Please fill in all fields.");
+    return;
+  }
 
+  setFreelancerList((previous) => [
+    ...previous,
+    {
+      id: Date.now(),
+      name: newFreelancer.name.trim(),
+      email: newFreelancer.email.trim(),
+      skill: newFreelancer.skill.trim(),
+      projects: 0,
+      status: "Pending",
+    },
+  ]);
+
+  setNewFreelancer({
+    name: "",
+    email: "",
+    skill: "",
+  });
+
+  setShowAddFreelancer(false);
+};
 
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-bold text-gray-900">
-        Freelancers
-      </h1>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+  <div>
+    <h1 className="text-2xl font-bold text-gray-900">
+      Freelancers
+    </h1>
 
-      <p className="mt-2 text-sm text-gray-500">
-        Manage Allnova freelancers and track their activities.
-      </p>
+    <p className="mt-2 text-sm text-gray-500">
+      Manage freelancers, projects, and talent activities.
+    </p>
+  </div>
+
+  <div className="flex flex-wrap gap-2">
+    <button
+      type="button"
+      onClick={() => setShowAddFreelancer(true)}
+      className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
+    >
+      + Add freelancer
+    </button>
+
+    <button
+      type="button"
+      onClick={() => {
+  setEditingProjectId(null);
+  setNewProject({
+    title: "",
+    description: "",
+    budget: "",
+    deadline: "",
+  });
+  setShowPostProject(true);
+}}
+      className="rounded-md border border-purple-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-purple-50"
+    >
+      + Post project
+    </button>
+  </div>
+</div>
 
       {/* Statistics cards */}
       <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
@@ -81,18 +188,130 @@ const [freelancerList, setFreelancerList] = useState(freelancers);
 
           <div
             key={stat.title}
-            className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+            className="relative rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
           >
+            
+<div className="absolute right-5 top-5">
+  <div
+    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+      stat.title === "Active freelancer"
+        ? "bg-purple-100 text-purple-600"
+        : stat.title === "Ongoing projects"
+          ? "bg-pink-100 text-pink-600"
+          : "bg-green-100 text-green-700"
+    }`}
+  >
+    <span className="text-2xl">
+      {stat.title === "Active freelancer"
+        ? "♙"
+        : stat.title === "Ongoing projects"
+          ? "✧"
+          : "▣"}
+    </span>
+  </div>
+</div>
+
             <p className="text-sm font-medium text-gray-500">
               {stat.title}
             </p>
             <h2 className="mt-3 text-3xl font-bold text-gray-900">
               {stat.value}
             </h2>
+            <p className="mt-5 text-sm text-gray-500">
+  <span className="mr-2 font-semibold text-teal-500">
+    ↗ {stat.title === "Freelancer earning" ? "1.8%" : "1.3%"}
+  </span>
+  {stat.title === "Freelancer earning"
+    ? "Up from yesterday"
+    : "Up from past week"}
+</p>
           </div>
         ))}
       </div>
 
+      {/* Top Hiring Partner */}
+<div className="relative mt-5 mb-8 overflow-hidden rounded-xl bg-slate-900 p-6 text-white">
+  <div className="relative z-10">
+    <p className="text-sm text-gray-200">
+      <span className="mr-2 text-yellow-400">★</span>
+      Top Hiring Partner
+    </p>
+
+    <h2 className="mt-3 text-3xl font-bold">
+      Stripe
+    </h2>
+
+    <p className="mt-2 max-w-md text-sm text-gray-300">
+      Actively hiring frontend and backend talents through the
+      Allnova ecosystem.
+    </p>
+
+    <div className="mt-6 flex flex-wrap gap-6 text-sm text-gray-200">
+      <span>♙ 10 hires this month</span>
+      <span>◷ 18 hires this month</span>
+    </div>
+  </div>
+
+  <div className="pointer-events-none absolute -bottom-24 -right-16 h-48 w-full rounded-[50%] bg-white/10" />
+</div>
+      {projectList.length > 0 && (
+  <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6">
+    <h2 className="text-lg font-semibold text-gray-900">
+      Posted Projects
+    </h2>
+    <p className="mt-1 text-sm text-gray-500">
+      Projects added from the Post Project form.
+    </p>
+
+    <div className="mt-4 space-y-3">
+      {projectList.map((project) => (
+        <div
+          key={project.id}
+          className="rounded-lg border border-gray-200 p-4"
+        >
+          <h3 className="font-semibold text-gray-900">
+            {project.title}
+          </h3>
+          <p className="mt-1 text-sm text-gray-600">
+            {project.description}
+          </p>
+          <p className="mt-2 text-sm text-gray-500">
+            Budget: ${project.budget} | Deadline: {project.deadline}
+          </p>
+        <button
+  type="button"
+  onClick={() => {
+    if (window.confirm("Are you sure you want to delete this project?")) {
+      setProjectList((previous) =>
+        previous.filter((item) => item.id !== project.id)
+      );
+    }
+  }}
+  className="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white"
+>
+  Delete Project
+</button>
+        <button
+  type="button"
+  onClick={() => {
+    setEditingProjectId(project.id);
+    setNewProject({
+  title: project.title,
+  description: project.description,
+  budget: project.budget,
+  deadline: project.deadline,
+});
+setShowPostProject(true);
+  }}
+  className="ml-3 mt-3 rounded-lg bg-purple-700 px-4 py-2 text-sm font-medium text-white"
+>
+  Edit Project
+</button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
       {/* Freelancers table */}
       
 
@@ -115,6 +334,21 @@ const [freelancerList, setFreelancerList] = useState(freelancers);
     <option value="Pending">Pending</option>
     <option value="Suspended">Suspended</option>
   </select>
+  <select
+  value={categoryFilter}
+  onChange={(e) => setCategoryFilter(e.target.value)}
+  className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm"
+>
+  <option value="All">All Categories</option>
+  <option value="Design">Design</option>
+  <option value="Developer">Developer</option>
+  <option value="Data & AI">Data & AI</option>
+  <option value="Product Management">Product Management</option>
+  <option value="Content Writing">Content Writing</option>
+  <option value="Social Media">Social Media</option>
+  <option value="No-Code">No-Code</option>
+  <option value="Quality Assurance">Quality Assurance</option>
+</select>
 </div>
 
 
@@ -149,7 +383,19 @@ const [freelancerList, setFreelancerList] = useState(freelancers);
     if (statusFilter !== "All" && freelancer.status !== statusFilter) {
       return false;
     }
+if (categoryFilter !== "All") {
+  const skill = freelancer.skill.toLowerCase();
+  const category = categoryFilter.toLowerCase();
 
+  const matchesCategory =
+  category === "developer"
+    ? skill.includes("develop") || skill.includes("programmer")
+    : skill.includes(category);
+
+if (!matchesCategory) {
+    return false;
+  }
+}
 
     return (
       freelancer.name.toLowerCase().includes(search) ||
@@ -313,7 +559,190 @@ const [freelancerList, setFreelancerList] = useState(freelancers);
     </div>
   );
 })()}
+{showAddFreelancer && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900">
+          Add Freelancer
+        </h2>
 
+        <button
+          type="button"
+          onClick={() => setShowAddFreelancer(false)}
+          className="text-2xl text-gray-500 hover:text-gray-900"
+        >
+          ×
+        </button>
+      </div>
+
+      <p className="mt-2 text-sm text-gray-500">
+        Enter the details of the new freelancer.
+      </p>
+
+      <div className="mt-6 space-y-4">
+        <input
+          type="text"
+          placeholder="Full name"
+          value={newFreelancer.name}
+onChange={(e) =>
+  setNewFreelancer({ ...newFreelancer, name: e.target.value })
+}
+          className="w-full rounded-lg border border-gray-300 p-3"
+        />
+
+        <input
+          type="email"
+          placeholder="Email address"
+          value={newFreelancer.email}
+onChange={(e) =>
+  setNewFreelancer({ ...newFreelancer, email: e.target.value })
+}
+          className="w-full rounded-lg border border-gray-300 p-3"
+        />
+
+        <input
+          type="text"
+          placeholder="Skill"
+          value={newFreelancer.skill}
+onChange={(e) =>
+  setNewFreelancer({ ...newFreelancer, skill: e.target.value })
+}
+          className="w-full rounded-lg border border-gray-300 p-3"
+        />
+
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setShowAddFreelancer(false)}
+            className="rounded-lg border border-gray-300 px-4 py-2"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            onClick={handleAddFreelancer}
+            className="rounded-lg bg-purple-700 px-4 py-2 text-white"
+          >
+            Add Freelancer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+    {showPostProject && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+      <h2 className="text-xl font-bold text-gray-900">
+        {editingProjectId !== null ? "Edit Project" : "Post New Project"}
+      </h2>
+
+      <p className="mt-2 text-sm text-gray-500">
+        {editingProjectId !== null
+  ? "Update the details of this project."
+  : "Enter the details of the new project."}
+      </p>
+      <input
+  type="text"
+  placeholder="Project title"
+  value={newProject.title}
+onChange={(e) =>
+  setNewProject({ ...newProject, title: e.target.value })
+}
+  className="mt-5 w-full rounded-lg border border-gray-300 px-4 py-3"
+/>
+<textarea
+  placeholder="Project description"
+  value={newProject.description}
+onChange={(e) =>
+  setNewProject({ ...newProject, description: e.target.value })
+}
+  rows={4}
+  className="mt-4 w-full rounded-lg border border-gray-300 px-4 py-3"
+/>
+<input
+  type="number"
+  placeholder="Project budget ($)"
+  min="0"
+  className="mt-4 w-full rounded-lg border border-gray-300 px-4 py-3"
+  value={newProject.budget}
+onChange={(e) =>
+  setNewProject({ ...newProject, budget: e.target.value })
+}
+/>
+<div className="mt-4">
+  <label className="mb-2 block text-sm font-medium text-gray-700">
+    Project deadline
+  </label>
+  <input
+    type="date"
+    value={newProject.deadline}
+onChange={(e) =>
+  setNewProject({ ...newProject, deadline: e.target.value })
+}
+    className="w-full rounded-lg border border-gray-300 px-4 py-3"
+    
+  />
+</div>
+
+      <button
+        type="button"
+        onClick={() => setShowPostProject(false)}
+        className="mt-6 rounded-lg bg-purple-700 px-5 py-2 text-white"
+      >
+        Close
+      </button>
+      <button
+  type="button"
+  onClick={() => {
+    if (!newProject.title.trim()) {
+      alert("Please enter a project title.");
+      return;
+    }
+
+   if (editingProjectId !== null) {
+  setProjectList((previous) =>
+    previous.map((project) =>
+      project.id === editingProjectId
+        ? {
+            ...project,
+            title: newProject.title.trim(),
+            description: newProject.description.trim(),
+            budget: newProject.budget,
+            deadline: newProject.deadline,
+          }
+        : project
+    )
+  );
+} else {
+  setProjectList((previous) => [
+    ...previous,
+    {
+      id: Date.now(),
+      title: newProject.title.trim(),
+      description: newProject.description.trim(),
+      budget: newProject.budget,
+      deadline: newProject.deadline,
+    },
+  ]);
+}
+    alert(
+  editingProjectId !== null
+    ? "Project updated successfully!"
+    : "Project created successfully!"
+);
+    setShowPostProject(false);
+    setEditingProjectId(null);
+  }}
+  className="ml-3 rounded-lg bg-green-600 px-5 py-2 text-white"
+>
+  {editingProjectId !== null ? "Save Changes" : "Post Project"}
+</button>
+    </div>
+  </div>
+)}
     </div>
   );
 }
