@@ -20,7 +20,9 @@ const menuItems = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { name: "Students", path: "/admin/students", icon: GraduationCap },
   { name: "Freelancers", path: "/admin/freelancers", icon: Users },
-  { name: "Recruiters/Clients", path: "/admin/clients", icon: Building2 },
+  
+{ name: "Recruiters/Clients", path: "/admin/recruiters-clients", icon: Building2 },
+
   { name: "Projects", path: "/admin/projects", icon: BriefcaseBusiness },
   { name: "Courses", path: "/admin/courses", icon: BookOpen },
   { name: "Applications", path: "/admin/applications", icon: ClipboardList },

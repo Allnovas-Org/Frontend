@@ -5,6 +5,7 @@ import AdminLayout from "./layout/AdminLayout";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import Freelancers from "./pages/Freelancers";
+import RecruitersClients from "./pages/RecruitersClients";
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="students" element={<Students />} />
           <Route path="freelancers" element={<Freelancers />} />
+          
+<Route path="recruiters-clients" element={<RecruitersClients />} />
+
         </Route>
       </Routes>
     </BrowserRouter>
