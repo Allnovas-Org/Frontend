@@ -1,9 +1,10 @@
 
 import { useEffect, useState } from "react";
+import { UsersRound, GraduationCap, BriefcaseBusiness } from "lucide-react";
 
 
 
-const getFreelancerStats = (list: typeof freelancers) => [
+const getFreelancerStats = (list: Freelancer[]) => [
   {
     title: "Active freelancer",
     value: list.filter((f) => f.status === "Active").length.toLocaleString(),
@@ -42,6 +43,7 @@ const freelancers = [
     email: "alex@example.com",
     skill: "UI/UX Design",
     projects: 12,
+    hourlyRate: "120",
     status: "Active",
   },
   {
@@ -50,6 +52,7 @@ const freelancers = [
     email: "sarah@example.com",
     skill: "Frontend Development",
     projects: 8,
+    hourlyRate: "150",
     status: "Active",
   },
   {
@@ -58,6 +61,7 @@ const freelancers = [
     email: "michael@example.com",
     skill: "Graphic Design",
     projects: 5,
+    hourlyRate: "85",
     status: "Pending",
   },
   {
@@ -66,6 +70,7 @@ const freelancers = [
     email: "grace@example.com",
     skill: "Content Writing",
     projects: 15,
+    hourlyRate: "120",
     status: "Active",
   },
   {
@@ -74,6 +79,7 @@ const freelancers = [
     email: "daniel@example.com",
     skill: "Backend Development",
     projects: 3,
+    hourlyRate: "100",
     status: "Suspended",
   },
 ];
@@ -226,7 +232,7 @@ setFreelancerPhoto(null);
 </div>
 
       {/* Statistics cards */}
-      <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
         
 {getFreelancerStats(freelancerList).map((stat) => (
 
@@ -245,13 +251,13 @@ setFreelancerPhoto(null);
           : "bg-green-100 text-green-700"
     }`}
   >
-    <span className="text-2xl">
-      {stat.title === "Active freelancer"
-        ? "♙"
-        : stat.title === "Ongoing projects"
-          ? "✧"
-          : "▣"}
-    </span>
+    {stat.title === "Active freelancer" ? (
+  <UsersRound size={24} strokeWidth={1.8} />
+) : stat.title === "Ongoing projects" ? (
+  <GraduationCap size={24} strokeWidth={1.8} />
+) : (
+  <BriefcaseBusiness size={24} strokeWidth={1.8} />
+)}
   </div>
 </div>
 
@@ -274,7 +280,7 @@ setFreelancerPhoto(null);
       </div>
 
       {/* Top Hiring Partner */}
-<div className="relative mt-5 mb-8 overflow-hidden rounded-xl bg-slate-900 p-6 text-white">
+<div className="relative mt-5 mb-8 min-h-[220px] overflow-hidden rounded-xl bg-slate-900 p-6 text-white">
   <div className="relative z-10">
     <p className="text-sm text-gray-200">
       <span className="mr-2 text-yellow-400">★</span>
@@ -290,13 +296,13 @@ setFreelancerPhoto(null);
       Allnova ecosystem.
     </p>
 
-    <div className="mt-6 flex flex-wrap gap-6 text-sm text-gray-200">
+    <div className="mt-8 flex flex-wrap gap-6 text-sm text-gray-200">
       <span>♙ 10 hires this month</span>
       <span>◷ 18 hires this month</span>
     </div>
   </div>
 
-  <div className="pointer-events-none absolute -bottom-24 -right-16 h-48 w-full rounded-[50%] bg-white/10" />
+  <div className="pointer-events-none absolute -bottom-36 -right-16 h-48 w-full rounded-[50%] bg-white/5" />
 </div>
       {projectList.length > 0 && (
   <div className="mb-8 rounded-xl border border-gray-200 bg-white p-6">
@@ -359,7 +365,7 @@ setShowPostProject(true);
       {/* Freelancers table */}
       
 
-<div className="mb-4 flex flex-wrap items-center gap-4">
+<div className="flex flex-wrap items-center gap-4">
   <input
     type="text"
     placeholder="Search freelancers by name, email, or skill..."
@@ -368,42 +374,31 @@ setShowPostProject(true);
     className="w-full max-w-md rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-purple-600"
   />
 
-  <select
-    value={statusFilter}
-    onChange={(e) => setStatusFilter(e.target.value)}
-    className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 outline-none focus:border-purple-600"
-  >
-    <option value="All">All Statuses</option>
-    <option value="Active">Active</option>
-    <option value="Pending">Pending</option>
-    <option value="Suspended">Suspended</option>
-  </select>
-  <select
-  value={categoryFilter}
-  onChange={(e) => setCategoryFilter(e.target.value)}
-  className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm"
->
-  <option value="All">All Categories</option>
-  <option value="Design">Design</option>
-  <option value="Developer">Developer</option>
-  <option value="Data & AI">Data & AI</option>
-  <option value="Product Management">Product Management</option>
-  <option value="Content Writing">Content Writing</option>
-  <option value="Social Media">Social Media</option>
-  <option value="No-Code">No-Code</option>
-  <option value="Quality Assurance">Quality Assurance</option>
-</select>
+  
 </div>
 
 
       <div className="mt-8 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 p-5">
+          
+          <div>
           <h2 className="text-lg font-semibold text-gray-900">
-            All Freelancers
+            Active Talent Pool
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            View and manage registered freelancers.
+            Monitor and manage all freelancers currently on the platform
           </p>
+        </div>
+        <select
+  value={statusFilter}
+  onChange={(e) => setStatusFilter(e.target.value)}
+  className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700"
+>
+  <option value="All">All</option>
+  <option value="Active">Active</option>
+  <option value="Pending">Pending</option>
+  <option value="Suspended">Suspended</option>
+</select>
         </div>
 
         <div className="overflow-x-auto">
@@ -413,6 +408,7 @@ setShowPostProject(true);
                 <th className="px-5 py-4 font-semibold">Freelancer</th>
                 <th className="px-5 py-4 font-semibold">Skill</th>
                 <th className="px-5 py-4 font-semibold">Projects</th>
+                <th className="px-5 py-4 font-semibold">Earning</th>
                 <th className="px-5 py-4 font-semibold">Status</th>
                 <th className="px-5 py-4 font-semibold">Action</th>
               </tr>
@@ -454,22 +450,40 @@ if (!matchesCategory) {
                   className="border-t border-gray-100 hover:bg-gray-50"
                 >
                   <td className="px-5 py-4">
-                    <p className="font-medium text-gray-900">
-                      {freelancer.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {freelancer.email}
-                    </p>
-                  </td>
+  <div className="flex items-center gap-3">
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
+      {freelancer.photo ? (
+        <img
+          src={freelancer.photo}
+          alt={freelancer.name}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        freelancer.name.charAt(0).toUpperCase()
+      )}
+    </div>
+
+    <div>
+      <p className="font-medium text-gray-900">
+        {freelancer.name}
+      </p>
+      <p className="text-xs text-gray-500">
+        {freelancer.email}
+      </p>
+    </div>
+  </div>
+</td>
 
                   <td className="px-5 py-4 text-gray-600">
                     {freelancer.skill}
                   </td>
 
                   <td className="px-5 py-4 text-gray-600">
-                    {freelancer.projects}
+                    {freelancer.projects} Completed
                   </td>
-
+<td className="px-5 py-4 text-gray-600">
+  {freelancer.hourlyRate ? `$${freelancer.hourlyRate}` : "—"}
+</td>
                   <td className="px-5 py-4">
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -480,7 +494,10 @@ if (!matchesCategory) {
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {freelancer.status}
+                      <span className="inline-flex items-center gap-1">
+  <span className="text-xs">●</span>
+  {freelancer.status}
+</span>
                     </span>
                   </td>
 
