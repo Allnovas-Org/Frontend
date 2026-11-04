@@ -287,7 +287,13 @@ export default function RecruitersClients() {
     <h2 className="text-lg font-semibold text-gray-900">
       Available Job
     </h2>
-    <button type="button" className="text-sm font-medium text-purple-700">
+    
+<button
+  type="button"
+  onClick={() => window.location.href = "/admin/available-job"}
+  className="text-sm font-medium text-purple-700"
+>
+
       View all
     </button>
   </div>
