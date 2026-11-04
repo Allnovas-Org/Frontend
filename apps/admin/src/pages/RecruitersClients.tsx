@@ -142,6 +142,7 @@ export default function RecruitersClients() {
     </div>
 
     <button
+    onClick={() => window.location.href = "/admin/recruiters-companies"}
       type="button"
       className="text-sm font-medium text-purple-700"
     >

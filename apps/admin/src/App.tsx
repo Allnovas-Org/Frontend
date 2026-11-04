@@ -6,7 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import Freelancers from "./pages/Freelancers";
 import RecruitersClients from "./pages/RecruitersClients";
-
+import RecruitersCompanies from "./pages/RecruitersCompanies";
 function App() {
   return (
     <BrowserRouter>
@@ -17,7 +17,7 @@ function App() {
           <Route path="freelancers" element={<Freelancers />} />
           
 <Route path="recruiters-clients" element={<RecruitersClients />} />
-
+<Route path="recruiters-companies" element={<RecruitersCompanies />} />
         </Route>
       </Routes>
     </BrowserRouter>
