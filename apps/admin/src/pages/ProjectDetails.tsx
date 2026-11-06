@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Pencil,
   CircleCheck,
@@ -9,17 +10,56 @@ import {
 } from "lucide-react";
 
 export default function ProjectDetails() {
+ const [activeModal, setActiveModal] = useState<
+  "edit" | "approve" | "reject" | "owner" | null
+>(null);
+  const [projectTitle, setProjectTitle] = useState(() => {
+  return localStorage.getItem("allnova-project-title") || "Mobile App UI/UX Design";
+});
+  const [editedTitle, setEditedTitle] = useState(projectTitle);
+  const [projectStatus, setProjectStatus] = useState(() => {
+  return localStorage.getItem("allnova-project-status") || "Active";
+});
+  const [editedStatus, setEditedStatus] = useState(projectStatus);
+ const [projectCategory, setProjectCategory] = useState(() => {
+  return localStorage.getItem("allnova-project-category") || "Design";
+});
+const [editedCategory, setEditedCategory] = useState(projectCategory);
+const [projectBudget, setProjectBudget] = useState(() => {
+  return Number(localStorage.getItem("allnova-project-budget") ?? 1800);
+});
+
+const [editedBudget, setEditedBudget] = useState(projectBudget);
+const [projectDeadline, setProjectDeadline] = useState(() => {
+  return localStorage.getItem("allnova-project-deadline") || "2026-06-25";
+});
+
+const [editedDeadline, setEditedDeadline] = useState(projectDeadline);
+const [projectDescription, setProjectDescription] = useState(() => {
   return (
+    localStorage.getItem("allnova-project-description") ||
+    "Design a fitness tracking mobile application"
+  );
+});
+
+const [editedDescription, setEditedDescription] = useState(projectDescription);
+const [projectProgress, setProjectProgress] = useState(() => {
+  return Number(localStorage.getItem("allnova-project-progress") ?? 40);
+});
+const [editedProgress, setEditedProgress] = useState(projectProgress);
+const [rejectionReason, setRejectionReason] = useState("");
+const [approvalNotes, setApprovalNotes] = useState("");
+    return (
     <div className="p-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-xl font-semibold text-gray-900">
-              Mobile App UI/UX Design
+              {projectTitle}
             </h1>
 
             <span className="rounded-md bg-purple-700 px-3 py-1 text-xs font-medium text-white">
-              Active
+              {projectStatus}
             </span>
 
             <span className="rounded-full border border-gray-200 px-3 py-1 text-xs">
@@ -33,15 +73,27 @@ export default function ProjectDetails() {
         </div>
 
         <div className="flex gap-2">
-          <button className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm">
+          <button onClick={() => setActiveModal("edit")}className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm">
             <Pencil size={16} /> Edit
           </button>
 
-          <button className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm">
+         <button
+  onClick={() => {
+    setApprovalNotes("");
+    setActiveModal("approve");
+  }}
+  className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm"
+>
             <CircleCheck size={16} /> Approve
           </button>
 
-          <button className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm">
+         <button
+  onClick={() => {
+    setRejectionReason("");
+    setActiveModal("reject");
+  }}
+  className="flex items-center gap-2 rounded-md border bg-white px-4 py-2 text-sm"
+>
             <CircleX size={16} /> Reject
           </button>
         </div>
@@ -57,17 +109,20 @@ export default function ProjectDetails() {
         <h3 className="mb-2 font-medium">Description</h3>
 
         <p className="text-sm text-gray-500">
-          Design a fitness tracking mobile application
-        </p>
+  {projectDescription}
+</p>
 
         <div className="mt-6">
           <div className="mb-2 flex justify-between text-sm">
             <span>Progress</span>
-            <span className="font-semibold">40%</span>
+            <span className="font-semibold">{projectProgress}%</span>
           </div>
 
           <div className="h-2 rounded-full bg-gray-200">
-            <div className="h-2 w-[40%] rounded-full bg-slate-950" />
+            <div
+  className="h-2 rounded-full bg-slate-950"
+  style={{ width: `${Math.max(0, Math.min(100, projectProgress))}%` }}
+/>
           </div>
         </div>
 
@@ -76,7 +131,7 @@ export default function ProjectDetails() {
             <DollarSign className="text-gray-500" size={20} />
             <div>
               <p className="text-sm text-gray-500">Budget</p>
-              <p className="font-medium">$1,800</p>
+              <p className="font-medium">${projectBudget.toLocaleString()}</p>
             </div>
           </div>
 
@@ -84,15 +139,24 @@ export default function ProjectDetails() {
             <CalendarDays className="text-gray-500" size={20} />
             <div>
               <p className="text-sm text-gray-500">Deadline</p>
-              <p className="font-medium">June 25, 2026</p>
+              <p className="font-medium">
+  {new Date(projectDeadline + "T00:00:00").toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}
+</p>
             </div>
           </div>
+
+
+
 
           <div className="flex items-center gap-3">
             <Tag className="text-gray-500" size={20} />
             <div>
               <p className="text-sm text-gray-500">Category</p>
-              <p className="font-medium">Design</p>
+              <p className="font-medium">{projectCategory}</p>
             </div>
           </div>
 
@@ -212,6 +276,7 @@ export default function ProjectDetails() {
 
   <button
     type="button"
+    onClick={() => setActiveModal("owner")}
     className="mt-5 w-full rounded-md border border-gray-200 py-2 text-sm font-medium hover:bg-gray-50"
   >
     View Profile
@@ -276,6 +341,363 @@ export default function ProjectDetails() {
 </div>
 </div>
 </div>
+
+{activeModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
+      <h2 className="mb-4 text-lg font-semibold">
+        {activeModal === "edit"
+          ? "Edit Project"
+          : activeModal === "approve"
+          ? "Approve Project"
+          : activeModal === "reject"
+  ? "Reject Project"
+  : "Project Owner Profile"}
+      </h2>
+{activeModal === "edit" && (
+    <>
+  <div className="mb-4">
+    <label className="mb-2 block text-sm font-medium text-gray-900">
+      Project Title *
+    </label>
+    <input
+      type="text"
+      value={editedTitle}
+onChange={(e) => setEditedTitle(e.target.value)}
+      className="w-full rounded-md border border-gray-200 px-3 py-3 text-sm"
+    />
+  </div>
+<div className="mb-4 grid grid-cols-2 gap-3">
+  <div>
+    <label className="mb-2 block text-sm font-medium">
+      Status *
+    </label>
+    <select
+      value={editedStatus}
+onChange={(e) => setEditedStatus(e.target.value)}
+      className="w-full rounded-md border border-gray-200 p-3 text-sm"
+    >
+      <option>Active</option>
+      <option>Pending</option>
+      <option>Completed</option>
+      <option>Cancelled</option>
+      <option>Rejected</option>
+    </select>
+  </div>
+
+  <div>
+    <label className="mb-2 block text-sm font-medium">
+      Category *
+    </label>
+    <select
+      value={editedCategory}
+onChange={(e) => setEditedCategory(e.target.value)}
+      className="w-full rounded-md border border-gray-200 p-3 text-sm"
+    >
+      <option>Design</option>
+      <option>Development</option>
+      <option>Marketing</option>
+      <option>Other</option>
+    </select>
+  </div>
+</div>
+<div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    User Name *
+  </label>
+  <input
+    type="text"
+    placeholder="Enter user name"
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+<div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    User Email *
+  </label>
+  <input
+    type="email"
+    placeholder="user@example.com"
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+<div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    Budget ($) *
+  </label>
+  <input
+    type="number"
+    min="0"
+    value={editedBudget}
+onChange={(e) => setEditedBudget(Number(e.target.value))}
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+<div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    Progress (%) *
+  </label>
+  <input
+    type="number"
+    min="0"
+    max="100"
+    value={editedProgress}
+    onChange={(e) =>
+      setEditedProgress(Number(e.target.value))
+    }
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+<div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    Deadline *
+  </label>
+  <input
+    type="date"
+    value={editedDeadline}
+onChange={(e) => setEditedDeadline(e.target.value)}
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+<div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    Description *
+  </label>
+  <textarea
+    rows={3}
+    value={editedDescription}
+onChange={(e) => setEditedDescription(e.target.value)}
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+<div className="mb-4 rounded-md border border-gray-200 bg-gray-50 p-3">
+  <p className="mb-2 text-sm font-semibold">
+    Project Owner Information
+  </p>
+  <p className="text-sm text-gray-500">
+    Owner: Sarah Mitchell
+  </p>
+  <p className="text-sm text-gray-500">
+    Type: Freelancer
+  </p>
+  <p className="mt-1 text-xs italic text-gray-400">
+    Note: Owner details cannot be changed here
+  </p>
+</div>
+</>
+)}
+      {activeModal === "edit" && (
+      <button
+        type="button"
+        onClick={() => {
+  setEditedTitle(projectTitle);
+  setEditedStatus(projectStatus);
+  setEditedCategory(projectCategory);
+  setEditedBudget(projectBudget);
+  setEditedProgress(projectProgress);
+  setEditedDeadline(projectDeadline);
+setEditedDescription(projectDescription);
+  setActiveModal(null);
+}}
+        className="rounded-md border border-gray-200 px-4 py-2"
+      >
+        Cancel
+      </button>
+      )}
+    {activeModal === "edit" && (
+  <button
+    type="button"
+    onClick={() => {
+  setProjectTitle(editedTitle);
+  setProjectStatus(editedStatus);
+  setProjectCategory(editedCategory);
+  setProjectBudget(editedBudget);
+  setProjectProgress(Math.max(0, Math.min(100, editedProgress)));
+localStorage.setItem(
+  "allnova-project-progress",
+  String(Math.max(0, Math.min(100, editedProgress)))
+);
+  setProjectDeadline(editedDeadline);
+  setProjectDescription(editedDescription);
+localStorage.setItem("allnova-project-description", editedDescription);
+localStorage.setItem("allnova-project-deadline", editedDeadline);
+localStorage.setItem("allnova-project-budget", String(editedBudget));
+localStorage.setItem("allnova-project-category", editedCategory);
+  localStorage.setItem("allnova-project-title", editedTitle);
+  localStorage.setItem("allnova-project-status", editedStatus);
+  alert("Project changes saved successfully!");
+  setActiveModal(null);
+}}
+    className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
+  >
+    Save Changes
+  </button>
+)}
+{activeModal === "approve" && (
+    <>
+    <h3 className="mb-3 text-base font-semibold text-gray-900">
+  Confirm Project Approval
+</h3>
+  <p className="mb-4 text-sm text-gray-600">
+  Are you sure you want to approve this project?
+  This will change the project status to Active.
+</p>
+  <div className="mb-4 rounded-lg bg-gray-50 p-4">
+  <h3 className="mb-3 font-semibold text-gray-900">
+    Project Information
+  </h3>
+
+  <p className="text-sm">
+    <strong>Project:</strong> {projectTitle}
+  </p>
+
+  <p className="mt-2 text-sm">
+    <strong>Owner:</strong> Sarah Mitchell
+  </p>
+
+  <p className="mt-2 text-sm">
+    <strong>Budget:</strong> ${projectBudget.toLocaleString()}
+  </p>
+
+  <p className="mt-2 text-sm">
+    <strong>Status:</strong> {projectStatus}
+  </p>
+</div>
+  <div className="mb-4">
+        <label className="mb-2 block text-sm font-medium text-gray-900">
+      Approval Notes (Optional)
+    </label>
+    <textarea
+      rows={4}
+      value={approvalNotes}
+      onChange={(e) => setApprovalNotes(e.target.value)}
+      placeholder="Add any comments or instructions for the project owner..."
+      className="w-full rounded-md border border-gray-200 p-3 text-sm"
+    />
+  </div>
+  <button
+    type="button"
+    onClick={() => {
+      setProjectStatus("Active");
+      localStorage.setItem("allnova-project-status", "Active");
+      localStorage.setItem("allnova-project-approval-notes", approvalNotes.trim());
+      setApprovalNotes("");
+      alert("Project approved successfully!");
+setActiveModal(null);
+    }}
+    className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
+  >
+      Confirm Approval
+</button>
+
+<button
+  type="button"
+  onClick={() => setActiveModal(null)}
+  className="rounded-md border border-gray-200 px-4 py-2 text-sm font-medium"
+>
+  Cancel
+</button>
+  </>
+  
+)}
+{activeModal === "reject" && (
+    <>
+    <h3 className="mb-3 text-base font-semibold text-gray-900">
+  Confirm Project Rejection
+</h3>
+    <p className="mb-4 text-sm text-gray-600">
+  Are you sure you want to reject this project?
+  Please provide a reason for the rejection.
+</p>
+    <div className="mb-4 rounded-lg bg-gray-50 p-4">
+  <h3 className="mb-3 font-semibold text-gray-900">
+    Project Information
+  </h3>
+
+  <p className="text-sm">
+    <strong>Project:</strong> {projectTitle}
+  </p>
+
+  <p className="mt-2 text-sm">
+    <strong>Owner:</strong> Sarah Mitchell
+  </p>
+
+  <p className="mt-2 text-sm">
+    <strong>Budget:</strong> ${projectBudget.toLocaleString()}
+  </p>
+
+  <p className="mt-2 text-sm">
+    <strong>Status:</strong> {projectStatus}
+  </p>
+</div>
+    <div className="mb-4">
+  <label className="mb-2 block text-sm font-medium text-gray-900">
+    Rejection Reason *
+  </label>
+  <textarea
+    rows={4}
+    value={rejectionReason}
+    onChange={(e) => setRejectionReason(e.target.value)}
+    placeholder="Explain why this project is being rejected..."
+    className="w-full rounded-md border border-gray-200 p-3 text-sm"
+  />
+</div>
+  <button
+    type="button"
+    disabled={!rejectionReason.trim()}
+    onClick={() => {
+        if (!rejectionReason.trim()) {
+  alert("Please provide a reason for rejecting this project.");
+  return;
+}
+      setProjectStatus("Rejected");
+      localStorage.setItem("allnova-project-status", "Rejected");
+      localStorage.setItem("allnova-project-rejection-reason", rejectionReason.trim());
+      setRejectionReason("");
+      alert("Project rejected successfully!");
+      setActiveModal(null);
+    }}
+    className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    Confirm Rejection
+  </button>
+  <button
+  type="button"
+  onClick={() => setActiveModal(null)}
+  className="rounded-md border border-gray-200 px-4 py-2 text-sm font-medium"
+>
+  Cancel
+</button>
+  </>
+)}
+    {activeModal === "owner" && (
+  <div className="space-y-4">
+    <div className="rounded-lg bg-gray-50 p-4">
+      <h3 className="text-lg font-semibold text-gray-900">
+        Sarah Mitchell
+      </h3>
+      <p className="text-sm text-gray-500">Freelancer</p>
+    </div>
+
+    <div className="space-y-3 text-sm">
+      <p><strong>User ID:</strong> USER-2190</p>
+      <p><strong>Projects Completed:</strong> 15</p>
+      <p><strong>Project:</strong> {projectTitle}</p>
+    </div>
+
+    <button
+      type="button"
+      onClick={() => setActiveModal(null)}
+      className="w-full rounded-md bg-purple-700 px-4 py-2 text-white"
+    >
+      Close Profile
+    </button>
+  </div>
+)}
+    </div>
+  </div>
+)}
+
 </div>
   );
 }
