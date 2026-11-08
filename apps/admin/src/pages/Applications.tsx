@@ -371,6 +371,12 @@ onReject={() => {
     [selectedApplication.id]: "Rejected",
   }));
 }}    
+onMoveToReview={() => {
+  setApplicationStatuses((previousStatuses) => ({
+    ...previousStatuses,
+    [selectedApplication.id]: "Review",
+  }));
+}}
 onClose={() => setShowDetails(false)}
   />
 )}

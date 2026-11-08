@@ -12,6 +12,7 @@ import AvailableJob from "./pages/AvailableJob";
 
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
+import Applications from "./pages/Applications";
 function App() {
   return (
     <BrowserRouter>
@@ -28,6 +29,9 @@ function App() {
 
 <Route path="projects" element={<Projects />} />
 <Route path="projects/:id" element={<ProjectDetails />} />
+
+<Route path="applications" element={<Applications />} />
+
 
         </Route>
       </Routes>

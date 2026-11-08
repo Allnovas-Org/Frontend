@@ -15,6 +15,7 @@ type ApplicationDetailsProps = {
   isClaimed: boolean;
   onClaim: () => void;
   onReject: () => void;
+  onMoveToReview: () => void;
   onClose: () => void;
 };
 
@@ -25,6 +26,7 @@ export default function ApplicationDetails({
   isClaimed,
   onClaim,
   onReject,
+  onMoveToReview,
   onClose,
 }: ApplicationDetailsProps) {
   const [note, setNote] = useState("");
@@ -266,6 +268,7 @@ onChange={(e) => setNote(e.target.value)}
   ✕ Reject
 </button>
 <button
+onClick={() => onMoveToReview()}
   type="button"
   className="flex-1 rounded-lg bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
 >
