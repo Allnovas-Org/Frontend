@@ -377,6 +377,18 @@ onMoveToReview={() => {
     [selectedApplication.id]: "Review",
   }));
 }}
+onMoveToInterview={() => {
+  setApplicationStatuses((previousStatuses) => ({
+    ...previousStatuses,
+    [selectedApplication.id]: "Interview",
+  }));
+}}
+onMoveToOffer={() => {
+  setApplicationStatuses((previousStatuses) => ({
+    ...previousStatuses,
+    [selectedApplication.id]: "Offer",
+  }));
+}}
 onClose={() => setShowDetails(false)}
   />
 )}

@@ -16,6 +16,8 @@ type ApplicationDetailsProps = {
   onClaim: () => void;
   onReject: () => void;
   onMoveToReview: () => void;
+  onMoveToInterview: () => void;
+  onMoveToOffer: () => void;
   onClose: () => void;
 };
 
@@ -27,6 +29,8 @@ export default function ApplicationDetails({
   onClaim,
   onReject,
   onMoveToReview,
+  onMoveToInterview,
+  onMoveToOffer,
   onClose,
 }: ApplicationDetailsProps) {
   const [note, setNote] = useState("");
@@ -252,7 +256,7 @@ onChange={(e) => setNote(e.target.value)}
 ))}
 </div>
 </div>
- <div className="mt-6 flex items-center gap-2 border-t border-gray-200 pt-4">
+ <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-gray-200 pt-4">
   <button
     type="button"
     onClick={onClose}
@@ -267,13 +271,36 @@ onChange={(e) => setNote(e.target.value)}
 >
   ✕ Reject
 </button>
-<button
-onClick={() => onMoveToReview()}
-  type="button"
-  className="flex-1 rounded-lg bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
->
-  Move to Review →
-</button>
+{!["review", "interview", "offer"].includes(
+  application.status.toLowerCase()
+) && (
+  <button
+    type="button"
+    onClick={onMoveToReview}
+    className="flex-1 rounded-lg bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
+  >
+    Move to Review →
+  </button>
+)}
+
+{application.status.toLowerCase() === "review" && (
+  <button
+    type="button"
+    onClick={onMoveToInterview}
+    className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+  >
+    Move to Interview →
+  </button>
+)}
+{application.status.toLowerCase() === "interview" && (
+  <button
+    type="button"
+    onClick={onMoveToOffer}
+    className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+  >
+    Move to Offer →
+  </button>
+)}
 </div>         
           
           <button
