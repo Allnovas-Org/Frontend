@@ -13,6 +13,7 @@ import AvailableJob from "./pages/AvailableJob";
 import Projects from "./pages/Projects";
 import ProjectDetails from "./pages/ProjectDetails";
 import Applications from "./pages/Applications";
+import CourseInternshipPayments from "./pages/CourseInternshipPayments";
 function App() {
   return (
     <BrowserRouter>
@@ -31,7 +32,7 @@ function App() {
 <Route path="projects/:id" element={<ProjectDetails />} />
 
 <Route path="applications" element={<Applications />} />
-
+<Route path="course-payments" element={<CourseInternshipPayments />} />
 
         </Route>
       </Routes>

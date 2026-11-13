@@ -54,7 +54,7 @@ const AdminNavbar = () => {
             }
           >
   {item.icon && <item.icon size={18} />}
-  <span>{item.name}</span>
+  <span className="min-w-0 flex-1 truncate">{item.name}</span>
 </NavLink>
         ))}
       </nav>
