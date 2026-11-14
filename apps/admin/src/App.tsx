@@ -1,6 +1,6 @@
 
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./layout/AdminLayout";
 import RequireAdmin from "./auth/RequireAdmin";
 import SignIn from "./auth/SignIn";
@@ -30,6 +30,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Navigate to="/sign-in" replace />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
