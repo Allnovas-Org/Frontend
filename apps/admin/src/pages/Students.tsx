@@ -1,401 +1,374 @@
-import React, { useState } from "react";
-const students = [
-  {
-    id: 1,
-    name: "Theresa Webb",
-    path: "Frontend Development",
-    progress: 50,
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Kristin Watson",
-    path: "Frontend Development",
-    progress: 3.86,
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Savannah Nguyen",
-    path: "Frontend Development",
-    progress: 50,
-    status: "Active",
-  },
-  {
-    id: 4,
-    name: "Ralph Edwards",
-    path: "Frontend Development",
-    progress: 3.86,
-    status: "Inactive",
-  },
-  {
-    id: 5,
-    name: "Jenny Wilson",
-    path: "Frontend Development",
-    progress: 3.86,
-    status: "Active",
-  },
-  {
-    id: 6,
-    name: "Michael Smith",
-    path: "Backend Development",
-    progress: 4.10,
-    status: "Active",
-  },
-  {
-    id: 7,
-    name: "Sarah Johnson",
-    path: "UI/UX Design",
-    progress: 3.75,
-    status: "Inactive",
-  },
-  {
-    id: 8,
-    name: "David Brown",
-    path: "Data Analysis",
-    progress: 4.25,
-    status: "Active",
-  },
-  {
-    id: 9,
-    name: "Emily Davis",
-    path: "Product Management",
-    progress: 3.95,
-    status: "Active",
-  },
-  {
-    id: 10,
-    name: "Daniel Garcia",
-    path: "DevOps Engineering",
-    progress: 4.00,
-    status: "Inactive",
-  },
-  {
-    id: 11,
-    name: "Sophia Martinez",
-    path: "Quality Assurance",
-    progress: 3.50,
-    status: "Active",
-  },
-];
-const AdminStudents = () => {
-  const [selectedStudent, setSelectedStudent] = useState<
-    (typeof students)[number] | null
-  >(null);
-  
-const [showMessagePreview, setShowMessagePreview] = useState(false);
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AdminAuthenticationError } from "../services/adminDashboardApi";
+import {
+  fetchAdminUsers,
+  type AdminUser,
+  type AdminUsersPage,
+} from "../services/adminUsersApi";
 
-const [messageText, setMessageText] = useState("");
+const roles = ["admin", "student", "freelancer", "client"];
 
-const [messageConfirmation, setMessageConfirmation] = useState("");
+function formatCreatedAt(value: string): string {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+}
 
-const [studentList, setStudentList] = useState(students);
+function displayName(user: AdminUser): string {
+  return [user.first_name, user.last_name].filter(Boolean).join(" ") || user.username;
+}
 
+export default function AdminStudents() {
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageUrl, setPageUrl] = useState<string | null>(null);
+  const [usersPage, setUsersPage] = useState<AdminUsersPage | null>(null);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPageNumber(1);
+      setPageUrl(null);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    async function loadUsers() {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const result = await fetchAdminUsers({
+          search,
+          role,
+          page: pageNumber,
+          pageUrl,
+          signal: controller.signal,
+        });
+        if (active) {
+          setUsersPage(result);
+        }
+      } catch (loadError) {
+        if (loadError instanceof AdminAuthenticationError) {
+          if (active) {
+            navigate("/sign-in", { replace: true });
+          }
+          return;
+        }
+
+        if (active && !controller.signal.aborted) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Could not load users."
+          );
+          setUsersPage(null);
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadUsers();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [navigate, pageNumber, pageUrl, retryCount, role, search]);
+
+  function changeRole(nextRole: string) {
+    setRole(nextRole);
+    setPageNumber(1);
+    setPageUrl(null);
+    setSelectedUser(null);
+  }
+
+  function changePage(direction: "next" | "previous") {
+    if (!usersPage) {
+      return;
+    }
+    const target = direction === "next" ? usersPage.next : usersPage.previous;
+    if (!target) {
+      return;
+    }
+    setPageUrl(target);
+    setPageNumber((current) =>
+      direction === "next" ? current + 1 : Math.max(1, current - 1)
+    );
+    setSelectedUser(null);
+  }
+
+  const users = usersPage?.results ?? [];
 
   return (
     <div className="w-full">
-        
-{messageConfirmation && (
-  <div className="mb-4 flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-    <span>{messageConfirmation}</span>
-    <button
-      type="button"
-      onClick={() => setMessageConfirmation("")}
-      className="ml-4 font-bold text-green-700"
-    >
-      ×
-    </button>
-  </div>
-)}
-
-      <h1 className="text-2xl font-bold text-gray-900">
-        Students
-      </h1>
-
+      <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
       <p className="mt-2 text-sm text-gray-500">
-        Manage Allnova students and track their learning progress.
+        View platform accounts and their current access status.
       </p>
-      {/* Students Table */}
-<div className="mt-8 overflow-x-auto rounded-xl border border-gray-200 bg-white">
 
-  <table className="w-full border-collapse text-left">
-
-    <thead className="bg-purple-50">
-      <tr>
-        <th className="px-4 py-4 text-sm font-semibold">
-          Learner
-        </th>
-
-        <th className="px-4 py-4 text-sm font-semibold">
-          Learning Path
-        </th>
-
-        <th className="px-4 py-4 text-sm font-semibold">
-          Progress
-        </th>
-
-        <th className="px-4 py-4 text-sm font-semibold">
-          Status
-        </th>
-
-        <th className="px-4 py-4 text-sm font-semibold">
-          Action
-        </th>
-      </tr>
-    </thead>
-
-    <tbody>
-  
-{studentList.map((student, index) => (
-
-  <tr key={index} className="border-t border-gray-200">
-    <td className="px-4 py-4">
-  <div className="flex items-center gap-3">
-    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
-      {student.name
-        .split(" ")
-        .map((word) => word[0])
-        .join("")
-        .slice(0, 2)}
-    </div>
-
-    <span className="text-sm font-medium text-gray-900">
-      {student.name}
-    </span>
-  </div>
-</td>
-
-    <td className="px-4 py-4">
-      {student.path}
-    </td>
-
-    <td className="px-4 py-4">
-  <div className="flex items-center gap-2">
-    <div className="h-2.5 w-20 overflow-hidden rounded-full bg-gray-300">
-      <div
-        className={`h-full rounded-full ${
-          student.progress >= 50
-            ? "bg-amber-500"
-            : "bg-red-400"
-        }`}
-        style={{ width: `${student.progress}%` }}
-      />
-    </div>
-
-    <span className="text-sm font-medium text-gray-900">
-      {student.progress}%
-    </span>
-  </div>
-</td>
-
-    <td className="px-4 py-4">
-  <span
-    className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
-      student.status === "Active"
-        ? "bg-green-100 text-green-700"
-        : "bg-gray-100 text-gray-500"
-    }`}
-  >
-    <span
-      className={`h-1.5 w-1.5 rounded-full ${
-        student.status === "Active"
-          ? "bg-green-600"
-          : "bg-gray-400"
-      }`}
-    />
-
-    {student.status}
-  </span>
-</td>
-
-    <td className="px-4 py-4">
-      <button
-        type="button"
-        onClick={() => setSelectedStudent(student)}
-        className="text-sm font-medium text-purple-700"
+      <section
+        aria-label="User list filters"
+        className="mt-6 flex flex-col gap-3 sm:flex-row"
       >
-        View
-      </button>
-    </td>
-  </tr>
-))}
-</tbody>
-
-  </table>
-
-</div>
-{selectedStudent && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Student: {selectedStudent.name}
-        </h2>
-
-        <button
-          type="button"
-          onClick={() => setSelectedStudent(null)}
-          className="text-xl text-gray-500 hover:text-gray-900"
+        <label className="sr-only" htmlFor="user-search">
+          Search users
+        </label>
+        <input
+          id="user-search"
+          type="search"
+          value={searchInput}
+          onChange={(event) => setSearchInput(event.target.value)}
+          placeholder="Search by name, username, or email..."
+          className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-purple-600 sm:max-w-md"
+        />
+        <label className="sr-only" htmlFor="user-role-filter">
+          Filter by role
+        </label>
+        <select
+          id="user-role-filter"
+          value={role}
+          onChange={(event) => changeRole(event.target.value)}
+          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-purple-600"
         >
-          ×
-        </button>
-      </div>
-      <div className="mt-5 space-y-6">
+          <option value="">All roles</option>
+          {roles.map((item) => (
+            <option key={item} value={item}>
+              {item.charAt(0).toUpperCase() + item.slice(1)}
+            </option>
+          ))}
+        </select>
+      </section>
 
- <div>
-  <p className="text-xs text-gray-500">
-    Email
-  </p>
-  <p className="mt-1 text-sm font-medium text-gray-900">
-    {selectedStudent.name.toLowerCase().replace(/\s+/g, ".")}@example.com
-  </p>
-</div>
-  <div>
-    <p className="text-xs text-gray-500">
-      Learning Path
-    </p>
-    <p className="mt-1 text-sm font-medium text-gray-900">
-      {selectedStudent.path}
-    </p>
-  </div>
+      {isLoading ? (
+        <p role="status" className="mt-6 rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
+          Loading users...
+        </p>
+      ) : error ? (
+        <div role="alert" className="mt-6 rounded-xl border border-red-200 bg-white p-6">
+          <p className="text-sm text-red-600">{error}</p>
+          <button
+            type="button"
+            onClick={() => setRetryCount((count) => count + 1)}
+            className="mt-3 text-sm font-medium text-purple-700 hover:underline"
+          >
+            Try again
+          </button>
+        </div>
+      ) : !usersPage || users.length === 0 ? (
+        <p className="mt-6 rounded-xl border border-gray-200 bg-white p-6 text-sm text-gray-500">
+          {search || role
+            ? "No users match your search or role filter."
+            : "No users are available."}
+        </p>
+      ) : (
+        <>
+          <div className="mt-6 overflow-x-auto rounded-xl border border-gray-200 bg-white">
+            <table className="w-full border-collapse text-left">
+              <thead className="bg-purple-50">
+                <tr>
+                  <th className="px-4 py-4 text-sm font-semibold">User</th>
+                  <th className="px-4 py-4 text-sm font-semibold">Email</th>
+                  <th className="px-4 py-4 text-sm font-semibold">Role</th>
+                  <th className="px-4 py-4 text-sm font-semibold">Account status</th>
+                  <th className="px-4 py-4 text-sm font-semibold">Staff</th>
+                  <th className="px-4 py-4 text-sm font-semibold">Joined</th>
+                  <th className="px-4 py-4 text-sm font-semibold">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-t border-gray-200">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold uppercase text-purple-700">
+                          {user.username.slice(0, 2)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {displayName(user)}
+                          </p>
+                          <p className="text-xs text-gray-500">@{user.username}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-600">{user.email || "—"}</td>
+                    <td className="px-4 py-4 text-sm capitalize text-gray-600">
+                      {user.user_role || "—"}
+                    </td>
+                    <td className="px-4 py-4">
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium ${
+                          user.is_active
+                            ? "bg-green-100 text-green-700"
+                            : "bg-gray-100 text-gray-500"
+                        }`}
+                      >
+                        <span
+                          className={`h-1.5 w-1.5 rounded-full ${
+                            user.is_active ? "bg-green-600" : "bg-gray-400"
+                          }`}
+                        />
+                        {user.is_active ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {user.is_staff ? "Yes" : "No"}
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-600">
+                      {formatCreatedAt(user.created_at)}
+                    </td>
+                    <td className="px-4 py-4">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedUser(user)}
+                        className="text-sm font-medium text-purple-700 hover:underline"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-  <div>
-    <p className="text-xs text-gray-500">
-      Progress
-    </p>
-    <p className="mt-1 text-sm font-medium text-gray-900">
-      {selectedStudent.progress}%
-    </p>
-  </div>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-gray-500">
+              {usersPage.count.toLocaleString()} user
+              {usersPage.count === 1 ? "" : "s"} total · Page {pageNumber}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={!usersPage.previous}
+                onClick={() => changePage("previous")}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                type="button"
+                disabled={!usersPage.next}
+                onClick={() => changePage("next")}
+                className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
-</div>
-<div className="mt-4">
-  <p className="text-xs text-gray-500">
-    Account Status
-  </p>
-
-  <span
-    className={`mt-1 inline-flex rounded-full px-3 py-1 text-xs font-medium ${
-      selectedStudent.status === "Active"
-        ? "bg-green-100 text-green-700"
-        : "bg-gray-100 text-gray-500"
-    }`}
-  >
-    ● {selectedStudent.status}
-  </span>
-</div>
-
-<div className="mt-4">
-  <p className="text-xs text-gray-500">
-    Date Joined
-  </p>
-  <p className="mt-1 text-sm font-medium text-gray-900">
-    April 3, 2026
-  </p>
-</div>
-
-<div className="mt-5 flex items-center justify-between">
-  <button
-    type="button"
-    
-
-onClick={() => setShowMessagePreview(true)}
-
-
-    className="rounded-md bg-purple-700 px-6 py-2 text-sm font-medium text-white hover:bg-purple-800"
-  >
-    Message
-  </button>
-  
-<button
-  type="button"
-  
-onClick={() => {
-  const newStatus =
-    selectedStudent.status === "Active" ? "Inactive" : "Active";
-
-  setStudentList((previousList) =>
-    previousList.map((student) =>
-      student.id === selectedStudent.id
-        ? { ...student, status: newStatus }
-        : student
-    )
-  );
-
-  setSelectedStudent({
-    ...selectedStudent,
-    status: newStatus,
-  });
-}}
-
-  className="rounded-md bg-gray-200 px-6 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
->
-  
-{selectedStudent.status === "Active"
-  ? "Deactivate Account"
-  : "Activate Account"}
-
-</button>
-
-</div>
-
+      {selectedUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="selected-user-heading"
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2 id="selected-user-heading" className="text-lg font-semibold text-gray-900">
+                User details
+              </h2>
+              <button
+                type="button"
+                onClick={() => setSelectedUser(null)}
+                aria-label="Close user details"
+                className="text-xl text-gray-500 hover:text-gray-900"
+              >
+                ×
+              </button>
+            </div>
+            <dl className="mt-5 grid grid-cols-2 gap-4">
+              <div>
+                <dt className="text-xs text-gray-500">Name</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-900">
+                  {displayName(selectedUser)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Username</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-900">
+                  @{selectedUser.username}
+                </dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="text-xs text-gray-500">Email</dt>
+                <dd className="mt-1 break-all text-sm font-medium text-gray-900">
+                  {selectedUser.email || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Role</dt>
+                <dd className="mt-1 text-sm font-medium capitalize text-gray-900">
+                  {selectedUser.user_role || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">User ID</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-900">
+                  {selectedUser.id}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Account status</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-900">
+                  {selectedUser.is_active ? "Active" : "Inactive"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Staff account</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-900">
+                  {selectedUser.is_staff ? "Yes" : "No"}
+                </dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="text-xs text-gray-500">Date joined</dt>
+                <dd className="mt-1 text-sm font-medium text-gray-900">
+                  {formatCreatedAt(selectedUser.created_at)}
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-6 border-t border-gray-100 pt-4">
+              <button
+                type="button"
+                disabled
+                title="Account changes require a secure backend endpoint."
+                className="cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-500"
+              >
+                Account changes unavailable
+              </button>
+              <p className="mt-2 text-xs text-gray-500">
+                This user list is read-only. Account activation, deactivation,
+                editing, and deletion are unavailable until secure backend
+                endpoints are provided.
+              </p>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
-  </div>
-)}
-   
-    
-{showMessagePreview && selectedStudent && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-    <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">
-          Message {selectedStudent.name}
-        </h2>
-        <button
-          type="button"
-          onClick={() => setShowMessagePreview(false)}
-          className="text-xl text-gray-500"
-        >
-          ×
-        </button>
-      </div>
-      <p className="mt-4 text-sm text-gray-500">
-        Compose a message to this student.
-      </p>
-      
-<textarea
-
-value={messageText}
-onChange={(e) => setMessageText(e.target.value)}
-
-placeholder="Type your message here..."
-  rows={4}
-  className="mt-4 w-full rounded-lg border border-gray-300 p-3 text-sm outline-none focus:border-purple-600"
-/>
-
-<button
-  type="button"
-  
-onClick={() => {
- 
-setMessageConfirmation(`Message preview completed for ${selectedStudent.name}. No message was sent.`);
-
-  setMessageText("");
-  setShowMessagePreview(false);
-}}
-
-  disabled={!messageText.trim()}
-  className="mt-4 rounded-lg bg-purple-700 px-6 py-3 text-sm font-medium text-white hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
->
-  Send Message
-</button>
-
-
-    </div>
-  </div>
-)}
- </div>
   );
-};
-
-export default AdminStudents;
+}

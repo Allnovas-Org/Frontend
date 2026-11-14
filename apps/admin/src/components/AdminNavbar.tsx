@@ -18,7 +18,7 @@ import {
 
 const menuItems = [
   { name: "Dashboard", path: "/admin", icon: LayoutDashboard },
-  { name: "Students", path: "/admin/students", icon: GraduationCap },
+  { name: "User Management", path: "/admin/students", icon: GraduationCap },
   { name: "Freelancers", path: "/admin/freelancers", icon: Users },
   
 { name: "Recruiters/Clients", path: "/admin/recruiters-clients", icon: Building2 },
