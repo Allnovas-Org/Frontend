@@ -15,6 +15,7 @@ import ProjectDetails from "./pages/ProjectDetails";
 import Applications from "./pages/Applications";
 import CourseInternshipPayments from "./pages/CourseInternshipPayments";
 import FreelancerPayments from "./pages/FreelancerPayments";
+import Profile from "./pages/Profile";
 function App() {
   return (
     <BrowserRouter>
@@ -35,6 +36,7 @@ function App() {
 <Route path="applications" element={<Applications />} />
 <Route path="course-payments" element={<CourseInternshipPayments />} />
 <Route path="freelancer-payments" element={<FreelancerPayments />} />
+<Route path="profile" element={<Profile />} />
 
         </Route>
       </Routes>
