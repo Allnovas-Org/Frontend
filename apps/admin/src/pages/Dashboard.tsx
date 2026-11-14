@@ -1,4 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  AdminAuthenticationError,
+  fetchPlatformOverview,
+  type PlatformOverview,
+} from "../services/adminDashboardApi";
 import {
   LineChart,
   Line,
@@ -50,7 +56,64 @@ const learningPathData = [
   { name: "Others", value: 5, color: "#FED7AA" },
 ];
 
+const platformStatistics: { label: string; key: keyof PlatformOverview }[] = [
+  { label: "Total Users", key: "total_users" },
+  { label: "Active Users", key: "active_users" },
+  { label: "Total Freelancers", key: "total_freelancers" },
+  { label: "Total Clients", key: "total_clients" },
+  { label: "Total Jobs", key: "total_jobs" },
+  { label: "Total Conversations", key: "total_conversations" },
+  { label: "Total Messages", key: "total_messages" },
+];
+
 const AdminDashboard = () => {
+  const [overview, setOverview] = useState<PlatformOverview | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadOverview() {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const data = await fetchPlatformOverview();
+        if (active) {
+          setOverview(data);
+        }
+      } catch (loadError) {
+        if (loadError instanceof AdminAuthenticationError) {
+          if (active) {
+            navigate("/sign-in", { replace: true });
+          }
+          return;
+        }
+        if (active) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Could not load platform statistics."
+          );
+          setOverview(null);
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadOverview();
+
+    return () => {
+      active = false;
+    };
+  }, [navigate, retryCount]);
+
   return (
     <div className="w-full">
 
@@ -88,6 +151,58 @@ const AdminDashboard = () => {
         </div>
 
       </div>
+
+      <section
+        aria-labelledby="platform-statistics-heading"
+        className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+      >
+        <h2
+          id="platform-statistics-heading"
+          className="text-xl font-semibold text-gray-900"
+        >
+          Platform Statistics
+        </h2>
+
+        {isLoading ? (
+          <p role="status" className="mt-5 text-sm text-gray-500">
+            Loading platform statistics...
+          </p>
+        ) : error ? (
+          <div className="mt-5" role="alert">
+            <p className="text-sm text-red-600">{error}</p>
+            <button
+              type="button"
+              onClick={() => setRetryCount((count) => count + 1)}
+              className="mt-3 text-sm font-medium text-purple-700 hover:underline"
+            >
+              Try again
+            </button>
+          </div>
+        ) : overview === null ? (
+          <p className="mt-5 text-sm text-gray-500">
+            No platform statistics are available yet.
+          </p>
+        ) : (
+          <dl className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {platformStatistics.map(({ label, key }) => (
+              <div
+                key={key}
+                className="rounded-lg border border-gray-100 bg-gray-50 p-4"
+              >
+                <dt className="text-sm text-gray-500">{label}</dt>
+                <dd className="mt-2 text-2xl font-bold text-gray-900">
+                  {overview[key].toLocaleString()}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </section>
+
+      <p className="mb-3 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        Demo data: the learning metrics, charts, and tables below are sample
+        content and are not live platform statistics.
+      </p>
 
       {/* Dashboard Statistics */}
 
