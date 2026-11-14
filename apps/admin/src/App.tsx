@@ -18,6 +18,7 @@ import FreelancerPayments from "./pages/FreelancerPayments";
 import Profile from "./pages/Profile";
 import Transactions from "./pages/Transactions";
 import Messages from "./pages/Messages";
+import CertificateManagement from "./pages/certificate";
 function App() {
   return (
     <BrowserRouter>
@@ -41,6 +42,7 @@ function App() {
 <Route path="profile" element={<Profile />} />
 <Route path="transactions" element={<Transactions />} />
 <Route path="messages" element={<Messages />} />
+<Route path="certificates" element={<CertificateManagement />} />
 
         </Route>
       </Routes>
