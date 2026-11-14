@@ -17,6 +17,7 @@ import CourseInternshipPayments from "./pages/CourseInternshipPayments";
 import FreelancerPayments from "./pages/FreelancerPayments";
 import Profile from "./pages/Profile";
 import Transactions from "./pages/Transactions";
+import Messages from "./pages/Messages";
 function App() {
   return (
     <BrowserRouter>
@@ -39,6 +40,7 @@ function App() {
 <Route path="freelancer-payments" element={<FreelancerPayments />} />
 <Route path="profile" element={<Profile />} />
 <Route path="transactions" element={<Transactions />} />
+<Route path="messages" element={<Messages />} />
 
         </Route>
       </Routes>
