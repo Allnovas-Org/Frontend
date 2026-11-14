@@ -2,6 +2,12 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminLayout from "./layout/AdminLayout";
+import RequireAdmin from "./auth/RequireAdmin";
+import SignIn from "./auth/SignIn";
+import SignUp from "./auth/SignUp";
+import ForgotPassword from "./auth/ForgotPassword";
+import EmailSent from "./auth/EmailSent";
+import ResetPassword from "./auth/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import Freelancers from "./pages/Freelancers";
@@ -24,7 +30,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/email-sent" element={<EmailSent />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/admin"
+          element={
+            <RequireAdmin>
+              <AdminLayout />
+            </RequireAdmin>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="students" element={<Students />} />
           <Route path="freelancers" element={<Freelancers />} />
