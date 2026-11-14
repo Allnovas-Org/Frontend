@@ -6,6 +6,7 @@ import {
   Users,
   Building2,
   BriefcaseBusiness,
+  Briefcase,
   BookOpen,
   ClipboardList,
   CreditCard,
@@ -24,6 +25,7 @@ const menuItems = [
 { name: "Recruiters/Clients", path: "/admin/recruiters-clients", icon: Building2 },
 
   { name: "Projects", path: "/admin/projects", icon: BriefcaseBusiness },
+  { name: "Freelance Jobs", path: "/admin/jobs", icon: Briefcase },
   { name: "Courses", path: "/admin/courses", icon: BookOpen },
   { name: "Applications", path: "/admin/applications", icon: ClipboardList },
   { name: "Course/Internship Payments", path: "/admin/course-payments", icon: CreditCard },

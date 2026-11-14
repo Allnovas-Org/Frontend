@@ -17,6 +17,7 @@ import JobVacancy from "./pages/JobVacancy";
 import AvailableJob from "./pages/AvailableJob";
 
 import Projects from "./pages/Projects";
+import AdminJobs from "./pages/AdminJobs";
 import ProjectDetails from "./pages/ProjectDetails";
 import Applications from "./pages/Applications";
 import CourseInternshipPayments from "./pages/CourseInternshipPayments";
@@ -54,6 +55,7 @@ function App() {
 <Route path="available-job" element={<AvailableJob />} />
 
 <Route path="projects" element={<Projects />} />
+<Route path="jobs" element={<AdminJobs />} />
 <Route path="projects/:id" element={<ProjectDetails />} />
 
 <Route path="applications" element={<Applications />} />
