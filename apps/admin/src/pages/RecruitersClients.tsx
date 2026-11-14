@@ -1,356 +1,424 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AdminAuthenticationError } from "../services/adminDashboardApi";
+import {
+  fetchAdminClients,
+  type AdminClient,
+  type AdminClientsPage,
+} from "../services/adminClientsApi";
 
-import { UsersRound, BriefcaseBusiness, TrendingUp } from "lucide-react";
+function displayName(client: AdminClient): string {
+  return [client.first_name, client.last_name]
+    .filter((name): name is string => Boolean(name?.trim()))
+    .join(" ");
+}
+
+function formatDate(value: string | null | undefined): string {
+  if (!value) {
+    return "—";
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+}
+
+function formatClientType(value: string | null | undefined): string {
+  if (!value?.trim()) {
+    return "Not specified";
+  }
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "individual") {
+    return "Individual";
+  }
+  if (normalized === "company") {
+    return "Company";
+  }
+  return value;
+}
+
+function initials(client: AdminClient): string {
+  const name = displayName(client);
+  if (name) {
+    return name
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  }
+  return client.username?.trim().charAt(0).toUpperCase() || "?";
+}
+
 export default function RecruitersClients() {
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageUrl, setPageUrl] = useState<string | null>(null);
+  const [clientsPage, setClientsPage] = useState<AdminClientsPage | null>(null);
+  const [selectedClient, setSelectedClient] = useState<AdminClient | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPageNumber(1);
+      setPageUrl(null);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [searchInput]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    async function loadClients() {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const result = await fetchAdminClients({
+          search,
+          page: pageNumber,
+          pageUrl,
+          signal: controller.signal,
+        });
+        if (active) {
+          setClientsPage(result);
+        }
+      } catch (loadError) {
+        if (loadError instanceof AdminAuthenticationError) {
+          if (active) {
+            navigate("/sign-in", { replace: true });
+          }
+          return;
+        }
+
+        if (active && !controller.signal.aborted) {
+          setError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Could not load clients."
+          );
+          setClientsPage(null);
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadClients();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [navigate, pageNumber, pageUrl, retryCount, search]);
+
+  function changePage(direction: "next" | "previous") {
+    if (!clientsPage) {
+      return;
+    }
+    const target =
+      direction === "next" ? clientsPage.next : clientsPage.previous;
+    if (!target) {
+      return;
+    }
+    setPageUrl(target);
+    setPageNumber((current) =>
+      direction === "next" ? current + 1 : Math.max(1, current - 1)
+    );
+    setSelectedClient(null);
+  }
+
+  const clients = clientsPage?.results ?? [];
+
   return (
-    <div className="p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Recruiters/Clients
-          </h1>
-          <p className="mt-2 text-sm text-gray-500">
-            Manage recruiters, companies, and job opportunities.
-          </p>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            type="button"
-            className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white"
-          >
-            + Add freelancer
-          </button>
-
-          <button
-            type="button"
-            className="rounded-md border border-purple-300 bg-white px-4 py-2 text-sm font-medium text-gray-900"
-          >
-            + Post project
-          </button>
-        </div>
-      </div>
-      
-{/* Statistics cards */}
-<div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
-  {[
-    {
-      title: "Recruiters",
-      value: "12,450",
-      growth: "1.3%",
-      period: "Up from past week",
-      Icon: UsersRound,
-      iconStyle: "bg-purple-100 text-purple-600",
-    },
-    {
-      title: "Active Company",
-      value: "48",
-      growth: "1.3%",
-      period: "Up from past week",
-      Icon: BriefcaseBusiness,
-      iconStyle: "bg-sky-100 text-cyan-500",
-    },
-    {
-      title: "Open Opportunities",
-      value: "1,240",
-      growth: "1.8%",
-      period: "Up from yesterday",
-      Icon: BriefcaseBusiness,
-      iconStyle: "bg-green-100 text-green-700",
-    },
-  ].map((stat) => (
-    <div
-      key={stat.title}
-      className="relative min-h-[170px] rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
-    >
-      <div className={`absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl ${stat.iconStyle}`}>
-        <stat.Icon size={23} strokeWidth={1.8} />
+    <div className="w-full p-4 sm:p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Clients</h1>
+        <p className="mt-2 text-sm text-gray-500">
+          Client accounts and company profile information.
+        </p>
       </div>
 
-      <p className="text-sm font-medium text-gray-500">
-        {stat.title}
-      </p>
-
-      <h2 className="mt-4 text-3xl font-bold text-gray-900">
-        {stat.value}
-      </h2>
-
-      <div className="mt-5 flex items-center gap-2 text-sm">
-        <TrendingUp size={16} className="text-teal-500" />
-        <span className="font-semibold text-teal-500">
-          {stat.growth}
-        </span>
-        <span className="text-gray-500">{stat.period}</span>
-      </div>
-    </div>
-  ))}
-</div>
-
-{/* Top Hiring Partner */}
-<div className="relative mt-5 min-h-[220px] overflow-hidden rounded-xl bg-slate-900 p-6 text-white">
-  <div className="relative z-10">
-    <p className="text-sm text-gray-200">
-      <span className="mr-2 text-yellow-400">★</span>
-      Top Hiring Partner
-    </p>
-
-    <h2 className="mt-3 text-3xl font-bold">
-      Stripe
-    </h2>
-
-    <p className="mt-2 max-w-md text-sm text-gray-300">
-      Actively hiring frontend and backend talents through the
-      Allnova ecosystem.
-    </p>
-
-    <div className="mt-8 flex flex-wrap gap-6 text-sm text-gray-200">
-      <span>♙ 10 hires this month</span>
-      <span>◷ 18 hires this month</span>
-    </div>
-  </div>
-
-  <div className="pointer-events-none absolute -bottom-24 -right-16 h-48 w-full rounded-[50%] bg-white/10" />
-</div>
-
-{/* Recruiters action buttons */}
-<div className="mt-5 flex flex-wrap gap-3">
-  <button
-    type="button"
-    className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
-  >
-    View opportunities
-  </button>
-
-  <button
-    type="button"
-    className="rounded-md border border-purple-300 bg-white px-4 py-2 text-sm font-medium text-purple-700 hover:bg-purple-50"
-  >
-    Company details
-  </button>
-</div>
-
-
-{/* Recruiters and Companies Table */}
-<div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
-  <div className="flex items-center justify-between p-5">
-    <div>
-      <h2 className="text-lg font-semibold text-gray-900">
-        Recruiters & Companies
-      </h2>
-      <p className="mt-1 text-sm text-gray-500">
-        Manage platform hiring partners
-      </p>
-    </div>
-
-    <button
-    onClick={() => window.location.href = "/admin/recruiters-companies"}
-      type="button"
-      className="text-sm font-medium text-purple-700"
-    >
-      View all
-    </button>
-  </div>
-
-  <div className="overflow-x-auto">
-    <table className="w-full text-left text-sm">
-      <thead className="bg-purple-50 text-gray-700">
-        <tr>
-          <th className="px-5 py-4 font-medium">Company</th>
-          <th className="px-5 py-4 font-medium">Recruiters</th>
-          <th className="px-5 py-4 font-medium">Opportunities</th>
-          <th className="px-5 py-4 font-medium">Performance</th>
-          <th className="px-5 py-4 font-medium">Status</th>
-          <th className="px-5 py-4 font-medium">Action</th>
-        </tr>
-      </thead>
-      
-<tbody className="divide-y divide-gray-100">
-  {[
-    { company: "Stripe", hires: 18, recruiter: "James Bond", email: "james.bond@example.com", roles: 12, category: "UI/UX, Frontend...", performance: 100, status: "Pending" },
-    { company: "PayPal", hires: 25, recruiter: "Tony Stark", email: "tony.stark@example.com", roles: 10, category: "Backend, DevOps...", performance: 85, status: "Active" },
-    { company: "Square", hires: 15, recruiter: "Bruce Wayne", email: "bruce.wayne@example.com", roles: 8, category: "Mobile, UI/UX...", performance: 100, status: "Verified" },
-    { company: "Amazon", hires: 30, recruiter: "Clark Kent", email: "clark.kent@example.com", roles: 14, category: "Frontend, Backend...", performance: 100, status: "Inactive" },
-    { company: "Apple", hires: 22, recruiter: "Diana Prince", email: "diana.prince@example.com", roles: 9, category: "UX Research, Design...", performance: 100, status: "Verified" },
-    { company: "Google", hires: 28, recruiter: "Peter Parker", email: "peter.parker@example.com", roles: 11, category: "Data Science, AI...", performance: 58, status: "Verified" },
-  ].map((company) => (
-    <tr key={company.company} className="hover:bg-gray-50">
-      <td className="px-5 py-4">
-        <p className="font-medium text-gray-900">{company.company}</p>
-        <p className="text-xs text-gray-500">{company.hires} hires</p>
-      </td>
-
-      <td className="px-5 py-4">
-        <p className="font-medium text-gray-900">{company.recruiter}</p>
-        <p className="text-xs text-gray-500">{company.email}</p>
-      </td>
-
-      <td className="px-5 py-4">
-        <p className="font-medium text-gray-900">{company.roles} Roles</p>
-        <p className="text-xs text-gray-500">{company.category}</p>
-      </td>
-
-      <td className="px-5 py-4">
-        <div className="flex items-center gap-2">
-          <div className="h-1.5 w-20 rounded-full bg-gray-100">
-            <div
-              className={`h-full rounded-full ${company.performance < 70 ? "bg-yellow-400" : "bg-green-500"}`}
-              style={{ width: `${company.performance}%` }}
-            />
-          </div>
-          <span className="text-xs font-medium text-green-600">
-            {company.performance}%
-          </span>
-        </div>
-      </td>
-
-      <td className="px-5 py-4">
-        <span className={`rounded-full px-3 py-1 text-xs font-medium ${
-          company.status === "Verified" ? "bg-green-100 text-green-700" :
-          company.status === "Pending" ? "bg-yellow-100 text-yellow-700" :
-          company.status === "Active" ? "bg-purple-100 text-purple-700" :
-          "bg-gray-100 text-gray-500"
-        }`}>
-          • {company.status}
-        </span>
-      </td>
-
-      <td className="px-5 py-4">
-        <button type="button" className="text-sm font-medium text-purple-700">
-          View
-        </button>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
-    </table>
-  </div>
-</div>
-
- 
-{/* Job & Vacancy Section */}
-<div className="mt-8">
-  <div className="mb-4 flex items-center justify-between">
-    <h2 className="text-lg font-semibold text-gray-900">
-      Job & Vacancy
-    </h2>
-    <button
-      type="button"
-      onClick={() => window.location.href = "/admin/job-vacancy"}
-      className="text-sm font-medium text-purple-700"
-    >
-      View all
-    </button>
-  </div>
-
-  <div className="divide-y divide-gray-200">
-    {[
-      { company: "Stripe", location: "Remote", type: "Full-time", status: "Hiring" },
-      { company: "Airbnb", location: "On-site", type: "Full-time", status: "Hiring" },
-      { company: "GitHub", location: "Hybrid", type: "Contract", status: "Closed" },
-      { company: "Notion", location: "Remote", type: "Part-time", status: "Hiring" },
-    ].map((job) => (
-      <div
-        key={job.company}
-        className="flex items-center justify-between gap-4 py-4"
+      <section
+        aria-label="Client account statistics"
+        className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3"
       >
-        <div>
-          <p className="text-sm font-medium text-gray-900">
-            Senior Frontend Engineer
+        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <p className="text-sm font-medium text-gray-500">Total clients</p>
+          <p className="mt-3 text-3xl font-bold text-gray-900">
+            {isLoading || error || !clientsPage
+              ? "—"
+              : clientsPage.count.toLocaleString()}
           </p>
-          <p className="mt-1 text-xs text-gray-500">
-            {job.company} · {job.location} · {job.type}
+          <p className="mt-3 text-xs text-gray-500">
+            {isLoading
+              ? "Loading client count..."
+              : "Total returned by the client directory API"}
           </p>
         </div>
+      </section>
 
-        <div className="flex items-center gap-6">
-          <span className="text-sm font-medium text-gray-700">
-            $120K–150K
-          </span>
-          <span
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              job.status === "Hiring"
-                ? "bg-green-50 text-green-600"
-                : "bg-gray-100 text-gray-500"
-            }`}
-          >
-            • {job.status}
-          </span>
-        </div>
-      </div>
-    ))}
-  </div>
-</div>
-
-{/* Available Job Section */}
-<div className="mt-10">
-  <div className="mb-5 flex items-center justify-between">
-    <h2 className="text-lg font-semibold text-gray-900">
-      Available Job
-    </h2>
-    
-<button
-  type="button"
-  onClick={() => window.location.href = "/admin/available-job"}
-  className="text-sm font-medium text-purple-700"
->
-
-      View all
-    </button>
-  </div>
-
-  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {Array.from({ length: 6 }, (_, index) => (
-      <div
-        key={index}
-        className="rounded-xl border border-gray-200 bg-white p-5"
-      >
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-900 text-sm font-bold text-white">
-              N
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-gray-900">Notion</h3>
-              <p className="text-xs text-gray-500">Bessie Cooper</p>
-            </div>
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Client Directory
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Search and view client account details.
+            </p>
           </div>
 
-          <span className={`rounded-full px-3 py-1 text-xs font-medium ${
-            index === 2 || index === 4
-              ? "bg-yellow-50 text-yellow-600"
-              : "bg-green-50 text-green-600"
-          }`}>
-            {index === 2 || index === 4 ? "Pending" : "Verified"}
-          </span>
+          <label className="sr-only" htmlFor="client-search">
+            Search clients by name, username, or email
+          </label>
+          <input
+            id="client-search"
+            type="search"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder="Search name, username, or email..."
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-purple-600 sm:max-w-sm"
+          />
         </div>
 
-        <div className="mt-5 flex gap-3">
-          <div className="rounded-md border border-gray-200 px-3 py-2">
-            <p className="text-xs text-gray-500">Hires</p>
-            <p className="text-sm font-semibold">18</p>
-          </div>
-          <div className="rounded-md border border-gray-200 px-3 py-2">
-            <p className="text-xs text-gray-500">Roles</p>
-            <p className="text-sm font-semibold">12</p>
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-wrap gap-2">
-          {["React", "Node.js", "Figma", "Next.js"].map((skill) => (
-            <span
-              key={skill}
-              className="rounded border border-gray-200 px-2 py-1 text-xs text-gray-500"
+        {isLoading ? (
+          <p role="status" className="p-6 text-sm text-gray-500">
+            Loading clients...
+          </p>
+        ) : error ? (
+          <div role="alert" className="p-6">
+            <p className="text-sm text-red-600">{error}</p>
+            <button
+              type="button"
+              onClick={() => setRetryCount((count) => count + 1)}
+              className="mt-3 text-sm font-medium text-purple-700 hover:underline"
             >
-              {skill}
-            </span>
-          ))}
+              Try again
+            </button>
+          </div>
+        ) : clients.length === 0 ? (
+          <p className="p-6 text-sm text-gray-500">
+            {search
+              ? "No clients match your search."
+              : "No client accounts are available."}
+          </p>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-purple-50 text-gray-700">
+                  <tr>
+                    <th className="px-5 py-4 font-medium">Client</th>
+                    <th className="px-5 py-4 font-medium">Type</th>
+                    <th className="px-5 py-4 font-medium">Company</th>
+                    <th className="px-5 py-4 font-medium">Title</th>
+                    <th className="px-5 py-4 font-medium">Status</th>
+                    <th className="px-5 py-4 font-medium">Joined</th>
+                    <th className="px-5 py-4 font-medium">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {clients.map((client) => (
+                    <tr key={client.id} className="hover:bg-gray-50">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-700">
+                            {initials(client)}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {displayName(client) || "Name unavailable"}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {client.email?.trim() || "Email unavailable"}
+                            </p>
+                            {client.username?.trim() && (
+                              <p className="text-xs text-gray-400">
+                                @{client.username}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-5 py-4 text-gray-600">
+                        {formatClientType(client.client_type)}
+                      </td>
+                      <td className="px-5 py-4 text-gray-600">
+                        {client.company_name?.trim() || "—"}
+                      </td>
+                      <td className="px-5 py-4 text-gray-600">
+                        {client.title?.trim() || "—"}
+                      </td>
+                      <td className="px-5 py-4">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-medium ${
+                            client.is_active
+                              ? "bg-green-100 text-green-700"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {client.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4 text-gray-600">
+                        {formatDate(client.created_at)}
+                      </td>
+                      <td className="px-5 py-4">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedClient(client)}
+                          className="text-sm font-medium text-purple-700 hover:underline"
+                        >
+                          View Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 px-5 py-4">
+              <p className="text-sm text-gray-500">
+                {clientsPage?.count.toLocaleString()} clients · Page {pageNumber}
+              </p>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={!clientsPage?.previous}
+                  onClick={() => changePage("previous")}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  type="button"
+                  disabled={!clientsPage?.next}
+                  onClick={() => changePage("next")}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </section>
+
+      <p className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        Client management is read-only. Adding freelancers or projects,
+        editing client profiles, and changing account status are unavailable
+        without dedicated secure backend endpoints.
+      </p>
+
+      {selectedClient && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="client-details-heading"
+            className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <h2
+                id="client-details-heading"
+                className="text-xl font-bold text-gray-900"
+              >
+                Client Details
+              </h2>
+              <button
+                type="button"
+                onClick={() => setSelectedClient(null)}
+                className="text-2xl text-gray-500 hover:text-gray-900"
+                aria-label="Close client details"
+              >
+                ×
+              </button>
+            </div>
+
+            <dl className="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+              <div>
+                <dt className="text-xs text-gray-500">Name</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {displayName(selectedClient) || "Name unavailable"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Username</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {selectedClient.username?.trim() || "—"}
+                </dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs text-gray-500">Email</dt>
+                <dd className="mt-1 break-all font-medium text-gray-900">
+                  {selectedClient.email?.trim() || "Email unavailable"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Client type</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {formatClientType(selectedClient.client_type)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Title</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {selectedClient.title?.trim() || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Company</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {selectedClient.company_name?.trim() || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Industry</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {selectedClient.company_industry?.trim() || "—"}
+                </dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs text-gray-500">Company website</dt>
+                <dd className="mt-1 break-all font-medium text-gray-900">
+                  {selectedClient.company_website?.trim() || "—"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Account status</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {selectedClient.is_active ? "Active" : "Inactive"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-gray-500">Date joined</dt>
+                <dd className="mt-1 font-medium text-gray-900">
+                  {formatDate(selectedClient.created_at)}
+                </dd>
+              </div>
+            </dl>
+
+            <p className="mt-6 border-t border-gray-100 pt-4 text-xs text-gray-500">
+              Client details are read-only. Profile edits and account status
+              changes require dedicated secure backend endpoints.
+            </p>
+          </section>
         </div>
-      </div>
-    ))}
-  </div>
-</div>
-  
-   
+      )}
     </div>
   );
 }
