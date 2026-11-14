@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminAuthenticationError } from "../services/adminDashboardApi";
 import {
+  AdminUserStatusError,
   fetchAdminUsers,
+  updateAdminUserStatus,
   type AdminUser,
   type AdminUsersPage,
 } from "../services/adminUsersApi";
@@ -24,6 +26,15 @@ function displayName(user: AdminUser): string {
   return [user.first_name, user.last_name].filter(Boolean).join(" ") || user.username;
 }
 
+type StatusConfirmation = {
+  user: AdminUser;
+  isActive: boolean;
+};
+
+function isProtectedUser(user: AdminUser): boolean {
+  return user.is_staff || user.user_role.toLowerCase() === "admin";
+}
+
 export default function AdminStudents() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -32,6 +43,12 @@ export default function AdminStudents() {
   const [pageUrl, setPageUrl] = useState<string | null>(null);
   const [usersPage, setUsersPage] = useState<AdminUsersPage | null>(null);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [statusConfirmation, setStatusConfirmation] =
+    useState<StatusConfirmation | null>(null);
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState("");
+  const [statusNotice, setStatusNotice] = useState("");
+  const statusRequestInProgress = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
@@ -118,6 +135,56 @@ export default function AdminStudents() {
     setSelectedUser(null);
   }
 
+  async function confirmStatusChange() {
+    if (!statusConfirmation || statusRequestInProgress.current) {
+      return;
+    }
+
+    const { user, isActive } = statusConfirmation;
+    if (isProtectedUser(user)) {
+      return;
+    }
+
+    statusRequestInProgress.current = true;
+    setUpdatingUserId(String(user.id));
+    setStatusError("");
+    setStatusNotice("");
+
+    try {
+      await updateAdminUserStatus(user.id, isActive);
+      setStatusConfirmation(null);
+      setSelectedUser(null);
+      setStatusNotice(
+        `${displayName(user)}'s account was ${isActive ? "activated" : "deactivated"}.`
+      );
+      setRetryCount((count) => count + 1);
+    } catch (updateError) {
+      if (updateError instanceof AdminAuthenticationError) {
+        navigate("/sign-in", { replace: true });
+        return;
+      }
+
+      const message =
+        updateError instanceof AdminUserStatusError
+          ? updateError.message
+          : updateError instanceof Error
+            ? updateError.message
+            : "Could not update account status. Please try again.";
+      setStatusError(message);
+
+      if (
+        updateError instanceof AdminUserStatusError &&
+        updateError.status === 404
+      ) {
+        setStatusConfirmation(null);
+        setRetryCount((count) => count + 1);
+      }
+    } finally {
+      statusRequestInProgress.current = false;
+      setUpdatingUserId(null);
+    }
+  }
+
   const users = usersPage?.results ?? [];
 
   return (
@@ -126,6 +193,15 @@ export default function AdminStudents() {
       <p className="mt-2 text-sm text-gray-500">
         View platform accounts and their current access status.
       </p>
+
+      {statusNotice && (
+        <p
+          role="status"
+          className="mt-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+        >
+          {statusNotice}
+        </p>
+      )}
 
       <section
         aria-label="User list filters"
@@ -352,19 +428,92 @@ export default function AdminStudents() {
               </div>
             </dl>
             <div className="mt-6 border-t border-gray-100 pt-4">
+              {isProtectedUser(selectedUser) ? (
+                <p className="text-sm text-gray-500">
+                  Account status changes are disabled for staff and administrator accounts.
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  disabled={updatingUserId !== null}
+                  onClick={() => {
+                    setStatusError("");
+                    setStatusConfirmation({
+                      user: selectedUser,
+                      isActive: !selectedUser.is_active,
+                    });
+                  }}
+                  className={`rounded-md px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50 ${
+                    selectedUser.is_active
+                      ? "bg-gray-700 hover:bg-gray-800"
+                      : "bg-purple-700 hover:bg-purple-800"
+                  }`}
+                >
+                  {selectedUser.is_active ? "Deactivate Account" : "Activate Account"}
+                </button>
+              )}
+              {statusError && (
+                <p role="alert" className="mt-3 text-sm text-red-600">
+                  {statusError}
+                </p>
+              )}
+              <p className="mt-2 text-xs text-gray-500">
+                Status changes are available only for ordinary, non-staff accounts.
+              </p>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {statusConfirmation && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
+          <section
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="status-confirmation-heading"
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <h2
+              id="status-confirmation-heading"
+              className="text-lg font-semibold text-gray-900"
+            >
+              Confirm {statusConfirmation.isActive ? "activation" : "deactivation"}
+            </h2>
+            <p className="mt-4 text-sm text-gray-700">
+              {statusConfirmation.isActive ? "Activate" : "Deactivate"} the account
+              for{" "}
+              <strong>{displayName(statusConfirmation.user)}</strong>
+              {" "}({statusConfirmation.user.email || "no email address"})?
+            </p>
+            {statusError && (
+              <p role="alert" className="mt-3 text-sm text-red-600">
+                {statusError}
+              </p>
+            )}
+            <div className="mt-6 flex justify-end gap-3">
               <button
                 type="button"
-                disabled
-                title="Account changes require a secure backend endpoint."
-                className="cursor-not-allowed rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-500"
+                disabled={updatingUserId !== null}
+                onClick={() => {
+                  setStatusConfirmation(null);
+                  setStatusError("");
+                }}
+                className="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Account changes unavailable
+                Cancel
               </button>
-              <p className="mt-2 text-xs text-gray-500">
-                This user list is read-only. Account activation, deactivation,
-                editing, and deletion are unavailable until secure backend
-                endpoints are provided.
-              </p>
+              <button
+                type="button"
+                disabled={updatingUserId !== null}
+                onClick={() => void confirmStatusChange()}
+                className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {updatingUserId !== null
+                  ? "Updating..."
+                  : statusConfirmation.isActive
+                    ? "Confirm activation"
+                    : "Confirm deactivation"}
+              </button>
             </div>
           </section>
         </div>

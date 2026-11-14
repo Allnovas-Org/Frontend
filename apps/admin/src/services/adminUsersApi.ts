@@ -30,6 +30,16 @@ export type FetchAdminUsersOptions = {
   signal?: AbortSignal;
 };
 
+export class AdminUserStatusError extends Error {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
+    super(message);
+    this.name = "AdminUserStatusError";
+  }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -96,6 +106,31 @@ async function getErrorMessage(response: Response): Promise<string> {
   return `Could not load users (HTTP ${response.status}).`;
 }
 
+async function getStatusErrorDetail(response: Response): Promise<string | undefined> {
+  try {
+    const payload: unknown = await response.json();
+    if (isRecord(payload)) {
+      const detail = payload.detail ?? payload.message;
+      if (typeof detail === "string" && detail.trim()) {
+        return detail;
+      }
+
+      for (const value of Object.values(payload)) {
+        if (typeof value === "string" && value.trim()) {
+          return value;
+        }
+        if (Array.isArray(value) && typeof value[0] === "string") {
+          return value[0];
+        }
+      }
+    }
+  } catch {
+    // The status-specific message below is used if the response has no readable detail.
+  }
+
+  return undefined;
+}
+
 export async function fetchAdminUsers(
   options: FetchAdminUsersOptions
 ): Promise<AdminUsersPage> {
@@ -148,4 +183,54 @@ export async function fetchAdminUsers(
     previous: payload.previous,
     results: payload.results,
   };
+}
+
+export async function updateAdminUserStatus(
+  userId: AdminUser["id"],
+  isActive: boolean
+): Promise<void> {
+  const accessToken = getAdminSession()?.accessToken;
+  if (!accessToken) {
+    clearAdminSession();
+    throw new AdminAuthenticationError();
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(
+      `${USERS_URL}${encodeURIComponent(String(userId))}/status/`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_active: isActive }),
+      }
+    );
+  } catch {
+    throw new AdminUserStatusError(
+      "Network error: the account status could not be updated. Check your connection and try again.",
+      0
+    );
+  }
+
+  if (response.status === 401) {
+    clearAdminSession();
+    throw new AdminAuthenticationError();
+  }
+
+  if (!response.ok) {
+    const detail = await getStatusErrorDetail(response);
+    const message =
+      response.status === 400
+        ? `The status change was rejected.${detail ? ` ${detail}` : " Check the request and try again."}`
+        : response.status === 403
+          ? `You are not allowed to change this account.${detail ? ` ${detail}` : " Staff and protected accounts cannot be changed."}`
+          : response.status === 404
+            ? "This user could not be found. The user list will be refreshed."
+            : detail ?? `Could not update account status (HTTP ${response.status}).`;
+    throw new AdminUserStatusError(message, response.status);
+  }
 }
