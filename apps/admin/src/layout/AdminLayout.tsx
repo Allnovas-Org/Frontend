@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import AdminNavbar from "../components/AdminNavbar";
 import allnovaLogo from "../assets/AllNova black 2 (1).png";
 import { Search, Bell, Settings, Plus } from "lucide-react";
 import adminProfile from "../assets/demilade.png";
 const AdminLayout = () => {
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("allnova-admin-settings-preferences.v1");
+      const appearance: unknown = saved ? JSON.parse(saved)?.appearance : "light";
+      const resolved = appearance === "dark" ? "dark" : "light";
+      document.documentElement.dataset.adminAppearance = resolved;
+      document.documentElement.style.colorScheme = resolved;
+    } catch (error) {
+      console.error("Could not load the saved admin appearance preference.", error);
+      document.documentElement.dataset.adminAppearance = "light";
+      document.documentElement.style.colorScheme = "light";
+    }
+  }, []);
+
   return (
     <div className="relative flex min-h-screen bg-gray-50">
 

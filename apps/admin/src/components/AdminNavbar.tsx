@@ -62,7 +62,11 @@ const AdminNavbar = () => {
       <div className="mt-12 border-t border-gray-700 pt-4">
         <NavLink
           to="/admin/settings"
-          className="block px-4 py-3 text-sm text-gray-300"
+          className={({ isActive }) =>
+            `block rounded-lg px-4 py-3 text-sm transition ${
+              isActive ? "bg-[#8700D4] text-white" : "text-gray-300 hover:bg-purple-900"
+            }`
+          }
         >
           Settings
         </NavLink>

@@ -1,2 +1,47 @@
 
 @import "tailwindcss";
+
+html[data-admin-appearance="dark"] body,
+html[data-admin-appearance="dark"] #root .min-h-screen {
+  background-color: #100c14;
+}
+
+html[data-admin-appearance="dark"] #root header.fixed {
+  background-color: #19131f;
+  border-color: #342a3d;
+  color: #f3f4f6;
+}
+
+html[data-admin-appearance="dark"] #root header.fixed input {
+  border-color: #44384e;
+  background-color: #100c14;
+  color: #f3f4f6;
+}
+
+html[data-admin-appearance="dark"] #root header.fixed > div:first-child img {
+  filter: brightness(0) invert(1);
+}
+
+html[data-admin-appearance="dark"] #root main {
+  background-color: #100c14;
+  color: #f3f4f6;
+}
+
+html[data-admin-appearance="dark"] #root main .bg-white,
+html[data-admin-appearance="dark"] #root main .bg-gray-50 {
+  background-color: #19131f;
+}
+
+html[data-admin-appearance="dark"] #root main .border-gray-100,
+html[data-admin-appearance="dark"] #root main .border-gray-200,
+html[data-admin-appearance="dark"] #root main .border-gray-300 {
+  border-color: #3a3043;
+}
+
+html[data-admin-appearance="dark"] #root main .text-gray-900,
+html[data-admin-appearance="dark"] #root main .text-gray-800,
+html[data-admin-appearance="dark"] #root main .text-gray-700,
+html[data-admin-appearance="dark"] #root main .text-gray-600,
+html[data-admin-appearance="dark"] #root main .text-gray-500 {
+  color: #e5e0e9;
+}

@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import Transactions from "./pages/Transactions";
 import Messages from "./pages/Messages";
 import CertificateManagement from "./pages/certificate";
+import Settings from "./pages/settings";
 function App() {
   return (
     <BrowserRouter>
@@ -43,6 +44,7 @@ function App() {
 <Route path="transactions" element={<Transactions />} />
 <Route path="messages" element={<Messages />} />
 <Route path="certificates" element={<CertificateManagement />} />
+<Route path="settings" element={<Settings />} />
 
         </Route>
       </Routes>
