@@ -1,7 +1,8 @@
 import { clearAdminSession, getAdminSession } from "../auth/adminAuth";
 import { AdminAuthenticationError } from "./adminDashboardApi";
+import { adminApiUrl } from "./adminApiConfig";
 
-const CLIENTS_URL = "https://allnovas.com/api/v1/admin/clients/";
+const CLIENTS_URL = adminApiUrl("/api/v1/admin/clients/");
 
 export type AdminClient = {
   id: number | string;

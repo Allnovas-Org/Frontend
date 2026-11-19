@@ -1,7 +1,8 @@
 import { clearAdminSession, getAdminSession } from "../auth/adminAuth";
 import { AdminAuthenticationError } from "./adminDashboardApi";
+import { adminApiUrl } from "./adminApiConfig";
 
-const JOBS_URL = "https://allnovas.com/api/v1/admin/jobs/";
+const JOBS_URL = adminApiUrl("/api/v1/admin/jobs/");
 
 export type AdminJob = {
   id: number | string;
@@ -151,4 +152,43 @@ export async function fetchAdminJobs(
     previous: payload.previous,
     results: payload.results,
   };
+}
+export type CreateAdminJobInput = {
+  client: number;
+  title: string;
+  description: string;
+  budget: number;
+  currency: string;
+  category: string;
+  skills: string[];
+};
+
+export async function createAdminJob(
+  data: CreateAdminJobInput
+): Promise<void> {
+  const accessToken = getAdminSession()?.accessToken;
+
+  if (!accessToken) {
+    clearAdminSession();
+    throw new AdminAuthenticationError();
+  }
+
+  const response = await fetch(JOBS_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (response.status === 401) {
+    clearAdminSession();
+    throw new AdminAuthenticationError();
+  }
+
+  if (!response.ok) {
+    throw new Error(await getErrorMessage(response));
+  }
 }

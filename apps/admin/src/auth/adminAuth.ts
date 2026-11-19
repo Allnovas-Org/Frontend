@@ -1,4 +1,6 @@
-const LOGIN_URL = "https://allnovas.com/api/v1/auth/login/";
+import { adminApiUrl } from "../services/adminApiConfig";
+
+const LOGIN_URL = adminApiUrl("/api/v1/auth/login/");
 const SESSION_KEY = "allnova-admin-auth.v1";
 
 export type AdminSession = {

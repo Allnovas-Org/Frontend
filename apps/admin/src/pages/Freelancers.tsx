@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { BriefcaseBusiness, GraduationCap, UsersRound } from "lucide-react";
 import { AdminAuthenticationError } from "../services/adminDashboardApi";
 import {
   fetchAdminFreelancers,
@@ -46,7 +47,16 @@ export default function Freelancers() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [retryCount, setRetryCount] = useState(0);
+  const [activeFreelancerCount, setActiveFreelancerCount] =
+    useState<number | null>(null);
+  const [activeCountError, setActiveCountError] = useState("");
+  const location = useLocation();
   const navigate = useNavigate();
+  const freelancerCreated =
+    typeof location.state === "object" &&
+    location.state !== null &&
+    "freelancerCreated" in location.state &&
+    location.state.freelancerCreated === true;
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -107,6 +117,51 @@ export default function Freelancers() {
     };
   }, [activeFilter, navigate, pageNumber, pageUrl, retryCount, search]);
 
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+
+    async function loadActiveFreelancerCount() {
+      setActiveFreelancerCount(null);
+      setActiveCountError("");
+
+      try {
+        const result = await fetchAdminFreelancers({
+          search: "",
+          active: "true",
+          page: 1,
+          signal: controller.signal,
+        });
+        if (active) {
+          setActiveFreelancerCount(result.count);
+        }
+      } catch (loadError) {
+        if (loadError instanceof AdminAuthenticationError) {
+          if (active) {
+            navigate("/sign-in", { replace: true });
+          }
+          return;
+        }
+
+        if (active && !controller.signal.aborted) {
+          setActiveFreelancerCount(null);
+          setActiveCountError(
+            loadError instanceof Error
+              ? loadError.message
+              : "Could not load active freelancer count."
+          );
+        }
+      }
+    }
+
+    void loadActiveFreelancerCount();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [navigate, retryCount]);
+
   function changePage(direction: "next" | "previous") {
     if (!freelancersPage) {
       return;
@@ -133,43 +188,119 @@ export default function Freelancers() {
   }
 
   const freelancers = freelancersPage?.results ?? [];
+  const summaryCards = [
+    {
+      title: "Active Freelancer",
+      value:
+        activeFreelancerCount === null
+          ? "—"
+          : activeFreelancerCount.toLocaleString(),
+      description: activeCountError || "Live count from freelancer accounts.",
+      icon: <UsersRound size={24} strokeWidth={1.8} />,
+      iconClass: "bg-purple-100 text-purple-600",
+    },
+    {
+      title: "Ongoing Projects",
+      value: "—",
+      description: "Not provided by the current API.",
+      icon: <GraduationCap size={24} strokeWidth={1.8} />,
+      iconClass: "bg-pink-100 text-pink-600",
+    },
+    {
+      title: "Freelancer Earnings",
+      value: "—",
+      description: "Not provided by the current API.",
+      icon: <BriefcaseBusiness size={24} strokeWidth={1.8} />,
+      iconClass: "bg-green-100 text-green-700",
+    },
+  ];
 
   return (
     <div className="w-full">
+      {freelancerCreated && (
+        <p
+          role="status"
+          className="mb-5 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800"
+        >
+          Freelancer created successfully.
+        </p>
+      )}
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Freelancers</h1>
           <p className="mt-2 text-sm text-gray-500">
-            Read-only freelancer profiles from the Allnova platform.
+            Manage freelancers, projects, and talent activities.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            disabled
-            title="Adding freelancers requires a secure backend endpoint."
-            className="cursor-not-allowed rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white opacity-50"
+            onClick={() => navigate("/admin/freelancers/add")}
+            className="rounded-md bg-purple-700 px-4 py-2 text-sm font-medium text-white hover:bg-purple-800"
           >
             + Add freelancer
           </button>
           <button
             type="button"
-            disabled
-            title="Posting projects requires a secure backend endpoint."
-            className="cursor-not-allowed rounded-md border border-purple-300 bg-white px-4 py-2 text-sm font-medium text-gray-500 opacity-60"
+            onClick={() => navigate("/admin/post-project")}
+            className="rounded-md border border-purple-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 hover:bg-purple-50"
           >
             + Post project
           </button>
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <p className="text-sm font-medium text-gray-500">
-          Freelancers matching current filters
-        </p>
-        <p className="mt-2 text-3xl font-bold text-gray-900">
-          {isLoading ? "—" : error ? "—" : (freelancersPage?.count ?? 0).toLocaleString()}
-        </p>
+      <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
+        {summaryCards.map((stat) => (
+          <div
+            key={stat.title}
+            className="relative rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+          >
+            <div className="absolute right-5 top-5">
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-2xl ${stat.iconClass}`}
+              >
+                {stat.icon}
+              </div>
+            </div>
+            <p className="text-sm font-medium text-gray-500">{stat.title}</p>
+            <h2 className="mt-3 text-3xl font-bold text-gray-900">
+              {stat.value}
+            </h2>
+            <p
+              className={`mt-5 text-sm ${
+                activeCountError && stat.title === "Active Freelancer"
+                  ? "text-red-600"
+                  : "text-gray-500"
+              }`}
+              role={
+                activeCountError && stat.title === "Active Freelancer"
+                  ? "alert"
+                  : undefined
+              }
+            >
+              {stat.description}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="relative mt-5 mb-8 min-h-[220px] overflow-hidden rounded-xl bg-slate-900 p-6 text-white">
+        <div className="relative z-10">
+          <p className="text-sm text-gray-200">
+            <span className="mr-2 text-yellow-400">★</span>
+            Top Hiring Partner
+          </p>
+          <h2 className="mt-3 text-3xl font-bold">Stripe</h2>
+          <p className="mt-2 max-w-md text-sm text-gray-300">
+            Hiring-partner activity is not available from the current API.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-6 text-sm text-gray-200">
+            <span>Hires this month: —</span>
+            <span>Hiring activity: —</span>
+          </div>
+        </div>
+        <div className="pointer-events-none absolute -bottom-36 -right-16 h-48 w-full rounded-[50%] bg-white/5" />
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -184,33 +315,33 @@ export default function Freelancers() {
           onChange={(event) => setSearchInput(event.target.value)}
           className="w-full max-w-md rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-purple-600"
         />
-        <label className="sr-only" htmlFor="freelancer-status">
-          Filter freelancers by account status
-        </label>
-        <select
-          id="freelancer-status"
-          value={activeFilter}
-          onChange={(event) =>
-            changeActiveFilter(event.target.value as "" | "true" | "false")
-          }
-          className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700"
-        >
-          <option value="">All statuses</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
-        </select>
       </div>
 
       <section className="mt-8 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 p-5">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              Freelancer Directory
+              Active Talent Pool
             </h2>
             <p className="mt-1 text-sm text-gray-500">
-              Profile information and account status
+              Monitor and manage all freelancers currently on the platform
             </p>
           </div>
+          <label className="sr-only" htmlFor="freelancer-status">
+            Filter freelancers by account status
+          </label>
+          <select
+            id="freelancer-status"
+            value={activeFilter}
+            onChange={(event) =>
+              changeActiveFilter(event.target.value as "" | "true" | "false")
+            }
+            className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700"
+          >
+            <option value="">All</option>
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
         </div>
 
         {isLoading ? (
@@ -241,8 +372,9 @@ export default function Freelancers() {
                 <thead className="bg-purple-50 text-gray-700">
                   <tr>
                     <th className="px-5 py-4 font-semibold">Freelancer</th>
-                    <th className="px-5 py-4 font-semibold">Title</th>
-                    <th className="px-5 py-4 font-semibold">Skills</th>
+                    <th className="px-5 py-4 font-semibold">Skill</th>
+                    <th className="px-5 py-4 font-semibold">Projects</th>
+                    <th className="px-5 py-4 font-semibold">Earning</th>
                     <th className="px-5 py-4 font-semibold">Status</th>
                     <th className="px-5 py-4 font-semibold">Action</th>
                   </tr>
@@ -272,11 +404,10 @@ export default function Freelancers() {
                           </div>
                         </td>
                         <td className="px-5 py-4 text-gray-600">
-                          {freelancer.title?.trim() || "—"}
-                        </td>
-                        <td className="px-5 py-4 text-gray-600">
                           {skills.length > 0 ? skills.join(", ") : "—"}
                         </td>
+                        <td className="px-5 py-4 text-gray-600">—</td>
+                        <td className="px-5 py-4 text-gray-600">—</td>
                         <td className="px-5 py-4">
                           <span
                             className={`rounded-full px-3 py-1 text-xs font-medium ${
@@ -331,12 +462,6 @@ export default function Freelancers() {
           </>
         )}
       </section>
-
-      <p className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-        This page is read-only. Adding freelancers, posting projects, and
-        changing freelancer accounts are unavailable because the current API
-        does not provide those operations.
-      </p>
 
       {selectedFreelancer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

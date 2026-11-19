@@ -1,7 +1,20 @@
 import { clearAdminSession, getAdminSession } from "../auth/adminAuth";
 import { AdminAuthenticationError } from "./adminDashboardApi";
+import { adminApiUrl } from "./adminApiConfig";
 
-const FREELANCERS_URL = "https://allnovas.com/api/v1/admin/freelancers/";
+const FREELANCERS_URL = adminApiUrl("/api/v1/admin/freelancers/");
+
+export type CreateAdminFreelancerInput = {
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  location: string;
+  title: string;
+  yearsOfExperience: string;
+  skills: string[];
+  bio: string;
+  profilePicture: File | null;
+};
 
 export type AdminFreelancer = {
   id: number | string;
@@ -99,6 +112,105 @@ async function getErrorMessage(response: Response): Promise<string> {
   }
 
   return `Could not load freelancers (HTTP ${response.status}).`;
+}
+
+function getErrorText(value: unknown): string | undefined {
+  if (typeof value === "string" && value.trim()) {
+    return value.trim();
+  }
+  if (Array.isArray(value)) {
+    return value.map(getErrorText).filter(Boolean).join(" ");
+  }
+  return undefined;
+}
+
+async function getCreateErrorMessage(response: Response): Promise<string> {
+  const body = await response.text();
+  let payload: unknown;
+  if (body.trim()) {
+    try {
+      payload = JSON.parse(body) as unknown;
+    } catch {
+      payload = body;
+    }
+  }
+
+  const message =
+    typeof payload === "string"
+      ? payload
+      : isRecord(payload)
+        ? getErrorText(payload.detail ?? payload.message ?? payload.error) ??
+          Object.entries(payload)
+            .map(([field, value]) => {
+              const text = getErrorText(value);
+              return text ? `${field}: ${text}` : "";
+            })
+            .filter(Boolean)
+            .join(" ")
+        : undefined;
+  const emailError = isRecord(payload) ? getErrorText(payload.email) : undefined;
+  const combinedMessage = `${message ?? ""} ${emailError ?? ""}`.toLowerCase();
+
+  if (
+    response.status === 409 ||
+    (combinedMessage.includes("email") &&
+      /already exists|duplicate|already registered|already in use/.test(
+        combinedMessage
+      ))
+  ) {
+    return "A freelancer with this email address already exists.";
+  }
+
+  return message || `Could not create freelancer (HTTP ${response.status}).`;
+}
+
+export async function createAdminFreelancer(
+  freelancer: CreateAdminFreelancerInput
+): Promise<void> {
+  const accessToken = getAdminSession()?.accessToken;
+  if (!accessToken) {
+    clearAdminSession();
+    throw new AdminAuthenticationError();
+  }
+
+  const formData = new FormData();
+  formData.append("full_name", freelancer.fullName);
+  formData.append("email", freelancer.email);
+  if (freelancer.phoneNumber) {
+    formData.append("phone", freelancer.phoneNumber);
+  }
+  if (freelancer.location) {
+    formData.append("location", freelancer.location);
+  }
+  formData.append("job_title", freelancer.title);
+  if (freelancer.yearsOfExperience) {
+    formData.append("years_of_experience", freelancer.yearsOfExperience);
+  }
+  freelancer.skills.forEach((skill) => formData.append("skills", skill));
+  if (freelancer.bio) {
+    formData.append("bio", freelancer.bio);
+  }
+  if (freelancer.profilePicture) {
+    formData.append("profile_picture", freelancer.profilePicture);
+  }
+
+  const response = await fetch(FREELANCERS_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/json",
+    },
+    body: formData,
+  });
+
+  if (response.status === 401) {
+    clearAdminSession();
+    throw new AdminAuthenticationError();
+  }
+
+  if (!response.ok) {
+    throw new Error(await getCreateErrorMessage(response));
+  }
 }
 
 export async function fetchAdminFreelancers(

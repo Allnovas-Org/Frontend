@@ -1,6 +1,7 @@
 import { clearAdminSession, getAdminSession } from "../auth/adminAuth";
+import { adminApiUrl } from "./adminApiConfig";
 
-const OVERVIEW_URL = "https://allnovas.com/api/v1/admin/dashboard/overview/";
+const OVERVIEW_URL = adminApiUrl("/api/v1/admin/dashboard/overview/");
 
 export type PlatformOverview = {
   total_users: number;

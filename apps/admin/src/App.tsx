@@ -11,6 +11,8 @@ import ResetPassword from "./auth/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import Freelancers from "./pages/Freelancers";
+import AddFreelancer from "./pages/AddFreelancer";
+import PostProject from "./pages/PostProject";
 import RecruitersClients from "./pages/RecruitersClients";
 import RecruitersCompanies from "./pages/RecruitersCompanies";
 import JobVacancy from "./pages/JobVacancy";
@@ -38,6 +40,14 @@ function App() {
         <Route path="/email-sent" element={<EmailSent />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route
+          path="/admin/post-project"
+          element={
+            <RequireAdmin>
+              <PostProject />
+            </RequireAdmin>
+          }
+        />
+        <Route
           path="/admin"
           element={
             <RequireAdmin>
@@ -48,6 +58,7 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="students" element={<Students />} />
           <Route path="freelancers" element={<Freelancers />} />
+          <Route path="freelancers/add" element={<AddFreelancer />} />
           
 <Route path="recruiters-clients" element={<RecruitersClients />} />
 <Route path="recruiters-companies" element={<RecruitersCompanies />} />
