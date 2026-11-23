@@ -119,9 +119,10 @@ export const updateProposal = async (
   id: string,
   proposal: Partial<ProposalPayload>,
 ): Promise<JobApplication> => {
+  const { job_id: _jobId, ...editableProposal } = proposal;
   const { data } = await api.patch<JobApplication>(
     `/jobs/applications/${id}/`,
-    proposal,
+    editableProposal,
   );
   return data;
 };

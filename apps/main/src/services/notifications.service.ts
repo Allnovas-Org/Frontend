@@ -13,8 +13,10 @@ export interface ApiNotification {
 }
 
 export async function listNotifications(): Promise<Page<ApiNotification>> {
-  const { data } = await api.get<Page<ApiNotification>>("/notifications/");
-  return data;
+  const { data } = await api.get<Page<ApiNotification> | ApiNotification[]>("/notifications/");
+  return Array.isArray(data)
+    ? { count: data.length, next: null, previous: null, results: data }
+    : data;
 }
 
 export async function markNotificationRead(

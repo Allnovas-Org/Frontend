@@ -6,7 +6,7 @@ import {
   Conversation,
   Message,
   getConversation,
-  listMessages,
+  listAllMessages,
   markConversationRead,
 } from '../../../services/messaging.service';
 import { getApiErrorMessage } from '../../../utils/apiError';
@@ -29,11 +29,11 @@ const ConversationView: React.FC<ConversationViewProps> = ({ onToggleProfile }) 
     let active = true;
     setLoading(true);
     setLoadError('');
-    Promise.all([getConversation(id), listMessages(id), markConversationRead(id)])
-      .then(([conversationResult, messagePage]) => {
+    Promise.all([getConversation(id), listAllMessages(id), markConversationRead(id)])
+      .then(([conversationResult, allMessages]) => {
         if (!active) return;
         setConversation(conversationResult);
-        setMessages(messagePage.results);
+        setMessages(allMessages);
       })
       .catch((error: unknown) => {
         if (active) {
@@ -47,6 +47,29 @@ const ConversationView: React.FC<ConversationViewProps> = ({ onToggleProfile }) 
       });
     return () => {
       active = false;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    let active = true;
+    const refresh = async () => {
+      try {
+        const [conversationResult, allMessages] = await Promise.all([
+          getConversation(id),
+          listAllMessages(id),
+        ]);
+        if (!active) return;
+        setConversation(conversationResult);
+        setMessages(allMessages);
+      } catch {
+        // Preserve the currently displayed conversation if a refresh fails.
+      }
+    };
+    const interval = window.setInterval(refresh, 10000);
+    return () => {
+      active = false;
+      window.clearInterval(interval);
     };
   }, [id]);
 

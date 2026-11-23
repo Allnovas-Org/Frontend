@@ -39,10 +39,12 @@ export async function listProjects(
   page = 1,
   pageSize = 20,
 ): Promise<Page<ApiProject>> {
-  const { data } = await api.get<Page<ApiProject>>("/projects/projects/", {
+  const { data } = await api.get<Page<ApiProject> | ApiProject[]>("/projects/projects/", {
     params: { page, page_size: pageSize },
   });
-  return data;
+  return Array.isArray(data)
+    ? { count: data.length, next: null, previous: null, results: data }
+    : data;
 }
 
 export async function getProject(id: string): Promise<ApiProject> {

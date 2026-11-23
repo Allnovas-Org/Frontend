@@ -27,10 +27,12 @@ export interface Message {
 }
 
 export async function listConversations(): Promise<Page<Conversation>> {
-  const { data } = await api.get<Page<Conversation>>(
+  const { data } = await api.get<Page<Conversation> | Conversation[]>(
     "/messages/conversations/",
   );
-  return data;
+  return Array.isArray(data)
+    ? { count: data.length, next: null, previous: null, results: data }
+    : data;
 }
 
 export async function getConversation(id: string): Promise<Conversation> {
@@ -48,10 +50,33 @@ export async function createConversation(jobId: string): Promise<Conversation> {
 export async function listMessages(
   conversationId: string,
 ): Promise<Page<Message>> {
-  const { data } = await api.get<Page<Message>>(
+  const { data } = await api.get<Page<Message> | Message[]>(
     `/messages/conversations/${conversationId}/messages/`,
   );
-  return data;
+  return Array.isArray(data)
+    ? { count: data.length, next: null, previous: null, results: data }
+    : data;
+}
+
+export async function listAllMessages(
+  conversationId: string,
+): Promise<Message[]> {
+  const messages: Message[] = [];
+  let page = 1;
+  while (true) {
+    const { data } = await api.get<Page<Message> | Message[]>(
+      `/messages/conversations/${conversationId}/messages/`,
+      { params: { page } },
+    );
+    if (Array.isArray(data)) {
+      messages.push(...data);
+      break;
+    }
+    messages.push(...data.results);
+    if (!data.next) break;
+    page += 1;
+  }
+  return messages;
 }
 
 export async function sendMessage(

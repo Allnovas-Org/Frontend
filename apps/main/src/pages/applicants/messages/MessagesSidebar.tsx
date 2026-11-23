@@ -64,7 +64,7 @@ const MessagesSidebar: React.FC<MessagesSidebarProps> = ({ activeConversationId 
   // Filter conversations based on active tab
   const filteredConversations = conversations.filter((conv) => {
     if (activeTab === 'pinned' || activeTab === 'archived') return false;
-    if (activeTab === 'unread') return conv.unreadCount > 0;
+    if (activeTab === 'unread') return conv.unread_count > 0;
     return true;
   });
 

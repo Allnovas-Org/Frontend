@@ -2,7 +2,8 @@
 import axios from "axios";
 import { activateMockAPI } from "./mock-api";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+const configuredBaseURL = import.meta.env.VITE_API_BASE_URL?.trim();
+const baseURL = (configuredBaseURL || "https://backend.allnovas.com/api/v1").replace(/\/+$/, "");
 
 export const api = axios.create({
   baseURL,
