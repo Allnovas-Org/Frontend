@@ -1,46 +1,37 @@
-import React, { ChangeEvent } from "react";
-import { useFormik } from "formik";
+import React, { ChangeEvent, useContext } from "react";
 import { SectionTitle } from "./help";
-import { FormContext } from "../../store/FormContext";
+import { FormContext, FormValues } from "../../store/FormContext";
 import { Plus } from "lucide-react";
 
-const selectHowOptions = [
-  {
-    label: "Progress-Based Compensation",
-    subtext:
-      "Divide into key milestones, each representing a major phase of work. You’ll receive pay as each milestone is completed and approved.",
-  },
-  {
-    label: "Unified Project Payment",
-    subtext:
-      "Payment is rendered in full upon project completion and final delivery.",
-  },
-];
-
 const ProjectStructure: React.FC = () => {
-  const formik = React.useContext(FormContext)!;
+  const formik = useContext(FormContext);
+  if (!formik) throw new Error("ProjectStructure must be used within FormContext.");
   const duration = formik.values.duration || {
     compensated: false,
     unifiedPayment: false,
   };
   const formRows = formik.values.formRows;
   // Calculate total amount from formRows
-  const totalAmount = formRows.reduce((sum: number, row: any) => {
-    const val = parseFloat(row.amount);
+  const totalAmount = formRows.reduce((sum, row) => {
+    const val = Number(row.amount);
     return sum + (isNaN(val) ? 0 : val);
   }, 0);
-  const setduration = (how: typeof duration) =>
+  const setDuration = (how: typeof duration) =>
     formik.setFieldValue("duration", how);
   const setFormRows = (rows: typeof formRows) =>
     formik.setFieldValue("formRows", rows);
 
   const handleHowChange = (option: keyof typeof duration) => {
-    setduration({ ...duration, [option]: !duration[option] });
+    setDuration({ ...duration, [option]: !duration[option] });
   };
 
-  const handleFormChange = (idx: number, field: string, value: string) => {
-    const updated = formRows.map((row: any, i: number) =>
-      i === idx ? { ...row, [field]: value } : row
+  const handleFormChange = (
+    idx: number,
+    field: keyof FormValues["formRows"][number],
+    value: string,
+  ) => {
+    const updated = formRows.map((row, i) =>
+      i === idx ? { ...row, [field]: value } : row,
     );
     setFormRows(updated);
   };
@@ -50,13 +41,13 @@ const ProjectStructure: React.FC = () => {
   };
 
   const removeFormRow = (idx: number) => {
-    setFormRows(formRows.filter((_: any, i: number) => i !== idx));
+    setFormRows(formRows.filter((_, i) => i !== idx));
   };
 
   return (
     <div className='p-4 border border-input rounded-lg'>
       {/* Select how section */}
-      <SectionTitle>Select how you want to be paid</SectionTitle>
+      <SectionTitle>Select a proposed project structure</SectionTitle>
       <div className='flex flex-col gap-4 mb-6'>
         <label className='flex items-start gap-3 p-3'>
           <input
@@ -67,12 +58,11 @@ const ProjectStructure: React.FC = () => {
           />
           <div className='flex flex-col'>
             <span className='font-medium text-gray-700'>
-              Progress-Based Compensation
+              Milestone-based plan
             </span>
             <span className='text-sm text-gray-500'>
-              Divide into key milestones, each representing a major phase of
-              work. You’ll receive pay as each milestone is completed and
-              approved.
+              Divide the proposed work into milestones that can be reviewed
+              after the client hires you.
             </span>
           </div>
         </label>
@@ -85,11 +75,10 @@ const ProjectStructure: React.FC = () => {
           />
           <div className='flex flex-col'>
             <span className='font-medium text-gray-700'>
-              Unified Project Payment
+              Fixed-scope plan
             </span>
             <span className='text-sm text-gray-500'>
-              Payment is rendered in full upon project completion and final
-              delivery.
+              Submit one fixed project proposal without milestones.
             </span>
           </div>
         </label>
@@ -97,10 +86,12 @@ const ProjectStructure: React.FC = () => {
 
       {/* How many section */}
       <SectionTitle>
-        How many progress-based compensation level do you want to include?
+        {duration.compensated
+          ? "How many milestones do you want to propose?"
+          : "What is your proposed project amount?"}
       </SectionTitle>
       <div className='overflow-x-auto mb-6'>
-        {formRows.map((row: any, idx: number) => (
+        {formRows.map((row, idx) => (
           <div
             key={idx}
             className='grid grid-cols-[20px_2fr_1fr_1fr_1fr] gap-4 items-center mb-2'
@@ -188,7 +179,7 @@ const ProjectStructure: React.FC = () => {
             )}
           </div>
         ))}
-        <button
+        {duration.compensated ? <button
           type='button'
           onClick={addFormRow}
           className='flex items-center gap-2 mt-2 text-primary font-semibold text-sm focus:outline-none'
@@ -196,7 +187,7 @@ const ProjectStructure: React.FC = () => {
         >
           <Plus className='w-4 h-4' />
           Plan next phase
-        </button>
+        </button> : null}
       </div>
 
       <hr className='my-8 border-gray-300' />
@@ -216,8 +207,8 @@ const ProjectStructure: React.FC = () => {
             you filled in.
           </span>
           <span className='text-xs text-gray-400'>
-            NB: The amount shown above does not include the agreed 10% policy
-            fee.
+            This is proposal information only. Payments, escrow, and platform
+            fees are not enabled.
           </span>
         </div>
         <div className='flex items-center justify-end'>

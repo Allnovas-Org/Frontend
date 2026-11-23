@@ -29,6 +29,7 @@ export interface ToolsModalProps {
   onClose: () => void;
   tools: string[];
   setTools: (tools: string[]) => void;
+  onSave?: (tools: string[]) => Promise<void>;
 }
 
 const ToolsModal: React.FC<ToolsModalProps> = ({
@@ -36,11 +37,14 @@ const ToolsModal: React.FC<ToolsModalProps> = ({
   onClose,
   tools,
   setTools,
+  onSave,
 }) => {
   const [input, setInput] = useState("");
   const [dropdown, setDropdown] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
   const [localTools, setLocalTools] = useState<string[]>(tools);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   React.useEffect(() => {
     setLocalTools(tools);
@@ -86,9 +90,20 @@ const ToolsModal: React.FC<ToolsModalProps> = ({
     }
   };
 
-  const handleSave = () => {
-    setTools(localTools);
-    onClose();
+  const handleSave = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      await onSave?.(localTools);
+      setTools(localTools);
+      onClose();
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error ? saveError.message : "Unable to save tools.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!open) return null;
@@ -177,13 +192,15 @@ const ToolsModal: React.FC<ToolsModalProps> = ({
           ))}
         </div>
       </div>
-      {/* Save Button */}
+      {error && <p role='alert' className='mt-4 text-sm text-red-600'>{error}</p>}
       <div className='flex justify-end mt-8'>
         <button
+          type='button'
+          disabled={saving}
           className='bg-primary rounded-lg px-3 py-2 text-white font-semibold '
           onClick={handleSave}
         >
-          Save
+          {saving ? "Saving..." : "Save"}
         </button>
       </div>
     </ProfileModal>

@@ -232,7 +232,13 @@ export interface HelpCategory {
 
 //Projects
 
-export type ProjectStatus = "Active" | "On hold" | "Completed";
+export type ProjectStatus =
+  | "Open"
+  | "In Progress"
+  | "Completed"
+  | "Cancelled"
+  | "Active"
+  | "On hold";
 
 export type ProjectCategory =
   | "Web Development"

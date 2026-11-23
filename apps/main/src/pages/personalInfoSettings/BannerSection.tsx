@@ -1,40 +1,56 @@
-import React from "react";
-import { Pencil, ArrowRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import {
+	getCurrentUserSettings,
+	getFreelancerProfile,
+	getMediaUrl,
+} from "../../services/profile.service";
+import { getApiErrorMessage } from "../../utils/apiError";
+import userPlaceholder from "../../assets/applicants/user.png";
 
-const BannerSection: React.FC = () => (
-  <div className='w-full'>
-    {/* Banner */}
-    <div className='relative w-full'>
-      <img
-        src='/images/applicants/prof-banner.png'
-        alt='Profile banner'
-        className='w-full h-40 sm:h-60 object-cover'
-      />
-      {/* Banner Edit Pen */}
-      {/* <button className='absolute top-2 right-2 sm:top-4 sm:right-4 bg-white rounded-full p-2 shadow hover:bg-gray-100 transition'>
-        <span className='sr-only'>Edit Banner</span>
-        <Pencil className='w-5 h-5 text-gray-600' />
-      </button> */}
-    </div>
-    <div className='flex flex-col md:flex-row gap-6 md:gap-8 px-4 md:px-20 -mt-16'>
-      <div className='flex flex-col items-center w-full md:w-1/5 min-w-[8rem] mb-4 md:mb-0'>
-        <div className='relative'>
-          <img
-            src='/images/applicants/profile.png'
-            alt='Profile'
-            className='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white object-cover shadow'
-          />
-          <span className='absolute bottom-2 right-2'>
-            <img
-              src='/images/applicants/verified.svg'
-              alt='Verified'
-              className='w-6 h-6 sm:w-7 sm:h-7'
-            />
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-);
+const BannerSection: React.FC = () => {
+	const [profilePicture, setProfilePicture] = useState(userPlaceholder);
+	const [error, setError] = useState("");
+
+	useEffect(() => {
+		let active = true;
+		Promise.all([getCurrentUserSettings(), getFreelancerProfile()])
+			.then(([account, freelancer]) => {
+				if (!active) return;
+				setProfilePicture(
+					getMediaUrl(account.profile_picture) ||
+						getMediaUrl(freelancer.profile_photo) ||
+						userPlaceholder,
+				);
+			})
+			.catch((requestError: unknown) => {
+				if (active) setError(getApiErrorMessage(requestError, "Unable to load your profile photo."));
+			});
+		return () => {
+			active = false;
+		};
+	}, []);
+
+	return (
+		<div className="w-full">
+			<div className="relative w-full">
+				<img
+					src="/images/applicants/prof-banner.png"
+					alt="Profile banner"
+					className="h-40 w-full object-cover sm:h-60"
+				/>
+			</div>
+			<div className="-mt-16 flex flex-col gap-6 px-4 md:flex-row md:gap-8 md:px-20">
+				<div className="mb-4 flex w-full min-w-[8rem] flex-col items-center md:mb-0 md:w-1/5">
+					<img
+						src={profilePicture}
+						alt="Profile"
+						className="h-24 w-24 rounded-full border-4 border-white bg-white object-cover shadow sm:h-32 sm:w-32"
+					/>
+				</div>
+			</div>
+			{error && <p role="alert" className="sr-only">{error}</p>}
+		</div>
+	);
+};
 
 export default BannerSection;

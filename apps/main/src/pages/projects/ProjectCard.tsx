@@ -8,7 +8,8 @@ import {
 import { Project } from "../../types";
 import { formatPostedDate } from "../../utils/helpers";
 import { useNavigate } from "react-router-dom";
-import { removeProject } from "./store/project.store";
+import { deleteJob } from "../../services/jobs.service";
+import { getApiErrorMessage } from "../../utils/apiError";
 import ActionConfirmModal from "./modal/ActionConfirmModal";
 import ActionResultModal from "./modal/ActionResultModal";
 
@@ -21,6 +22,7 @@ const ProjectCard = ({ project, onDeleted }: Props) => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [showDeletedModal, setShowDeletedModal] = useState(false);
+	const [deleteError, setDeleteError] = useState("");
 
 	const navigate = useNavigate();
 
@@ -34,10 +36,16 @@ const ProjectCard = ({ project, onDeleted }: Props) => {
 		setShowDeleteModal(true);
 	};
 
-	const confirmDeleteProject = () => {
-		removeProject(project.id);
-		setShowDeleteModal(false);
-		setShowDeletedModal(true);
+	const confirmDeleteProject = async () => {
+		setDeleteError("");
+		try {
+			await deleteJob(project.id);
+			setShowDeleteModal(false);
+			setShowDeletedModal(true);
+			onDeleted();
+		} catch (error) {
+			setDeleteError(getApiErrorMessage(error, "Unable to delete this job."));
+		}
 	};
 
 	const handleGoToJobPostings = () => {
@@ -69,7 +77,7 @@ const ProjectCard = ({ project, onDeleted }: Props) => {
 						</h3>
 						<span
 							className={`mt-1 inline-block rounded-full  px-3 py-0.5 text-xs  ${
-								project.status === "Active"
+								["Active", "Open", "In Progress"].includes(project.status)
 									? "bg-green-100/50 text-green-700"
 									: project.status === "On hold"
 									? "bg-blue-100/50 text-blue-700"
@@ -145,8 +153,13 @@ const ProjectCard = ({ project, onDeleted }: Props) => {
 				title="Delete project"
 				description="Are you sure you want to delete this project?"
 				onCancel={() => setShowDeleteModal(false)}
-				onConfirm={confirmDeleteProject}
+				onConfirm={() => void confirmDeleteProject()}
 			/>
+			{deleteError ? (
+				<p role='alert' className='mt-2 text-sm text-red-600'>
+					{deleteError}
+				</p>
+			) : null}
 
 			<ActionResultModal
 				open={showDeletedModal}

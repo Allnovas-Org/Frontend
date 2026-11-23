@@ -1,72 +1,26 @@
-import React, { useState } from "react";
-import OfferTypeSelector from "./offerSelector";
-import FixedPriceOffer from "./fixed";
-import MilestoneOffer from "./milestones";
-import { SecurePaymentPage } from "./securePayment";
-import { OfferSummary, OfferType } from "../../../../types";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-type Step = "selectType" | "offerForm" | "payment";
+const OfferFlow: React.FC = () => {
+	const navigate = useNavigate();
 
-const initialOffer: OfferSummary = {
-  projectTitle: "Landing Page Design for Spotify",
-  freelancerName: "Alex Johnson",
-  type: "fixed",
-  duration: "",
-  deliverables: "",
-  message: "",
-  budget: 0,
-  milestones: [],
-};
-
-const OfferFlow = () => {
-  const [step, setStep] = useState<Step>("selectType");
-  const [offer, setOffer] = useState<OfferSummary>(initialOffer);
-
-  const handleSelectType = (type: OfferType) => {
-    setOffer((prev) => ({
-      ...prev,
-      type,
-      milestones: type === "milestone" ? prev.milestones : [],
-    }));
-    setStep("offerForm");
-  };
-
-  return (
-    <div className='py-20 md:py-20 lg:py-32'>
-      {step === "selectType" && (
-        <OfferTypeSelector onSelect={handleSelectType} />
-      )}
-
-      {step === "offerForm" && offer.type === "fixed" && (
-        <FixedPriceOffer
-          offer={offer}
-          onChangeType={() => setStep("selectType")}
-          onSubmit={(updated) => {
-            setOffer(updated);
-            setStep("payment");
-          }}
-        />
-      )}
-
-      {step === "offerForm" && offer.type === "milestone" && (
-        <MilestoneOffer
-          offer={offer}
-          onChangeType={() => setStep("selectType")}
-          onSubmit={(updated) => {
-            setOffer(updated);
-            setStep("payment");
-          }}
-        />
-      )}
-
-      {step === "payment" && (
-        <SecurePaymentPage
-          offer={offer}
-          onEditOffer={() => setStep("offerForm")}
-        />
-      )}
-    </div>
-  );
+	return (
+		<div className="mx-auto max-w-3xl px-6 py-24">
+			<div className="rounded-xl border border-amber-200 bg-amber-50 p-8">
+				<h1 className="text-2xl font-bold text-gray-900">Payments are not available yet</h1>
+				<p className="mt-3 text-gray-700">
+					Allnova beta does not process payments, hold funds, or collect card, bank, or cryptocurrency details.
+					You can still hire a freelancer and manage the project without making a payment through this app.
+				</p>
+				<button
+					onClick={() => navigate("/clients/projects")}
+					className="mt-6 rounded-lg bg-gray-900 px-5 py-3 text-sm font-semibold text-white"
+				>
+					Return to projects
+				</button>
+			</div>
+		</div>
+	);
 };
 
 export default OfferFlow;

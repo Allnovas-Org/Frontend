@@ -29,6 +29,7 @@ export interface SkillsModalProps {
   onClose: () => void;
   skills: string[];
   setSkills: (skills: string[]) => void;
+  onSave?: (skills: string[]) => Promise<void>;
 }
 
 const SkillsModal: React.FC<SkillsModalProps> = ({
@@ -36,11 +37,14 @@ const SkillsModal: React.FC<SkillsModalProps> = ({
   onClose,
   skills,
   setSkills,
+  onSave,
 }) => {
   const [input, setInput] = useState("");
   const [dropdown, setDropdown] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("");
   const [localSkills, setLocalSkills] = useState<string[]>(skills);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   React.useEffect(() => {
     setLocalSkills(skills);
@@ -86,9 +90,20 @@ const SkillsModal: React.FC<SkillsModalProps> = ({
     }
   };
 
-  const handleSave = () => {
-    setSkills(localSkills);
-    onClose();
+  const handleSave = async () => {
+    setSaving(true);
+    setError("");
+    try {
+      await onSave?.(localSkills);
+      setSkills(localSkills);
+      onClose();
+    } catch (saveError) {
+      setError(
+        saveError instanceof Error ? saveError.message : "Unable to save skills.",
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!open) return null;
@@ -178,12 +193,15 @@ const SkillsModal: React.FC<SkillsModalProps> = ({
           ))}
         </div>
       </div>
+      {error && <p role='alert' className='mt-4 text-sm text-red-600'>{error}</p>}
       <div className='flex justify-end mt-8'>
         <button
+          type='button'
+          disabled={saving}
           className='bg-primary rounded-lg px-3 py-2 text-white font-semibold '
           onClick={handleSave}
         >
-          Save
+          {saving ? "Saving..." : "Save"}
         </button>
         {/* <AppButton
           color='bg-primary'

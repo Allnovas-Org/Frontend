@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface MessageItemProps {
-  id: number;
+  id: string;
   avatar: string;
   userName: string;
   lastMessage: string;
@@ -21,9 +21,12 @@ const MessageItem: React.FC<MessageItemProps> = ({
   isActive = false,
 }) => {
   const navigate = useNavigate();
+  const basePath = window.location.pathname.startsWith("/clients")
+    ? "/clients/messages"
+    : "/applicants/messages";
 
   const handleClick = () => {
-    navigate(`/applicants/messages/${id}`);
+    navigate(`${basePath}/${id}`);
   };
 
   return (
@@ -35,7 +38,13 @@ const MessageItem: React.FC<MessageItemProps> = ({
     >
       {/* Avatar */}
       <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
-        <img src={avatar} alt={userName} className="w-full h-full object-cover" />
+        {avatar ? (
+          <img src={avatar} alt={userName} className="w-full h-full object-cover" />
+        ) : (
+          <span className="flex h-full w-full items-center justify-center bg-gray-200 text-sm font-medium text-gray-700">
+            {userName.slice(0, 1).toUpperCase()}
+          </span>
+        )}
       </div>
 
       {/* Content */}

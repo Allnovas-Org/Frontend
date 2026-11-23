@@ -1,267 +1,365 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  User, 
-  Star, 
-  Calendar, 
-  Clock, 
-  DollarSign,
-  FileText,
-  Wrench,
-  CheckCircle2,
-  CalendarDays,
-  BarChart3,
-  MessageSquare
-} from 'lucide-react';
-import { sampleProjects } from './data/projects';
+import React, { FormEvent, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, CalendarDays, CheckCircle2, FileText, Star } from "lucide-react";
+import {
+	ApiMilestone,
+	ApiProject,
+	getProject,
+	updateMilestoneStatus,
+} from "../../../services/projects.service";
+import {
+	ApiReview,
+	createDispute,
+	createReview,
+	listReviews,
+} from "../../../services/feedback.service";
+import { useAuthStore } from "../../../store/useAuthStore";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 const WorkHistoryDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+	const { id = "" } = useParams<{ id: string }>();
+	const navigate = useNavigate();
+	const user = useAuthStore((state) => state.user);
+	const [project, setProject] = useState<ApiProject | null>(null);
+	const [review, setReview] = useState<ApiReview | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState("");
+	const [busyMilestone, setBusyMilestone] = useState<number | null>(null);
+	const [reviewRating, setReviewRating] = useState(5);
+	const [reviewComment, setReviewComment] = useState("");
+	const [disputeReason, setDisputeReason] = useState("");
+	const [disputeDescription, setDisputeDescription] = useState("");
+	const [feedbackMessage, setFeedbackMessage] = useState("");
+	const [feedbackError, setFeedbackError] = useState("");
 
-  const project = sampleProjects.find((p) => p.id === Number(id));
+	useEffect(() => {
+		let active = true;
+		setLoading(true);
+		setError("");
+		getProject(id)
+			.then(async (result) => {
+				if (!active) return;
+				setProject(result);
+				if (result.status === "completed" && user?.id) {
+					const reviews = await listReviews(result.client);
+					if (active) {
+						setReview(
+							reviews.find(
+								(item) => item.project === result.id && item.reviewer === user.id,
+							) || null,
+						);
+					}
+				}
+			})
+			.catch((requestError: unknown) => {
+				if (active) setError(getApiErrorMessage(requestError, "Unable to load this project."));
+			})
+			.finally(() => {
+				if (active) setLoading(false);
+			});
+		return () => {
+			active = false;
+		};
+	}, [id, user?.id]);
 
-  if (!project) {
-    return (
-      <div className="min-h-screen bg-white p-8">
-        <button
-          onClick={() => navigate('/applicants/work-history')}
-          className="flex items-center gap-2 text-red-500 hover:text-red-600 mb-6"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Back to work history</span>
-        </button>
-        <p className="text-gray-600">Project not found</p>
-      </div>
-    );
-  }
+	const changeMilestoneStatus = async (
+		milestone: ApiMilestone,
+		status: ApiMilestone["status"],
+	) => {
+		setBusyMilestone(milestone.id);
+		setFeedbackError("");
+		try {
+			const updated = await updateMilestoneStatus(milestone.id, status);
+			setProject((current) =>
+				current?.contract
+					? {
+							...current,
+							contract: {
+								...current.contract,
+								milestones: current.contract.milestones.map((item) =>
+									item.id === updated.id ? updated : item,
+								),
+							},
+						}
+					: current,
+			);
+		} catch (requestError) {
+			setFeedbackError(
+				getApiErrorMessage(requestError, "Unable to update the milestone."),
+			);
+		} finally {
+			setBusyMilestone(null);
+		}
+	};
 
-  const skills = ['Web Design', 'UX Writing', 'User Research', 'Figma', 'Adobe XD'];
-  
-  const deliverables = [
-    'Responsive website design',
-    'Payment gateway integration',
-    'Admin dashboard',
-    'Mobile app prototype',
-    'Seo optimization',
-    'Performance testing report'
-  ];
+	const submitReview = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (!project) return;
+		setFeedbackError("");
+		setFeedbackMessage("");
+		try {
+			const result = await createReview({
+				project: project.id,
+				rating: reviewRating,
+				comment: reviewComment,
+			});
+			setReview(result);
+			setFeedbackMessage("Your review was submitted.");
+		} catch (requestError) {
+			setFeedbackError(getApiErrorMessage(requestError, "Unable to submit your review."));
+		}
+	};
 
-  const milestones = [
-    { title: 'Initial Design Mockups', date: 'Jan 15' },
-    { title: 'Initial Design Mockups', date: 'Feb 10' },
-    { title: 'Initial Design Mockups', date: 'Feb 25' },
-    { title: 'Initial Design Mockups', date: 'Mar 15' }
-  ];
+	const submitDispute = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		if (!project) return;
+		setFeedbackError("");
+		setFeedbackMessage("");
+		try {
+			await createDispute({
+				project: project.id,
+				reason: disputeReason,
+				description: disputeDescription,
+			});
+			setDisputeReason("");
+			setDisputeDescription("");
+			setFeedbackMessage("Your dispute report was submitted.");
+		} catch (requestError) {
+			setFeedbackError(getApiErrorMessage(requestError, "Unable to report this dispute."));
+		}
+	};
 
-  const performanceMetrics = [
-    { label: 'On-Time Delivery', value: 100 },
-    { label: 'Client Satisfaction', value: 98 },
-    { label: 'Quality Score', value: 96 },
-    { label: 'Budget Adherence', value: 95 }
-  ];
+	if (loading) {
+		return <div className="min-h-screen bg-white p-8 text-center text-gray-500">Loading project…</div>;
+	}
 
-  return (
-    <div className="min-h-screen bg-white py-8 px-16 mt-20">
-      {/* Back Button */}
-      <button
-        onClick={() => navigate('/applicants/work-history')}
-        className="flex items-center gap-2 text-red-500 hover:text-red-600 mb-8 ml-10 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span className="text-sm">Back to work history</span>
-      </button>
+	if (error || !project) {
+		return (
+			<div className="min-h-screen bg-white p-8">
+				<button
+					onClick={() => navigate("/applicants/work-history")}
+					className="mb-6 flex items-center gap-2 text-red-500 hover:text-red-600"
+				>
+					<ArrowLeft className="h-5 w-5" />
+					Back to work history
+				</button>
+				<p role="alert" className="text-red-600">{error || "Project not found."}</p>
+			</div>
+		);
+	}
 
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* PART 1: Main Info Card */}
-        <div className="bg-white border border-gray-200 rounded-xl p-8">
-          {/* Header Section */}
-          <div className="mb-6">
-            <div className="flex items-start justify-between mb-3">
-              <h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
-              <div className="flex items-center gap-3">
-                <span className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg">
-                  {project.category}
-                </span>
-                <span className="px-3 py-1 bg-green-50 text-green-600 text-xs font-medium rounded-lg border border-green-200">
-                  {project.status}
-                </span>
-              </div>
-            </div>
+	const milestones = project.contract?.milestones || [];
+	const canReportDispute = !["completed", "cancelled"].includes(project.status);
 
-            {/* Client and Rating */}
-            <div className="flex items-center gap-3 mb-6">
-              <User className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-700 font-medium">{project.client}</span>
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 ml-2" />
-              <span className="text-sm text-gray-700 font-medium">4.9</span>
-            </div>
+	return (
+		<div className="mt-20 min-h-screen bg-white px-8 py-8 md:px-16">
+			<button
+				onClick={() => navigate("/applicants/work-history")}
+				className="mb-8 ml-2 flex items-center gap-2 text-red-500 transition-colors hover:text-red-600 md:ml-10"
+			>
+				<ArrowLeft className="h-4 w-4" />
+				<span className="text-sm">Back to work history</span>
+			</button>
 
-            {/* Info Grid */}
-            <div className="grid grid-cols-4 gap-8 mb-6">
-              <div className="flex items-start gap-2">
-                <Calendar className="w-4 h-4 text-gray-400 mt-1" />
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Duration</p>
-                  <p className="text-sm font-semibold text-gray-900">2 Months</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Clock className="w-4 h-4 text-gray-400 mt-1" />
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Timeline</p>
-                  <p className="text-sm font-semibold text-gray-900">Jan 2024 - Mar 2024</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <DollarSign className="w-4 h-4 text-gray-400 mt-1" />
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Budget</p>
-                  <p className="text-sm font-semibold text-gray-900">$2,600</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Star className="w-4 h-4 text-gray-400 mt-1" />
-                <div>
-                  <p className="text-xs text-gray-500 mb-1">Rating</p>
-                  <p className="text-sm font-semibold text-gray-900">5/5</p>
-                </div>
-              </div>
-            </div>
-          </div>
+			<div className="mx-auto max-w-6xl space-y-6">
+				<section className="rounded-xl border border-gray-200 bg-white p-6 md:p-8">
+					<div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+						<div>
+							<h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
+							<p className="mt-2 text-sm text-gray-600">Client: {project.client_name}</p>
+						</div>
+						<span className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium capitalize text-gray-700">
+							{project.status.replace("_", " ")}
+						</span>
+					</div>
+					<div className="mb-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+						<Info label="Contract amount">
+							{project.contract
+								? `${project.contract.currency} ${Number(project.contract.total_amount).toLocaleString()}`
+								: "Not provided"}
+						</Info>
+						<Info label="Started">{formatDate(project.created_at)}</Info>
+						<Info label="Last updated">{formatDate(project.updated_at)}</Info>
+					</div>
+					<div className="mb-6">
+						<div className="mb-3 flex items-center gap-2">
+							<FileText className="h-4 w-4 text-gray-700" />
+							<h2 className="text-base font-semibold text-gray-900">Project description</h2>
+						</div>
+						<p className="whitespace-pre-wrap rounded-lg bg-gray-50 p-5 text-sm leading-relaxed text-gray-700">
+							{project.description || "No project description provided."}
+						</p>
+					</div>
+					{project.contract && (
+						<div>
+							<h2 className="mb-3 text-base font-semibold text-gray-900">Contract terms</h2>
+							<p className="whitespace-pre-wrap text-sm text-gray-700">
+								{project.contract.terms || "No contract terms provided."}
+							</p>
+						</div>
+					)}
+				</section>
 
-          {/* Project Description */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <FileText className="w-4 h-4 text-gray-700" />
-              <h2 className="text-base font-semibold text-gray-900">Project Description</h2>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-5">
-              <p className="text-sm text-gray-700 leading-relaxed">
-                We started with a clean, modern aesthetic, using Spotify's signature dark backdrop to make vibrant gradients and album artwork pop. The hero section features a bold call-to-action, encouraging users to explore personalized playlists or dive into podcasts with a single click. Interactive elements, like animated hover effects and subtle micro-animations, create a lively yet polished feel, mirroring the rhythm of music itself. Accessibility was a priority—high-contrast text, screen-reader compatibility, and responsive layouts ensure inclusivity across devices. The typography, a blend of sleek sans-serif fonts, feels approachable yet premium, aligning with Spotify's brand identity. Strategic content hierarchy guides users effortlessly from discovery to sign-up, with modular sections showcasing trending artists, curated playlists, and podcast highlights.
-              </p>
-            </div>
-          </div>
+				<section className="rounded-xl border border-gray-200 bg-white p-6 md:p-8">
+					<div className="mb-4 flex items-center gap-2">
+						<CalendarDays className="h-4 w-4 text-gray-700" />
+						<h2 className="text-base font-semibold text-gray-900">Project milestones</h2>
+					</div>
+					{milestones.length ? (
+						<div className="space-y-4">
+							{milestones.map((milestone) => (
+								<div
+									key={milestone.id}
+									className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-gray-50 p-4"
+								>
+									<div className="flex items-start gap-3">
+										<CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-gray-500" />
+										<div>
+											<p className="font-medium text-gray-800">{milestone.title}</p>
+											<p className="mt-1 text-sm text-gray-500">
+												{milestone.description || "No description"}
+												{" · "}
+												{project.contract?.currency}{" "}
+												{Number(milestone.amount).toLocaleString()}
+												{milestone.due_date ? ` · Due ${formatDate(milestone.due_date)}` : ""}
+											</p>
+										</div>
+									</div>
+									<div className="flex items-center gap-3">
+										<span className="text-sm capitalize text-gray-600">
+											{milestone.status.replace("_", " ")}
+										</span>
+										{nextMilestoneStatus(milestone) && project.status === "active" && (
+											<button
+												disabled={busyMilestone === milestone.id}
+												onClick={() =>
+													changeMilestoneStatus(milestone, nextMilestoneStatus(milestone)!)
+												}
+												className="rounded-md bg-gray-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+											>
+												{busyMilestone === milestone.id
+													? "Updating…"
+													: milestone.status === "pending"
+														? "Start work"
+														: "Submit work"}
+											</button>
+										)}
+									</div>
+								</div>
+							))}
+						</div>
+					) : (
+						<p className="text-sm text-gray-500">No milestones have been added to this contract.</p>
+					)}
+				</section>
 
-          {/* Skills and Tools */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Wrench className="w-4 h-4 text-gray-700" />
-              <h2 className="text-base font-semibold text-gray-900">Skills and Tools</h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs font-medium rounded-lg border border-purple-200"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+				{project.status === "completed" && (
+					<section className="rounded-xl border border-gray-200 bg-white p-6 md:p-8">
+						<div className="mb-4 flex items-center gap-2">
+							<Star className="h-4 w-4 text-gray-700" />
+							<h2 className="text-base font-semibold text-gray-900">Client review</h2>
+						</div>
+						{review ? (
+							<div className="rounded-lg bg-gray-50 p-4">
+								<p className="font-medium text-gray-800">
+									Your rating: {review.rating}/5
+								</p>
+								<p className="mt-2 whitespace-pre-wrap text-sm text-gray-600">{review.comment}</p>
+							</div>
+						) : (
+							<form onSubmit={submitReview} className="space-y-4">
+								<label className="block text-sm font-medium text-gray-700">
+									Rating
+									<select
+										value={reviewRating}
+										onChange={(event) => setReviewRating(Number(event.target.value))}
+										className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+									>
+										{[5, 4, 3, 2, 1].map((rating) => (
+											<option key={rating} value={rating}>{rating} / 5</option>
+										))}
+									</select>
+								</label>
+								<label className="block text-sm font-medium text-gray-700">
+									Comment
+									<textarea
+										required
+										maxLength={2000}
+										value={reviewComment}
+										onChange={(event) => setReviewComment(event.target.value)}
+										className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+										rows={4}
+									/>
+								</label>
+								<button className="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white">
+									Submit review
+								</button>
+							</form>
+						)}
+					</section>
+				)}
 
-        {/* PART 2: Deliverables and Milestones */}
-        <div className="grid grid-cols-2 gap-6">
-          {/* Deliverables */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle2 className="w-4 h-4 text-gray-700" />
-              <h2 className="text-base font-semibold text-gray-900">Deliverables</h2>
-            </div>
-            <div className="space-y-2.5">
-              {deliverables.map((item, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-grey-800 shrink-0" />
-                  <span className="text-sm text-gray-700">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+				{canReportDispute && (
+					<section className="rounded-xl border border-gray-200 bg-white p-6 md:p-8">
+						<h2 className="mb-4 text-base font-semibold text-gray-900">Report a project dispute</h2>
+						<form onSubmit={submitDispute} className="space-y-4">
+							<label className="block text-sm font-medium text-gray-700">
+								Reason
+								<input
+									required
+									maxLength={200}
+									value={disputeReason}
+									onChange={(event) => setDisputeReason(event.target.value)}
+									className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+								/>
+							</label>
+							<label className="block text-sm font-medium text-gray-700">
+								Details
+								<textarea
+									required
+									maxLength={5000}
+									value={disputeDescription}
+									onChange={(event) => setDisputeDescription(event.target.value)}
+									className="mt-1 block w-full rounded-md border border-gray-300 p-2"
+									rows={4}
+								/>
+							</label>
+							<button className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800">
+								Submit dispute report
+							</button>
+						</form>
+					</section>
+				)}
 
-          {/* Project Milestones */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <CalendarDays className="w-4 h-4 text-gray-700" />
-              <h2 className="text-base font-semibold text-gray-900">Project Milestones</h2>
-            </div>
-            <div className="space-y-2.5">
-              {milestones.map((milestone, index) => (
-                <div key={index} className="flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-gray-800 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm text-gray-700 font-medium">{milestone.title}</p>
-                    <p className="text-xs text-gray-500">{milestone.date}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* PART 3: Performance Metrics and Client Feedback */}
-        <div className="bg-white border border-gray-200 rounded-xl p-8">
-          {/* Performance Metrics */}
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-5">
-              <BarChart3 className="w-4 h-4 text-gray-700" />
-              <h2 className="text-base font-semibold text-gray-900">Performance Metrics</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-x-12 gap-y-5">
-              {performanceMetrics.map((metric, index) => (
-                <div key={index}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-700 font-medium">{metric.label}</span>
-                    <span className="text-sm text-gray-900 font-semibold">{metric.value}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gray-900 rounded-full transition-all"
-                      style={{ width: `${metric.value}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Client Feedback */}
-          <div>
-            <div className="flex items-center gap-2 mb-5">
-              <MessageSquare className="w-4 h-4 text-gray-700" />
-              <h2 className="text-base font-semibold text-gray-900">Client Feedback</h2>
-            </div>
-            <div className="bg-gray-50 rounded-lg p-5">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-                  <img 
-                    src="https://i.pravatar.cc/150?img=12" 
-                    alt="Mark Brun" 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-900">Mark Brun, CTO</p>
-                  <div className="flex items-center gap-0.5 mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="border-l-4 border-blue-500 pl-4">
-                <p className="text-sm text-gray-700 italic leading-relaxed">
-                  "Exceptional work! The new website exceeded our expectations. The design is modern, user-friendly, and the performance improvements are remarkable. Communication was excellent throughout the project."
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+				{feedbackError && <p role="alert" className="text-sm text-red-600">{feedbackError}</p>}
+				{feedbackMessage && <p role="status" className="text-sm text-green-700">{feedbackMessage}</p>}
+			</div>
+		</div>
+	);
 };
+
+function Info({ label, children }: { label: string; children: React.ReactNode }) {
+	return (
+		<div>
+			<p className="text-xs text-gray-500">{label}</p>
+			<p className="mt-1 text-sm font-semibold text-gray-900">{children}</p>
+		</div>
+	);
+}
+
+function formatDate(value: string) {
+	const date = new Date(value);
+	return Number.isNaN(date.getTime()) ? "Not available" : date.toLocaleDateString();
+}
+
+function nextMilestoneStatus(
+	milestone: ApiMilestone,
+): ApiMilestone["status"] | null {
+	if (milestone.status === "pending") return "in_progress";
+	if (milestone.status === "in_progress" || milestone.status === "revision_requested") {
+		return "submitted";
+	}
+	return null;
+}
 
 export default WorkHistoryDetails;

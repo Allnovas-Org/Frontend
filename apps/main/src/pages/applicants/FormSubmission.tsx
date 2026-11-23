@@ -1,6 +1,7 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useContext } from "react";
 import { SectionTitle } from "./help";
-import { FormContext } from "../../store/FormContext";
+import { FormContext, FormValues } from "../../store/FormContext";
+import { Job } from "../../types";
 
 const howLongOptions = [
   "Less than 1 month",
@@ -9,29 +10,9 @@ const howLongOptions = [
   "More than 6 months",
 ];
 
-const job = {
-  position: "Frontend Developer",
-  company: "Company Name",
-  experience: "2+ years",
-  budget: "$1,400 - $2,000",
-  delivery: "2-4 weeks",
-  about:
-    "We are looking for a talented frontend developer to join our remote team. You will work on exciting projects and collaborate with a global team.",
-  qualifications: [
-    "Bachelor's degree in Computer Science or related field",
-    "2+ years experience in frontend development",
-    "Proficiency in React and JavaScript",
-  ],
-  responsibilities: [
-    "Develop and maintain web applications",
-    "Collaborate with designers and backend developers",
-    "Write clean, scalable code",
-  ],
-  skills: ["React", "JavaScript", "CSS", "HTML", "Git"],
-};
-
-const FormSubmission: React.FC = () => {
-  const formik = React.useContext(FormContext) as any;
+const FormSubmission: React.FC<{ job?: Job }> = ({ job }) => {
+  const formik = useContext(FormContext);
+  if (!formik) throw new Error("FormSubmission must be used within FormContext.");
   const selectedOptions = formik.values.selectedOptions;
   const coverLetter = formik.values.coverLetter;
   const attachments = formik.values.attachments;
@@ -39,7 +20,7 @@ const FormSubmission: React.FC = () => {
     formik.setFieldValue("selectedOptions", value);
   const setCoverLetter = (letter: string) =>
     formik.setFieldValue("coverLetter", letter);
-  const setAttachments = (files: File[]) =>
+  const setAttachments = (files: FormValues["attachments"]) =>
     formik.setFieldValue("attachments", files);
 
   const handleCheckboxChange = (option: string) => {
@@ -57,7 +38,7 @@ const FormSubmission: React.FC = () => {
       <div>
         {/* Position at Company */}
         <SectionTitle>
-          {job.position} at {job.company}
+          {job?.position || "Job proposal"} at {job?.company || "Client"}
         </SectionTitle>
         <p className='text-gray-600 mb-6'>
           Apply for this exciting opportunity and join our team!
@@ -67,18 +48,22 @@ const FormSubmission: React.FC = () => {
           <div className='flex flex-col '>
             <span className='font-semibold text-gray-700'>Experience</span>
             <span className='text-base text-gray-500 mt-2'>
-              {job.experience}
+              {job?.experience || "Not specified"}
             </span>
           </div>
           <div className='flex flex-col items-center'>
             <span className='font-semibold text-gray-700'>Budget</span>
-            <span className='text-base text-gray-500 mt-2'>{job.budget}</span>
+            <span className='text-base text-gray-500 mt-2'>
+              {job?.budget || job?.price || "See job budget"}
+            </span>
           </div>
           <div className='flex flex-col items-center'>
             <span className='font-semibold text-gray-700'>
               Delivery Timeline
             </span>
-            <span className='text-base text-gray-500 mt-2'>{job.delivery}</span>
+            <span className='text-base text-gray-500 mt-2'>
+              {job?.delivery || "Proposed by freelancer"}
+            </span>
           </div>
         </div>
       </div>
@@ -143,6 +128,7 @@ const FormSubmission: React.FC = () => {
             multiple
             onChange={handleFileChange}
             className='hidden'
+            disabled
           />
         </label>
         {attachments.length > 0 && (
@@ -153,6 +139,9 @@ const FormSubmission: React.FC = () => {
           </ul>
         )}
       </section>
+      <p className='mt-2 text-xs text-gray-400'>
+        File uploads are not enabled for beta proposals.
+      </p>
     </div>
   );
 };

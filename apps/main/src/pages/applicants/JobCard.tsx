@@ -42,11 +42,17 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
       <div className='flex items-start'>
         {/* Company logo */}
         <div className='w-9 h-9 flex items-center justify-center bg-input rounded-lg mr-4'>
-          <img
-            src={job.logo}
-            alt={job.company}
-            className='w-10 h-10 object-contain'
-          />
+          {job.logo ? (
+            <img
+              src={job.logo}
+              alt={job.company}
+              className='w-10 h-10 object-contain'
+            />
+          ) : (
+            <span className='text-sm font-semibold text-primary'>
+              {job.company.slice(0, 1).toUpperCase()}
+            </span>
+          )}
         </div>
         {/* Position, name, applicants */}
         <div className='flex-2 flex flex-col items-start'>

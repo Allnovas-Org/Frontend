@@ -1,4 +1,5 @@
-import React, { useState, lazy, Suspense } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
+import { useAuthStore } from "../../store/useAuthStore";
 const ReviewSection = lazy(() => import("./Review/ReviewSection"));
 import TabNav from "./TabNav";
 import TipsSidebar from "./TipsSidebar";
@@ -7,12 +8,13 @@ import BasicInfoSection from "./BasicInfo/BasicInfoSection";
 import AboutMeSection from "./About/AboutMeSection";
 import WorkExperienceSection from "./WorkExperience/WorkExperienceSection";
 import SkillsSection from "./Skills/SkillsSection";
-import ToolsSection from "./Tools/ToolsSection";
 import CatelogSection from "./Catelog/CatelogSection";
 import CreateCatalogue from "./Catelog/CreateCatalogue";
 import ProjectsSection from "./Project/ProjectsSection";
 import { ArrowRight } from "lucide-react";
 import { TabType, TabContent } from "../../types";
+import { getFreelancerProfile } from "../../services/profile.service";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 const cardData = [
 	{
@@ -66,11 +68,29 @@ const TAB_DATA: Record<TabType, TabContent> = {
 };
 
 const EditProfile: React.FC = () => {
+	const user = useAuthStore((state) => state.user);
 	const [activeTab, setActiveTab] = useState<TabType>("Profile");
 	const [showProfileEdit, setShowProfileEdit] = useState(false);
 	const [showProjectEdit, setShowProjectEdit] = useState(false);
 	const [showCreateCatalogue, setShowCreateCatalogue] = useState(false);
 	const [showCatalogueEdit, setShowCatalogueEdit] = useState(false);
+	const [profileTitle, setProfileTitle] = useState("");
+	const [profileError, setProfileError] = useState("");
+
+	useEffect(() => {
+		if (user?.userType !== "Freelancer") return;
+		let active = true;
+		getFreelancerProfile()
+			.then((profile) => {
+				if (active) setProfileTitle(profile.title || "");
+			})
+			.catch((requestError: unknown) => {
+				if (active) setProfileError(getApiErrorMessage(requestError, "Unable to load your profile."));
+			});
+		return () => {
+			active = false;
+		};
+	}, [user?.userType]);
 
 	const handleEditCatalogue = () => {
 		setShowCreateCatalogue(true);
@@ -105,10 +125,10 @@ const EditProfile: React.FC = () => {
 					<div className="flex sm:flex-row sm:items-center flex-col justify-between gap-4">
 						<div className="flex flex-col items-start gap-2">
 							<h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-								Ajayi Samuel
+								{`${user?.firstName || ""} ${user?.lastName || ""}`.trim() || "Your profile"}
 							</h2>
 							<p className="text-gray-500 text-sm">
-								Product Designer || UI/UX Designer
+								{profileTitle || "Freelancer"}
 							</p>
 							{/* Edit Pen */}
 							{activeTab === "Profile" && showProfileEdit && (
@@ -117,6 +137,7 @@ const EditProfile: React.FC = () => {
 								</button>
 							)}
 						</div>
+						{profileError && <p role="alert" className="text-sm text-red-600">{profileError}</p>}
 						<button
 							className={`bg-transparent text-purple px-4 py-2 rounded-lg font-medium border border-purple transition mt-4 sm:mt-0 ${activeTab === "Review" ? "hidden" : ""}`}
 							onClick={() => {
@@ -165,7 +186,7 @@ const EditProfile: React.FC = () => {
 										<SkillsSection showEdit={showProfileEdit} />
 									</div>
 									<div className="mt-6">
-										<WorkExperienceSection showEdit={showProfileEdit} />
+										<WorkExperienceSection />
 									</div>
 								</>
 							)}

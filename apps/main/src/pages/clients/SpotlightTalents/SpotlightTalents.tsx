@@ -1,150 +1,89 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+	Favorite,
 	Search,
 	TuneOutlined,
-	Favorite,
-	Add,
-	KeyboardArrowDown,
 } from "@mui/icons-material";
 import {
 	InputAdornment,
 	TextField,
-	MenuItem,
-	Select,
-	FormControl,
 	Pagination,
 } from "@mui/material";
 import FreelancerCard from "../../../components/FreelancerCard";
 import FreelancerInformationOverlay from "./modals/FreelancerInformationOverlay";
 import RelevanceOverlay from "./modals/RelevanceOverlay";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+	FreelancerDirectoryEntry,
+	listFreelancers,
+} from "../../../services/freelancers.service";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 interface Freelancer {
 	id: string;
 	name: string;
 	title: string;
 	profileImage: string;
-	rating: number;
+	rating: number | null;
 	jobCount: number;
 	skills: string[];
-	hourlyRate: number;
-	location: string;
-	responseTime: string;
-	jobsCompleted: number;
-	totalEarnings: number;
-	totalHours: number;
+	hourlyRate: number | null;
+	currency: string | null;
+	yearsExperience: number;
 	about: string;
-	certifications: string[];
-	isAvailable: boolean;
+	portfolio: FreelancerDirectoryEntry["portfolio"];
 	category: string;
 }
 
+const categories = [
+	"All",
+	"Web Development",
+	"Programming & Tech",
+	"Video Editing & Animation",
+];
+
 const SpotlightTalents = () => {
 	const [searchQuery, setSearchQuery] = useState("");
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const [selectedCategory, setSelectedCategory] = useState("All");
 	const [activeCategory, setActiveCategory] = useState("All");
 	const [selectedRelevance, setSelectedRelevance] = useState<string[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
+	const [totalCount, setTotalCount] = useState(0);
+	const [freelancers, setFreelancers] = useState<Freelancer[]>([]);
 	const [savedTalents, setSavedTalents] = useState<string[]>([]);
 	const [selectedFreelancer, setSelectedFreelancer] =
 		useState<Freelancer | null>(null);
 	const [relevanceModalOpen, setRelevanceModalOpen] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [loadError, setLoadError] = useState("");
+	const navigate = useNavigate();
 
-	// Mock data - replace with actual data
-  const [freelancers] = useState<Freelancer[]>([
-    {
-      id: "1",
-      name: "Alex Johnson",
-      title: "Product Designer",
-      profileImage: "https://i.pravatar.cc/150?img=1",
-      rating: 5.0,
-      jobCount: 33,
-      skills: ["Figma", "User-interface", "Wireframing", "Prototyping"],
-      hourlyRate: 20.0,
-      location: "San Francisco, CA",
-      responseTime: "Responds immediately",
-      jobsCompleted: 33,
-      totalEarnings: 16500,
-      totalHours: 2131,
-      about:
-        "I am an experienced web developer with a strong foundation in crafting dynamic, user-focused websites. My expertise spans front-end and back-end technologies, ensuring seamless functionality and engaging designs. I thrive on solving complex challenges, delivering responsive and accessible solutions. With a passion for innovation, I continuously adapt to evolving industry trends. I'm a passionate full-stack developer with over 5 years of experience building scalable web applications. I specialize in React, Node.js, and modern web technologies. My approach combines clean code practices with user-centered design to deliver exceptional digital experiences.",
-      certifications: [
-        "AWS Certified Developer - Associate",
-        "Google Cloud Professional Cloud Architect",
-        "Meta React Certification",
-      ],
-      isAvailable: true,
-      category: "Web Development",
-    },
-    {
-      id: "2",
-      name: "Maria Garcia",
-      title: "Video Editor & Animator",
-      profileImage: "https://i.pravatar.cc/150?img=2",
-      rating: 4.9,
-      jobCount: 45,
-      skills: ["Adobe Premiere Pro", "After Effects", "Final Cut Pro"],
-      hourlyRate: 35.0,
-      location: "New York, NY",
-      responseTime: "Within a few hours",
-      jobsCompleted: 42,
-      totalEarnings: 25000,
-      totalHours: 3500,
-      about:
-        "Creative and detail-oriented video editor with a passion for storytelling. I bring visions to life through compelling narratives and stunning visuals. Proficient in the latest video editing software and techniques.",
-      certifications: ["Adobe Certified Expert - Premiere Pro"],
-      isAvailable: true,
-      category: "Video Editing & Animation",
-    },
-    {
-      id: "3",
-      name: "David Smith",
-      title: "Full-Stack Developer",
-      profileImage: "https://i.pravatar.cc/150?img=3",
-      rating: 4.8,
-      jobCount: 50,
-      skills: ["React", "Node.js", "Python", "Django", "AWS"],
-      hourlyRate: 50.0,
-      location: "Austin, TX",
-      responseTime: "Responds within a day",
-      jobsCompleted: 48,
-      totalEarnings: 80000,
-      totalHours: 5000,
-      about:
-        "Experienced full-stack developer specializing in building robust and scalable web applications. I enjoy tackling complex problems and delivering high-quality code. Let's build something great together.",
-      certifications: ["AWS Certified Solutions Architect"],
-      isAvailable: false,
-      category: "Programming & Tech",
-    },
-    {
-      id: "4",
-      name: "Sophia Chen",
-      title: "UI/UX Designer",
-      profileImage: "https://i.pravatar.cc/150?img=4",
-      rating: 5.0,
-      jobCount: 25,
-      skills: ["Sketch", "InVision", "Adobe XD", "User Research"],
-      hourlyRate: 45.0,
-      location: "Los Angeles, CA",
-      responseTime: "Responds immediately",
-      jobsCompleted: 25,
-      totalEarnings: 35000,
-      totalHours: 1500,
-      about:
-        "A user-centric UI/UX designer dedicated to creating intuitive and beautiful digital experiences. I bridge the gap between user needs and business goals to create products that are both functional and delightful.",
-      certifications: ["Nielsen Norman Group UX Certification"],
-      isAvailable: true,
-      category: "Web Development",
-    },
-  ]);
-
-  const categories = [
-    "All",
-    "Web Development",
-    "Programming & Tech",
-    "Video Editing & Animation",
-  ];
+	useEffect(() => {
+		let active = true;
+		const timer = window.setTimeout(() => {
+			setLoading(true);
+			setLoadError("");
+			void listFreelancers(searchQuery.trim(), currentPage)
+				.then((page) => {
+					if (!active) return;
+					setFreelancers(page.results.map(mapFreelancer));
+					setTotalCount(page.count);
+				})
+				.catch((error: unknown) => {
+					if (active) {
+						setLoadError(
+							getApiErrorMessage(error, "Unable to load freelancers."),
+						);
+					}
+				})
+				.finally(() => {
+					if (active) setLoading(false);
+				});
+		}, 250);
+		return () => {
+			active = false;
+			window.clearTimeout(timer);
+		};
+	}, [currentPage, searchQuery]);
 
 	const handleToggleSave = (id: string) => {
 		setSavedTalents((prev) =>
@@ -154,72 +93,51 @@ const SpotlightTalents = () => {
 		);
 	};
 
-	const handleSeeMore = (id: string) => {
-		const freelancer = freelancers.find((f) => f.id === id);
-		if (freelancer) {
-			setSelectedFreelancer(freelancer);
-		}
-	};
-
 	const handleApplyRelevance = (selected: string[]) => {
 		setSelectedRelevance(selected);
 	};
 
-	const filteredFreelancers = freelancers.filter((freelancer) => {
-		if (activeCategory !== "All" && freelancer.category !== activeCategory) {
-			return false;
-		}
-		if (searchQuery) {
-			return (
-				freelancer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				freelancer.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				freelancer.skills.some((skill) =>
-					skill.toLowerCase().includes(searchQuery.toLowerCase()),
-				)
-			);
-		}
-		return true;
-	});
+	const filteredFreelancers = freelancers.filter(
+		(freelancer) =>
+			activeCategory === "All" || freelancer.category === activeCategory,
+	);
 
 	return (
 		<div className="min-h-screen bg-white">
-			<div className="max-w-7xl mx-auto px-4 py-8 mb-4">
-				{/* Category Pills - Top Navigation */}
-				<div className="flex max-md:flex-col md:items-center flex-row justify-between">
+			<div className="mx-auto mb-4 max-w-7xl px-4 py-8">
+				<div className="flex flex-row justify-between max-md:flex-col md:items-center">
 					<div className="flex gap-4">
 						{categories.map((category) => (
 							<button
 								key={category}
-								onClick={() => setActiveCategory(category)}
-								className="text-gray-600 hover:text-gray-900 transition text-sm"
+								onClick={() => {
+									setActiveCategory(category);
+									setCurrentPage(1);
+								}}
+								className="text-sm text-gray-600 transition hover:text-gray-900"
 							>
 								{category}
 							</button>
 						))}
 					</div>
-					{/* Search and Filters */}
 					<div className="inline-flex gap-4">
 						<TextField
-							placeholder="Search category"
+							placeholder="Search freelancers"
 							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
+							onChange={(event) => {
+								setSearchQuery(event.target.value);
+								setCurrentPage(1);
+							}}
 							variant="outlined"
 							size="small"
 							sx={{
 								width: 300,
 								backgroundColor: "white",
 								"& .MuiOutlinedInput-root": {
-									"& fieldset": {
-										borderColor: "#e5e7eb",
-									},
-									"&:hover fieldset": {
-										borderColor: "#d1d5db",
-									},
-									"&.Mui-focused fieldset": {
-										borderColor: "#9ca3af",
-									},
-									// Adjust height to match button
-									height: "40px", // or "42px" depending on your exact button height
+									"& fieldset": { borderColor: "#e5e7eb" },
+									"&:hover fieldset": { borderColor: "#d1d5db" },
+									"&.Mui-focused fieldset": { borderColor: "#9ca3af" },
+									height: "40px",
 								},
 							}}
 							InputProps={{
@@ -230,10 +148,9 @@ const SpotlightTalents = () => {
 								),
 							}}
 						/>
-
 						<button
 							onClick={() => setRelevanceModalOpen(true)}
-							className="px-4 h-10 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition flex items-center gap-2"
+							className="flex h-10 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
 						>
 							<TuneOutlined sx={{ fontSize: 18 }} />
 							Relevance
@@ -241,11 +158,10 @@ const SpotlightTalents = () => {
 					</div>
 				</div>
 
-				{/* Header Section */}
-				<div className="mb-8">
-					<div className="flex items-center justify-between mb-6">
+				<div className="mb-8 mt-8">
+					<div className="mb-6 flex items-center justify-between">
 						<div>
-							<h1 className="text-2xl font-semibold mb-2">
+							<h1 className="mb-2 text-2xl font-semibold">
 								Hire top freelancers
 							</h1>
 							<p className="text-gray-600">
@@ -253,58 +169,41 @@ const SpotlightTalents = () => {
 							</p>
 						</div>
 					</div>
-
-					{/* Breadcrumb Navigation */}
-					<div className="flex items-center gap-2 mb-6 text-sm text-gray-600">
-						<button
-							onClick={() => setActiveCategory("All")}
-							className="flex items-center gap-1 hover:text-gray-900"
-						>
-							<svg
-								className="w-4 h-4"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-								/>
-							</svg>
-						</button>
-						<span>/</span>
+					<div className="mb-6 flex items-center gap-2 text-sm text-gray-600">
 						<button
 							onClick={() => setActiveCategory("All")}
 							className="hover:text-gray-900"
+							aria-label="Show all categories"
 						>
-							All
+							⌂
 						</button>
-						{activeCategory !== "All" && (
+						<span>/</span>
+						<button onClick={() => setActiveCategory("All")}>All</button>
+						{activeCategory !== "All" ? (
 							<>
 								<span>/</span>
-								<span className="text-gray-900 font-medium">
-									{activeCategory}
-								</span>
+								<span className="font-medium text-gray-900">{activeCategory}</span>
 							</>
-						)}
-						{selectedRelevance.length > 0 && (
+						) : null}
+						{selectedRelevance.length ? (
 							<>
 								<span>/</span>
-								<span className="text-gray-900 font-medium">
+								<span className="font-medium text-gray-900">
 									{selectedRelevance[0]}
 								</span>
 							</>
-						)}
+						) : null}
 					</div>
 					<div className="flex gap-3">
-						<button className="px-6 py-2.5 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition">
+						<button
+							onClick={() => navigate("/clients/post-a-job")}
+							className="rounded-lg bg-red-500 px-6 py-2.5 font-medium text-white transition hover:bg-red-600"
+						>
 							Post a job
 						</button>
 						<Link
 							to="/clients/saved-talents"
-							className="px-6 py-2.5 bg-white border-2 border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition flex items-center gap-2"
+							className="flex items-center gap-2 rounded-lg border-2 border-gray-200 bg-white px-6 py-2.5 font-medium text-gray-700 transition hover:bg-gray-50"
 						>
 							<Favorite sx={{ fontSize: 18 }} />
 							Saved Talents
@@ -312,23 +211,33 @@ const SpotlightTalents = () => {
 					</div>
 				</div>
 
-				{/* Freelancers Grid */}
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-					{filteredFreelancers.map((freelancer) => (
-						<FreelancerCard
-							key={freelancer.id}
-							{...freelancer}
-							isSaved={savedTalents.includes(freelancer.id)}
-							onToggleSave={handleToggleSave}
-							onSeeMore={handleSeeMore}
-						/>
-					))}
-				</div>
+				{loading ? (
+					<p className="py-12 text-center text-gray-500">Loading freelancers…</p>
+				) : loadError ? (
+					<p role="alert" className="py-12 text-center text-red-600">
+						{loadError}
+					</p>
+				) : filteredFreelancers.length === 0 ? (
+					<p className="py-12 text-center text-gray-500">
+						No freelancers match this search.
+					</p>
+				) : (
+					<div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+						{filteredFreelancers.map((freelancer) => (
+							<FreelancerCard
+								key={freelancer.id}
+								{...freelancer}
+								isSaved={savedTalents.includes(freelancer.id)}
+								onToggleSave={handleToggleSave}
+								onSeeMore={() => setSelectedFreelancer(freelancer)}
+							/>
+						))}
+					</div>
+				)}
 
-				{/* Pagination */}
 				<div className="flex justify-center">
 					<Pagination
-						count={10}
+						count={Math.max(1, Math.ceil(totalCount / 20))}
 						page={currentPage}
 						onChange={(_, page) => setCurrentPage(page)}
 						sx={{
@@ -336,9 +245,7 @@ const SpotlightTalents = () => {
 								"&.Mui-selected": {
 									backgroundColor: "#6A0DAD",
 									color: "white",
-									"&:hover": {
-										backgroundColor: "#5a0b92",
-									},
+									"&:hover": { backgroundColor: "#5a0b92" },
 								},
 							},
 						}}
@@ -346,7 +253,6 @@ const SpotlightTalents = () => {
 				</div>
 			</div>
 
-			{/* Modals */}
 			<RelevanceOverlay
 				open={relevanceModalOpen}
 				onClose={() => setRelevanceModalOpen(false)}
@@ -354,17 +260,36 @@ const SpotlightTalents = () => {
 				onApply={handleApplyRelevance}
 			/>
 
-			{selectedFreelancer && (
+			{selectedFreelancer ? (
 				<FreelancerInformationOverlay
-					open={!!selectedFreelancer}
+					open
 					onClose={() => setSelectedFreelancer(null)}
 					freelancer={selectedFreelancer}
 					isSaved={savedTalents.includes(selectedFreelancer.id)}
 					onToggleSave={handleToggleSave}
 				/>
-			)}
+			) : null}
 		</div>
 	);
 };
+
+function mapFreelancer(entry: FreelancerDirectoryEntry): Freelancer {
+	return {
+		id: entry.user_id,
+		name: entry.name,
+		title: entry.title,
+		profileImage: entry.profile_photo || "",
+		rating: entry.rating,
+		jobCount: entry.review_count,
+		skills: entry.skills || [],
+		hourlyRate:
+			entry.hourly_rate === null ? null : Number(entry.hourly_rate),
+		currency: entry.currency,
+		yearsExperience: entry.yoe,
+		about: entry.shbio || entry.bio || "",
+		portfolio: entry.portfolio,
+		category: entry.spa?.[0] || "",
+	};
+}
 
 export default SpotlightTalents;
