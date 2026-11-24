@@ -33,8 +33,9 @@ const TermsOfService: React.FC = () => (
         content: (
           <>
             <p>Users must be at least 16 years old.</p>
-            <p>Users under 18 must obtain parental or legal guardian consent where required by applicable law.</p>
+            <p>Users under 18 must obtain parental or legal guardian consent.</p>
             <p>Activities involving binding contracts, payments or other regulated services may require users to be at least 18 years old or otherwise possess the necessary legal capacity.</p>
+            <p>Age-restricted services must not be made available without appropriate safeguards and compliance with applicable age and legal capacity requirements.</p>
           </>
         ),
       },

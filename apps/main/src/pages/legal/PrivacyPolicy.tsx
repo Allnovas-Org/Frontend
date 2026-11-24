@@ -76,8 +76,8 @@ const PrivacyPolicy: React.FC = () => (
         title: "Google Services and Backup Infrastructure",
         content: (
           <>
-            <p>Allnova uses Google Drive as part of its internal backup infrastructure.</p>
-            <p>Our backup application requests limited Google Drive access to create and manage authorized backup files. This access is intended for company-controlled backup operations rather than accessing the personal Google Drive accounts of Allnova platform users.</p>
+            <p>Allnova is configuring Google Drive as part of its internal backup infrastructure. Automated backups are not yet operational.</p>
+            <p>Any Google Drive access configured for the backup application is intended for company-controlled backup operations, not for accessing the personal Google Drive accounts of Allnova platform users.</p>
             <p>Allnova's use and transfer of information received from Google APIs will adhere to the Google API Services User Data Policy, including its Limited Use requirements where applicable.</p>
           </>
         ),
@@ -105,12 +105,7 @@ const PrivacyPolicy: React.FC = () => (
       {
         id: "data-retention",
         title: "Data Retention",
-        content: (
-          <>
-            <p>Personal information is retained only for as long as reasonably necessary to provide services, fulfill legitimate business purposes, resolve disputes and comply with applicable legal obligations.</p>
-            <p>Certain information may remain in restricted backups or records for applicable retention periods.</p>
-          </>
-        ),
+        content: <p>Retention periods, including for any future backups, are subject to applicable legal requirements.</p>,
       },
       {
         id: "international-data-transfers",
@@ -148,8 +143,9 @@ const PrivacyPolicy: React.FC = () => (
         content: (
           <>
             <p>Allnova is intended for individuals aged 16 and above.</p>
-            <p>Users under 18 must obtain parental or legal guardian consent where required by applicable law. Certain services, including financial transactions and contractual activities, may be restricted to users with the necessary legal capacity.</p>
-            <p>Allnova does not knowingly permit individuals below its minimum age to register.</p>
+            <p>Users under 18 must obtain parental or legal guardian consent.</p>
+            <p>Age-restricted services must not be made available without appropriate safeguards and compliance with applicable age and legal capacity requirements.</p>
+            <p>Individuals below the minimum age must not register.</p>
           </>
         ),
       },
