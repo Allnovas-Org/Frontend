@@ -81,10 +81,6 @@ const LegalPage: React.FC<LegalPageProps> = ({ title, sections, relatedPage }) =
             <h1 className="text-3xl font-semibold tracking-tight text-heading sm:text-4xl lg:text-5xl">
               {title}
             </h1>
-            <div className="mt-4 max-w-3xl rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-950">
-              <strong>Draft notice:</strong> This document is a draft and has
-              not yet received final legal approval.
-            </div>
           </div>
         </div>
 
