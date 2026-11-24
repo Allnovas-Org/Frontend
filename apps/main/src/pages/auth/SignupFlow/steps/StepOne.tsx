@@ -1,6 +1,5 @@
 import React from "react";
 import { Users, Briefcase } from "lucide-react";
-import { useSignupStore } from "../../../../store/useSignupStore";
 
 interface StepOneProps {
 	userType: "Freelancer" | "Client" | null;

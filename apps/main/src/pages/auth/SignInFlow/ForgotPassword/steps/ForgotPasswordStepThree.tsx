@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { resetPassword } from "../../../../../services/auth.service";
+import { getApiErrorMessage } from "../../../../../utils/apiError";
 
 interface ForgotPasswordStepThreeProps {
   onNext: () => void;
   onBack: () => void;
+  token: string;
 }
 
 const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
   onNext,
   onBack,
+  token,
 }) => {
   const [formData, setFormData] = useState({
     password: "",
@@ -17,8 +21,9 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password.length < 8) {
@@ -32,8 +37,15 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
     }
     
     setError("");
-    console.log("Password reset successfully");
-    onNext();
+    setLoading(true);
+    try {
+      await resetPassword(token, formData.password, formData.confirmPassword);
+      onNext();
+    } catch (error) {
+      setError(getApiErrorMessage(error, "Unable to reset the password."));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -53,6 +65,7 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
       {/* Back Button */}
       <button
         onClick={onBack}
+        disabled={loading}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors w-fit"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -136,7 +149,7 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
 
           {/* Error Message */}
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <p role="alert" className="text-red-600 text-sm">{error}</p>
           )}
         </div>
 
@@ -144,14 +157,14 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
         <div className="mt-8">
           <button
             type="submit"
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
             className={`w-full py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
               isFormValid
                 ? "bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                 : "bg-gray-300 cursor-not-allowed"
             }`}
           >
-            Reset Password
+            {loading ? "Resetting…" : "Reset Password"}
           </button>
         </div>
       </form>

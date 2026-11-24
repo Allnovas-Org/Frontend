@@ -11,7 +11,7 @@ const HelpSearch: React.FC<HelpSearchProps> = ({
   placeholder = "Search help...",
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

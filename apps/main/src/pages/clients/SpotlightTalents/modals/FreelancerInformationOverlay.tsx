@@ -16,11 +16,11 @@ interface FreelancerInformationOverlayProps {
 		rating: number | null;
 		jobCount: number;
 		hourlyRate: number | null;
-		currency: string | null;
-		yearsExperience: number;
+		currency?: string | null;
+		yearsExperience?: number;
 		about: string;
 		skills: string[];
-		portfolio: {
+		portfolio?: {
 			id: string;
 			title: string;
 			description: string;
@@ -35,6 +35,7 @@ interface FreelancerInformationOverlayProps {
 const FreelancerInformationOverlay: React.FC<
 	FreelancerInformationOverlayProps
 > = ({ open, onClose, freelancer, isSaved = false, onToggleSave }) => {
+	const portfolio = freelancer.portfolio ?? [];
 	const [activeTab, setActiveTab] = useState<
 		"about" | "portfolio" | "experience" | "reviews"
 	>("about");
@@ -128,11 +129,11 @@ const FreelancerInformationOverlay: React.FC<
 						<p className="text-sm text-gray-600">Hourly rate</p>
 					</div>
 					<div className="rounded-lg bg-gray-50 p-4">
-						<h3 className="mb-1 text-xl font-bold">{freelancer.yearsExperience}</h3>
+						<h3 className="mb-1 text-xl font-bold">{freelancer.yearsExperience ?? "Not provided"}</h3>
 						<p className="text-sm text-gray-600">Years of experience</p>
 					</div>
 					<div className="rounded-lg bg-gray-50 p-4">
-						<h3 className="mb-1 text-xl font-bold">{freelancer.portfolio.length}</h3>
+						<h3 className="mb-1 text-xl font-bold">{freelancer.portfolio ? portfolio.length : "Not provided"}</h3>
 						<p className="text-sm text-gray-600">Portfolio items</p>
 					</div>
 				</div>
@@ -176,9 +177,9 @@ const FreelancerInformationOverlay: React.FC<
 						</div>
 					) : null}
 					{activeTab === "portfolio" ? (
-						freelancer.portfolio.length ? (
+						portfolio.length ? (
 							<div className="space-y-4">
-								{freelancer.portfolio.map((item) => (
+								{portfolio.map((item) => (
 									<article key={item.id} className="rounded-lg border border-gray-200 p-4">
 										<h3 className="font-semibold">{item.title}</h3>
 										<p className="mt-2 text-sm text-gray-600">{item.description}</p>
@@ -199,7 +200,9 @@ const FreelancerInformationOverlay: React.FC<
 					) : null}
 					{activeTab === "experience" ? (
 						<p className="py-12 text-center text-gray-500">
-							{freelancer.yearsExperience} years of experience
+							{freelancer.yearsExperience === undefined
+								? "Experience not provided"
+								: `${freelancer.yearsExperience} years of experience`}
 						</p>
 					) : null}
 					{activeTab === "reviews" ? (

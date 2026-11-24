@@ -1,5 +1,4 @@
 import React from "react";
-// @ts-ignore: allow importing image assets when no module declaration is present
 import img from '../../assets/woman.png'
 interface FeatureCardProps {
   icon: React.ReactNode;

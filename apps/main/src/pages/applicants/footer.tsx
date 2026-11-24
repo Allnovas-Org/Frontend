@@ -1,13 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export default function AllNovaFooter() {
-  const [email, setEmail] = useState('');
-
-  const handleSubmit = () => {
-    console.log('Email submitted:', email);
-    setEmail('');
-  };
-
   const footerLinks = {
     categories: [
       'Graphic Design',

@@ -4,11 +4,11 @@ import { ChevronLeft, ChevronRight } from "@mui/icons-material";
 import { niches } from "../../innerpages/data/niches";
 
 function NichesSlider() {
-  const scrollContainerRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isAtStart, setIsAtStart] = useState(true);
   const [isAtEnd, setIsAtEnd] = useState(false);
 
-  const NicheCard = ({ title, image }) => (
+  const NicheCard = ({ title, image }: { title: string; image: string }) => (
     <div className='border-[0.5px] border-gray-200 shadow shrink-0 w-64 bg-white rounded-2xl overflow-hidden transition-transform hover:scale-105'>
       <div className='h-[200px] overflow-hidden p-1'>
         <img
@@ -37,7 +37,7 @@ function NichesSlider() {
   };
 
   // Smooth scroll by one card width
-  const scrollByAmount = (direction) => {
+  const scrollByAmount = (direction: number) => {
     if (!scrollContainerRef.current) return;
 
     const cardWidth = 256; // w-64

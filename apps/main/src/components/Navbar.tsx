@@ -39,7 +39,6 @@ const Navbar = () => {
 	const closeSigninModal = useUIStore((s) => s.closeSigninModal);
 
 	// Check for persisted signup data
-	const signupStore = useSignupStore();
 	const currentUser = useAuthStore((s) => s.user);
 
 	const [openMobileNav, setOpenMobileNav] = useState(false);
@@ -53,16 +52,17 @@ const Navbar = () => {
 
 	// Auto-reopen signup modal if signup is in progress
 	useEffect(() => {
+		const signupStore = useSignupStore.getState();
 		// Check if there's persisted signup data (user was in the middle of signup)
 		const hasSignupInProgress =
 			signupStore.currentStep > 1 ||
 			signupStore.email ||
 			signupStore.userType;
 
-		if (hasSignupInProgress && !isSignupModalOpen) {
+		if (hasSignupInProgress && !useUIStore.getState().isSignupModalOpen) {
 			openSignupModal();
 		}
-	}, []); // Run only once on mount
+	}, [openSignupModal]);
 	const isMainContent =
 		location.pathname === "/jobs" ||
 		location.pathname === "/saved-jobs" ||

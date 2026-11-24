@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { testimonials } from "../SignupFlow/testimonials";
 
@@ -6,7 +6,7 @@ const RightSide: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  const nextTestimonial = () => {
+  const nextTestimonial = useCallback(() => {
     if (!isTransitioning) {
       setIsTransitioning(true);
       setTimeout(() => {
@@ -14,7 +14,7 @@ const RightSide: React.FC = () => {
         setIsTransitioning(false);
       }, 500);
     }
-  };
+  }, [isTransitioning]);
 
   const prevTestimonial = () => {
     if (!isTransitioning) {
@@ -33,7 +33,7 @@ const RightSide: React.FC = () => {
     }, 7000); // 7 seconds
 
     return () => clearInterval(interval); // Cleanup on unmount
-  }, [currentIndex, isTransitioning]); // Dependencies to ensure proper cleanup
+  }, [currentIndex, nextTestimonial]);
 
   const current = testimonials[currentIndex];
 

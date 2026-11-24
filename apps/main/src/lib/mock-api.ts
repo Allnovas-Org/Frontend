@@ -30,8 +30,10 @@ const MOCK_RESPONSES: Record<string, unknown> = {
   // Auth
   "POST /auth/signup/email/": {
     message: "OTP sent successfully",
-    token: 123456,
-    info: "Check your email for the OTP",
+    info: { expires_in_seconds: 300, resend_after_seconds: 60, username: "mockuser" },
+  },
+  "POST /auth/signup/resend-code/": {
+    message: "If this email is registered, a code has been sent.",
   },
   "POST /auth/signup/verify-token/": {
     message: "Token verified successfully",
@@ -102,9 +104,8 @@ export function activateMockAPI() {
       const method = (config.method || "GET").toUpperCase();
       const url = config.url || "";
 
-      const key = `${method} ${url}`;
       const matchedKey = Object.keys(MOCK_RESPONSES).find((k) =>
-        url.includes(k.split(" ")[1]),
+        k.startsWith(`${method} `) && url.includes(k.split(" ")[1]),
       );
 
       if (matchedKey) {

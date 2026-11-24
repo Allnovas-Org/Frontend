@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// @ts-ignore: allow importing image assets when no module declaration is present
 import demilade from '../../assets/demilade.png'
 import samuel from '../../assets/sameul.png'
 import sayo from '../../assets/sayo.png'

@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import React from "react";
 import { East } from "@mui/icons-material";
@@ -8,6 +7,11 @@ const CustomButton = ({
 	otherStyles = "",
 	reverseAnimate = false,
 	customStyles = false,
+}: {
+	buttonText: React.ReactNode;
+	otherStyles?: string;
+	reverseAnimate?: boolean;
+	customStyles?: boolean;
 }) => {
 	return (
 		<motion.button

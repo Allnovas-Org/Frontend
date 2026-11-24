@@ -51,7 +51,7 @@ const FindJobs: React.FC = () => {
     const controller = new AbortController();
     const budgetRange: [number, number?] | null =
       filters.budget === "Custom"
-        ? filters.customBudget
+        ? filters.customBudget ?? null
         : filters.budget === "Less than $1,000"
           ? [0, 999]
           : filters.budget === "$1,000 - $16,000"

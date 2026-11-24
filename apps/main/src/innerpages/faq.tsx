@@ -1,12 +1,9 @@
 import { ArrowRight } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import FAQTabs from "../components/ui/FAQTabs";
 
 export default function ArticlesFAQ() {
-	const [activeTab, setActiveTab] = useState("General");
-	const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-
 	const articles = [
 		{
 			id: 1,
@@ -27,100 +24,6 @@ export default function ArticlesFAQ() {
 			category: "Marketing",
 		},
 	];
-
-	const tabs = ["General", "Freelancing", "Account", "Transfer"];
-
-	const faqData = {
-		General: [
-			{
-				question: "What is Allnovas about?",
-				answer:
-					"Allnova is a platform connecting freelancers with clients worldwide.",
-			},
-			{
-				question: "Who can use Allnovas?",
-				answer:
-					"Anyone looking to hire freelancers or offer their services can use Allnova.",
-			},
-			{
-				question: "How does Allnovas ensure quality?",
-				answer:
-					"We have a rigorous vetting process and rating system for all freelancers.",
-			},
-			{
-				question: "Is Allnovas available worldwide?",
-				answer: "Yes, Allnova is accessible globally in over 150 countries.",
-			},
-		],
-		Freelancing: [
-			{
-				question: "How do I start freelancing on Allnovas?",
-				answer:
-					"Create an account, complete your profile, and start creating gigs to offer your services.",
-			},
-			{
-				question: "What services can I offer?",
-				answer:
-					"You can offer any professional service including design, writing, programming, marketing, and more.",
-			},
-			{
-				question: "How do I set my rates?",
-				answer:
-					"You have full control over your pricing. Research market rates and set competitive prices.",
-			},
-			{
-				question: "When do I get paid?",
-				answer:
-					"Payment is released after successful project completion and client approval.",
-			},
-		],
-		Account: [
-			{
-				question: "How do I create an account?",
-				answer:
-					"Click on Sign Up, enter your email, create a password, and verify your email address.",
-			},
-			{
-				question: "Can I change my username?",
-				answer:
-					"Yes, you can change your username once every 60 days in your account settings.",
-			},
-			{
-				question: "How do I verify my account?",
-				answer:
-					"Complete your profile, upload required documents, and wait for our team to review.",
-			},
-			{
-				question: "Is my data secure?",
-				answer:
-					"Yes, we use industry-standard encryption and security measures to protect your data.",
-			},
-		],
-		Transfer: [
-			{
-				question: "How do I withdraw my earnings?",
-				answer:
-					"Go to your earnings section and request a withdrawal to your preferred payment method.",
-			},
-			{
-				question: "What payment methods are available?",
-				answer:
-					"We support PayPal, bank transfer, and various local payment options.",
-			},
-			{
-				question: "Are there any withdrawal fees?",
-				answer:
-					"Small service fees apply depending on your chosen payment method and amount.",
-			},
-			{
-				question: "How long does a transfer take?",
-				answer:
-					"Transfers typically process within 3-7 business days depending on the payment method.",
-			},
-		],
-	};
-
-	const currentFAQs = faqData[activeTab as keyof typeof faqData];
 
 	return (
 		<div className="max-w-6xl mx-auto bg-white">
