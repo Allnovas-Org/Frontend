@@ -1,4 +1,5 @@
 import { api } from "../lib/axios";
+import type { ApiProject } from "./projects.service";
 
 export interface ApiJob {
   id: string;
@@ -63,6 +64,7 @@ export interface JobApplication {
   status: "submitted" | "shortlisted" | "hired" | "rejected" | "withdrawn";
   created_at: string;
   updated_at: string;
+  project?: ApiProject;
 }
 
 export const listJobs = async (
@@ -90,9 +92,10 @@ export const submitProposal = async (
 
 export const listJobApplications = async (
   jobId: string,
+  page = 1,
 ): Promise<Page<JobApplication>> => {
   const { data } = await api.get<Page<JobApplication>>("/jobs/applications/", {
-    params: { job_id: jobId, page_size: 100 },
+    params: { job_id: jobId, page_size: 100, page },
   });
   return data;
 };

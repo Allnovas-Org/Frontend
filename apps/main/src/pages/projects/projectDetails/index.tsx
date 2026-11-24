@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
 import {
   ApiJob,
   JobApplication,
+  Page,
   getJob,
   listJobApplications,
   setApplicationStatus,
@@ -18,7 +19,10 @@ import {
 const ProjectDetailsPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
   const [job, setJob] = useState<ApiJob | null>(null);
-  const [applications, setApplications] = useState<JobApplication[]>([]);
+  const [applicationPage, setApplicationPage] = useState<Page<JobApplication> | null>(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [loadingApplications, setLoadingApplications] = useState(false);
+  const pageRequest = useRef(0);
   const [project, setProject] = useState<ApiProject | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -32,6 +36,7 @@ const ProjectDetailsPage = () => {
     if (!projectId) return;
     let active = true;
     setLoading(true);
+    setLoadingApplications(false);
     setLoadError("");
     Promise.all([
       getJob(projectId),
@@ -41,7 +46,8 @@ const ProjectDetailsPage = () => {
       .then(([jobResult, applicationPage, projectPage]) => {
         if (!active) return;
         setJob(jobResult);
-        setApplications(applicationPage.results);
+        setApplicationPage(applicationPage);
+        setPageNumber(1);
         setProject(projectPage.results.find((item) => item.job === projectId) || null);
       })
       .catch((error: unknown) => {
@@ -56,8 +62,28 @@ const ProjectDetailsPage = () => {
       });
     return () => {
       active = false;
+      pageRequest.current += 1;
     };
   }, [projectId]);
+
+  const changeApplicationPage = async (page: number) => {
+    if (!projectId || loadingApplications || savingApplicationId) return;
+    const requestId = ++pageRequest.current;
+    setLoadingApplications(true);
+    setLoadError("");
+    try {
+      const result = await listJobApplications(projectId, page);
+      if (requestId !== pageRequest.current) return;
+      setApplicationPage(result);
+      setPageNumber(page);
+    } catch (error) {
+      if (requestId === pageRequest.current) {
+        setLoadError(getApiErrorMessage(error, "Unable to load proposals."));
+      }
+    } finally {
+      if (requestId === pageRequest.current) setLoadingApplications(false);
+    }
+  };
 
   const handleApplicationStatus = async (
     application: JobApplication,
@@ -67,16 +93,25 @@ const ProjectDetailsPage = () => {
     setLoadError("");
     try {
       const updated = await setApplicationStatus(application.id, nextStatus);
-      setApplications((current) =>
-        current.map((item) => {
-          if (item.id === updated.id) return updated;
-          if (nextStatus === "hired" && item.status !== "withdrawn") {
-            return { ...item, status: "rejected" };
-          }
-          return item;
-        }),
+      setApplicationPage((current) =>
+        current && {
+          ...current,
+          results: current.results.map((item) => {
+            if (item.id === updated.id) return updated;
+            if (nextStatus === "hired" && item.status !== "withdrawn") {
+              return { ...item, status: "rejected" };
+            }
+            return item;
+          }),
+        },
       );
-      if (nextStatus === "hired" && projectId) setJob(await getJob(projectId));
+      if (nextStatus === "hired") {
+        setJob((current) => current && { ...current, status: "in_progress" });
+        if (!updated.project) {
+          throw new Error("Hiring succeeded, but the project details were not returned.");
+        }
+        setProject(updated.project);
+      }
     } catch (error) {
       setLoadError(
         getApiErrorMessage(error, "Unable to update this proposal."),
@@ -305,7 +340,9 @@ const ProjectDetailsPage = () => {
       <section className="mt-8">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Proposals</h2>
-          <span className="text-sm text-gray-500">{applications.length} shown</span>
+          <span className="text-sm text-gray-500">
+            {applicationPage?.count ?? 0} proposals
+          </span>
         </div>
         {loadError ? (
           <p role="alert" className="mb-4 text-sm text-red-600">{loadError}</p>
@@ -319,13 +356,13 @@ const ProjectDetailsPage = () => {
             Hiring creates a project and contract record. Payments, escrow, and withdrawals are disabled.
           </p>
         )}
-        {applications.length === 0 ? (
+        {applicationPage?.results.length === 0 ? (
           <div className="rounded-xl border border-input p-8 text-center text-sm text-gray-500">
             No proposals have been submitted yet.
           </div>
         ) : (
           <div className="space-y-4">
-            {applications.map((application) => (
+            {applicationPage?.results.map((application) => (
               <article key={application.id} className="rounded-xl border border-input bg-white p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
@@ -355,7 +392,7 @@ const ProjectDetailsPage = () => {
                   <div className="mt-5 flex flex-wrap gap-2">
                     {application.status === "submitted" ? (
                       <button
-                        disabled={savingApplicationId === application.id}
+                        disabled={savingApplicationId !== null || loadingApplications}
                         onClick={() => void handleApplicationStatus(application, "shortlisted")}
                         className="rounded-lg border border-input px-4 py-2 text-sm disabled:opacity-50"
                       >
@@ -363,14 +400,14 @@ const ProjectDetailsPage = () => {
                       </button>
                     ) : null}
                     <button
-                      disabled={savingApplicationId === application.id}
+                      disabled={savingApplicationId !== null || loadingApplications}
                       onClick={() => void handleApplicationStatus(application, "hired")}
                       className="rounded-lg bg-primary px-4 py-2 text-sm text-white disabled:opacity-50"
                     >
                       Hire
                     </button>
                     <button
-                      disabled={savingApplicationId === application.id}
+                      disabled={savingApplicationId !== null || loadingApplications}
                       onClick={() => void handleApplicationStatus(application, "rejected")}
                       className="rounded-lg border border-input px-4 py-2 text-sm disabled:opacity-50"
                     >
@@ -382,6 +419,25 @@ const ProjectDetailsPage = () => {
             ))}
           </div>
         )}
+        {applicationPage && (applicationPage.previous || applicationPage.next) ? (
+          <div className="mt-4 flex items-center justify-between text-sm">
+            <button
+              disabled={!applicationPage.previous || loadingApplications || savingApplicationId !== null}
+              onClick={() => void changeApplicationPage(pageNumber - 1)}
+              className="rounded-lg border border-input px-4 py-2 disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span>{loadingApplications ? "Loading proposals…" : `Page ${pageNumber}`}</span>
+            <button
+              disabled={!applicationPage.next || loadingApplications || savingApplicationId !== null}
+              onClick={() => void changeApplicationPage(pageNumber + 1)}
+              className="rounded-lg border border-input px-4 py-2 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        ) : null}
       </section>
     </main>
   );
