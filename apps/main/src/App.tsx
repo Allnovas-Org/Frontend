@@ -9,6 +9,8 @@ import ClientsLayout from "./layout/ClientsLayout";
 // Public pages
 import Home from "./pages/home";
 import { About } from "./pages/about";
+import PrivacyPolicy from "./pages/legal/PrivacyPolicy";
+import TermsOfService from "./pages/legal/TermsOfService";
 
 // Applicants pages
 import FindJobs from "./pages/applicants/findJobs";
@@ -64,6 +66,8 @@ function App() {
 			<Route element={<MainLayout />}>
 				<Route index element={<Home />} />
 				<Route path="about" element={<About />} />
+				<Route path="privacy-policy" element={<PrivacyPolicy />} />
+				<Route path="terms-of-service" element={<TermsOfService />} />
 				<Route path="profile-completion" element={<ProfileCompletion />} />
 				<Route path="find-jobs" element={<FindJobs />} />
 				<Route path="saved-jobs" element={<SavedJobs />} />

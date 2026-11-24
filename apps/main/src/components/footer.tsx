@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function AllNovaFooter() {
 	const [email, setEmail] = useState("");
@@ -38,10 +39,10 @@ export default function AllNovaFooter() {
 			"Success Stories",
 		],
 		company: [
-			"About Allnova",
-			"Contact Us",
-			"Privacy Policy",
-			"Terms of Service",
+			{ label: "About Allnova", to: "" },
+			{ label: "Contact Us", to: "" },
+			{ label: "Privacy Policy", to: "/privacy-policy" },
+			{ label: "Terms of Service", to: "/terms-of-service" },
 		],
 		forClients: ["Hire Freelancers", "Shared Platform", "Post a job"],
 	};
@@ -146,12 +147,21 @@ export default function AllNovaFooter() {
 						<ul className="space-y-3">
 							{footerLinks.company.map((link, index) => (
 								<li key={index}>
-									<a
-										href="#"
-										className="text-sm text-gray-600 hover:underline transition-colors"
-									>
-										{link}
-									</a>
+									{link.to ? (
+										<Link
+											to={link.to}
+											className="text-sm text-gray-600 hover:underline transition-colors"
+										>
+											{link.label}
+										</Link>
+									) : (
+										<a
+											href="#"
+											className="text-sm text-gray-600 hover:underline transition-colors"
+										>
+											{link.label}
+										</a>
+									)}
 								</li>
 							))}
 						</ul>
