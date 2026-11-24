@@ -1,0 +1,87 @@
+
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import AdminLayout from "./layout/AdminLayout";
+import RequireAdmin from "./auth/RequireAdmin";
+import SignIn from "./auth/SignIn";
+import SignUp from "./auth/SignUp";
+import ForgotPassword from "./auth/ForgotPassword";
+import EmailSent from "./auth/EmailSent";
+import ResetPassword from "./auth/ResetPassword";
+import Dashboard from "./pages/Dashboard";
+import Students from "./pages/Students";
+import Freelancers from "./pages/Freelancers";
+import AddFreelancer from "./pages/AddFreelancer";
+import PostProject from "./pages/PostProject";
+import RecruitersClients from "./pages/RecruitersClients";
+import RecruitersCompanies from "./pages/RecruitersCompanies";
+import JobVacancy from "./pages/JobVacancy";
+import AvailableJob from "./pages/AvailableJob";
+
+import Projects from "./pages/Projects";
+import AdminJobs from "./pages/AdminJobs";
+import ProjectDetails from "./pages/ProjectDetails";
+import Applications from "./pages/Applications";
+import CourseInternshipPayments from "./pages/CourseInternshipPayments";
+import FreelancerPayments from "./pages/FreelancerPayments";
+import Profile from "./pages/Profile";
+import Transactions from "./pages/Transactions";
+import Messages from "./pages/Messages";
+import CertificateManagement from "./pages/certificate";
+import Settings from "./pages/settings";
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navigate to="/sign-in" replace />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/email-sent" element={<EmailSent />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route
+          path="/admin/post-project"
+          element={
+            <RequireAdmin>
+              <PostProject />
+            </RequireAdmin>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <RequireAdmin>
+              <AdminLayout />
+            </RequireAdmin>
+          }
+        >
+          <Route index element={<Dashboard />} />
+          <Route path="students" element={<Students />} />
+          <Route path="freelancers" element={<Freelancers />} />
+          <Route path="freelancers/add" element={<AddFreelancer />} />
+          
+<Route path="recruiters-clients" element={<RecruitersClients />} />
+<Route path="recruiters-companies" element={<RecruitersCompanies />} />
+<Route path="job-vacancy" element={<JobVacancy />} />
+<Route path="available-job" element={<AvailableJob />} />
+
+<Route path="projects" element={<Projects />} />
+<Route path="jobs" element={<AdminJobs />} />
+<Route path="projects/:id" element={<ProjectDetails />} />
+
+<Route path="applications" element={<Applications />} />
+<Route path="course-payments" element={<CourseInternshipPayments />} />
+<Route path="freelancer-payments" element={<FreelancerPayments />} />
+<Route path="profile" element={<Profile />} />
+<Route path="transactions" element={<Transactions />} />
+<Route path="messages" element={<Messages />} />
+<Route path="certificates" element={<CertificateManagement />} />
+<Route path="settings" element={<Settings />} />
+
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
