@@ -20,7 +20,7 @@ const MessagesContent: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
       {/* Sidebar */}
-      <MessagesSidebar activeConversationId={id ? Number(id) : undefined} />
+      <MessagesSidebar activeConversationId={id} />
 
       {/* Main Content */}
       {id ? (

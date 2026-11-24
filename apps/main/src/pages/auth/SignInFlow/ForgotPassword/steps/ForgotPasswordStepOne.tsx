@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { requestPasswordReset } from "../../../../../services/auth.service";
+import { getApiErrorMessage } from "../../../../../utils/apiError";
 
 interface ForgotPasswordStepOneProps {
   onNext: () => void;
@@ -13,17 +15,22 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
   setEmail,
 }) => {
   const [emailInput, setEmailInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Send reset email
-    console.log("Reset password for:", emailInput);
-    
-    if (setEmail) {
-      setEmail(emailInput);
+    setLoading(true);
+    setError("");
+    try {
+      await requestPasswordReset(emailInput.trim());
+      setEmail?.(emailInput.trim());
+      onNext();
+    } catch (error) {
+      setError(getApiErrorMessage(error, "Unable to send the verification code."));
+    } finally {
+      setLoading(false);
     }
-    
-    onNext();
   };
 
   const isFormValid = emailInput !== "" && emailInput.includes("@");
@@ -33,6 +40,7 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
       {/* Back Button */}
       <button
         onClick={onBack}
+        disabled={loading}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors w-fit"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -48,6 +56,7 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
           Please enter your registered email ID
         </p>
       </div>
+      {error && <p role="alert" className="mt-4 text-sm text-red-600">{error}</p>}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
@@ -72,14 +81,14 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
         <div className="mt-8">
           <button
             type="submit"
-            disabled={!isFormValid}
+            disabled={!isFormValid || loading}
             className={`w-full py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
               isFormValid
                 ? "bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                 : "bg-gray-300 cursor-not-allowed"
             }`}
           >
-            Continue
+            {loading ? "Sending…" : "Continue"}
           </button>
         </div>
       </form>

@@ -12,10 +12,10 @@ interface FreelancerCardProps {
 	name: string;
 	title: string;
 	profileImage: string;
-	rating: number;
+	rating: number | null;
 	jobCount: number;
 	skills: string[];
-	hourlyRate: number;
+	hourlyRate: number | null;
 	isSaved?: boolean;
 	onToggleSave?: (id: string) => void;
 	onSeeMore?: (id: string) => void;
@@ -77,7 +77,7 @@ const FreelancerCard: React.FC<FreelancerCardProps> = ({
 			<div className="flex items-center gap-1 mb-4">
 				<Star sx={{ fontSize: 16, color: "#fbbf24" }} />
 				<span className="text-sm font-medium">
-					{rating}/5 ({jobCount} jobs)
+					{rating === null ? "No rating yet" : `${rating}/5 (${jobCount} reviews)`}
 				</span>
 			</div>
 
@@ -96,7 +96,7 @@ const FreelancerCard: React.FC<FreelancerCardProps> = ({
 			{/* Price and CTA */}
 			<div className="flex items-center justify-between pt-4 border-t border-gray-100">
 				<span className="text-lg font-semibold">
-					${hourlyRate.toFixed(2)}/hr
+					{hourlyRate === null ? "Rate not provided" : `$${hourlyRate.toFixed(2)}/hr`}
 				</span>
 				<button
 					onClick={(e) => {

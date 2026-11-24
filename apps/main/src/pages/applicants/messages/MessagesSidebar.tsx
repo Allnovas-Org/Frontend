@@ -3,17 +3,41 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, SlidersHorizontal, Edit, Pin, MessageSquare, MessagesSquare, Bookmark, Archive } from 'lucide-react';
 import TabNavigation from './components/TabNavigation';
 import MessageItem from './components/MessageItem';
-import { sampleConversations } from './data/conversations';
+import { Conversation, listConversations } from '../../../services/messaging.service';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 interface MessagesSidebarProps {
-  activeConversationId?: number;
+  activeConversationId?: string;
 }
 
 const MessagesSidebar: React.FC<MessagesSidebarProps> = ({ activeConversationId }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'unread' | 'pinned' | 'archived'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const filterRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    listConversations()
+      .then((page) => {
+        if (active) setConversations(page.results);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setLoadError(getApiErrorMessage(error, 'Unable to load conversations.'));
+        }
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [activeConversationId]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -38,21 +62,18 @@ const MessagesSidebar: React.FC<MessagesSidebarProps> = ({ activeConversationId 
   };
 
   // Filter conversations based on active tab
-  const filteredConversations = sampleConversations.filter((conv) => {
-    if (activeTab === 'pinned') return conv.isPinned;
-    if (activeTab === 'archived') return conv.isArchived;
-    if (activeTab === 'unread') return conv.unreadCount > 0;
-    return !conv.isArchived; // 'all' shows everything except archived
+  const filteredConversations = conversations.filter((conv) => {
+    if (activeTab === 'pinned' || activeTab === 'archived') return false;
+    if (activeTab === 'unread') return conv.unread_count > 0;
+    return true;
   });
 
   // Further filter by search query
   const searchedConversations = filteredConversations.filter((conv) =>
-    conv.userName.toLowerCase().includes(searchQuery.toLowerCase())
+    `${conv.other_user.first_name} ${conv.other_user.last_name} ${conv.job_title}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
   );
-
-  // Separate pinned and regular messages
-  const pinnedMessages = searchedConversations.filter((conv) => conv.isPinned);
-  const regularMessages = searchedConversations.filter((conv) => !conv.isPinned);
 
   return (
     <div className="w-full sm:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col mt-20 h-[calc(100vh-5rem)]">
@@ -132,7 +153,12 @@ const MessagesSidebar: React.FC<MessagesSidebarProps> = ({ activeConversationId 
           </div>
 
           {/* Compose Button */}
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <button
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+            disabled
+            title="Start a conversation from an open job"
+            aria-label="Compose message unavailable"
+          >
             <Edit className="w-5 h-5 text-gray-600" />
           </button>
         </div>
@@ -140,72 +166,41 @@ const MessagesSidebar: React.FC<MessagesSidebarProps> = ({ activeConversationId 
 
       {/* Messages List - Scrollable */}
       <div className="flex-1 overflow-y-auto">
-        {/* Pinned Messages Section */}
-        {pinnedMessages.length > 0 && activeTab !== 'pinned' && (
-          <div>
-            <div className="flex items-center gap-2 px-4 py-3 bg-gray-50">
-              <Pin className="w-4 h-4 text-gray-600" />
-              <span className="text-xs font-medium text-gray-600">Pinned Messages</span>
-            </div>
-            {pinnedMessages.map((conversation) => (
-              <MessageItem
-                key={conversation.id}
-                id={conversation.id}
-                avatar={conversation.avatar}
-                userName={conversation.userName}
-                lastMessage={conversation.lastMessage}
-                timestamp={conversation.timestamp}
-                unreadCount={conversation.unreadCount}
-                isActive={activeConversationId === conversation.id}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* All Messages Section */}
-        {regularMessages.length > 0 && activeTab !== 'pinned' && (
-          <div>
-            <div className="flex items-center gap-2 px-4 py-3 bg-gray-50">
-              <MessageSquare className="w-4 h-4 text-gray-600" />
-              <span className="text-xs font-medium text-gray-600">All Messages</span>
-            </div>
-            {regularMessages.map((conversation) => (
-              <MessageItem
-                key={conversation.id}
-                id={conversation.id}
-                avatar={conversation.avatar}
-                userName={conversation.userName}
-                lastMessage={conversation.lastMessage}
-                timestamp={conversation.timestamp}
-                unreadCount={conversation.unreadCount}
-                isActive={activeConversationId === conversation.id}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* Show all when pinned tab is active */}
-        {activeTab === 'pinned' && pinnedMessages.map((conversation) => (
-          <MessageItem
-            key={conversation.id}
-            id={conversation.id}
-            avatar={conversation.avatar}
-            userName={conversation.userName}
-            lastMessage={conversation.lastMessage}
-            timestamp={conversation.timestamp}
-            unreadCount={conversation.unreadCount}
-            isActive={activeConversationId === conversation.id}
-          />
-        ))}
-
-        {/* Empty State for Sidebar */}
-        {searchedConversations.length === 0 && (
+        {loading ? (
+          <p className="p-8 text-center text-sm text-gray-500">Loading conversations…</p>
+        ) : loadError ? (
+          <p role="alert" className="p-8 text-center text-sm text-red-600">
+            {loadError}
+          </p>
+        ) : activeTab === 'pinned' || activeTab === 'archived' ? (
+          <p className="p-8 text-center text-sm text-gray-500">
+            Pinned and archived conversations are not available yet.
+          </p>
+        ) : searchedConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-8 text-center">
             <MessageSquare className="w-12 h-12 text-gray-300 mb-3" />
             <p className="text-sm text-gray-500">
               {searchQuery ? 'No conversations found' : 'Conversations will appear here.'}
             </p>
           </div>
+        ) : (
+          searchedConversations.map((conversation) => (
+            <MessageItem
+              key={conversation.id}
+              id={conversation.id}
+              avatar=""
+              userName={
+                `${conversation.other_user.first_name} ${conversation.other_user.last_name}`.trim() ||
+                conversation.other_user.username
+              }
+              lastMessage={
+                conversation.latest_message?.body || conversation.job_title
+              }
+              timestamp={new Date(conversation.updated_at).toLocaleDateString()}
+              unreadCount={conversation.unread_count}
+              isActive={activeConversationId === conversation.id}
+            />
+          ))
         )}
       </div>
     </div>

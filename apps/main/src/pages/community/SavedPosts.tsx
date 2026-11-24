@@ -501,13 +501,11 @@ function PostCard({
 	post,
 	onView,
 	onRemove,
-	onLike,
 	onBookmark,
 }: {
 	post: Post;
 	onView: () => void;
 	onRemove: (id: number) => void;
-	onLike: (id: number) => void;
 	onBookmark: (id: number) => void;
 }) {
 	return (
@@ -799,7 +797,6 @@ export default function SavedPost() {
 										post={post}
 										onView={() => setSelectedPost(post)}
 										onRemove={handleRemove}
-										onLike={handleLike}
 										onBookmark={handleBookmark}
 									/>
 								))

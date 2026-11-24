@@ -79,7 +79,17 @@ function App() {
 					<Route path="billing" element={<BillingSettings />} />
 					<Route path="billing/payment-methods" element={<PaymentMethods />} />
 					<Route path="preferences" element={<PreferencesSettings />} />
-					<Route path="withdraw" element={<div>Withdraw Settings Page</div>} />
+					<Route
+						path="withdraw"
+						element={
+							<div className="rounded-lg border border-amber-200 bg-amber-50 p-6">
+								<h2 className="font-semibold text-amber-900">Withdrawals are disabled</h2>
+								<p className="mt-2 text-sm text-amber-900">
+									Withdrawals and wallet services are not available during the beta.
+								</p>
+							</div>
+						}
+					/>
 				</Route>
 			</Route>
 

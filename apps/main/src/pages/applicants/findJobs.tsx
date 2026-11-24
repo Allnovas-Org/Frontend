@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   MagnifierIcon,
   RecentIcon,
@@ -14,7 +14,7 @@ import JobCard from "./JobCard";
 import { Job } from "../../types";
 import JobSidebar from "./JobSidebar";
 import JobApplicationPanel from "./JobApplicationPanel";
-import jobs from "../../mockData/jobs";
+import { ApiJob, listJobs } from "../../services/jobs.service";
 
 // This page will list job opportunities for users
 
@@ -26,15 +26,18 @@ interface Filters {
 }
 
 const FindJobs: React.FC = () => {
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
   const [showApplicationPanel, setShowApplicationPanel] =
     useState<boolean>(false);
   const jobsPerPage = 16;
-  const totalPages = Math.ceil(jobs.length / jobsPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalCount / jobsPerPage));
 
-  const [search, setSearch] = useState<string>("");
   const [categoryInput, setCategoryInput] = useState("");
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -43,6 +46,61 @@ const FindJobs: React.FC = () => {
   const [sortOption, setSortOption] = useState<string>("Most Recent");
   const [filterDropdownOpen, setFilterDropdownOpen] = useState<boolean>(false);
   const [filters, setFilters] = useState<Filters>({});
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const budgetRange: [number, number?] | null =
+      filters.budget === "Custom"
+        ? filters.customBudget ?? null
+        : filters.budget === "Less than $1,000"
+          ? [0, 999]
+          : filters.budget === "$1,000 - $16,000"
+            ? [1000, 16000]
+            : filters.budget === "More than $16,000"
+              ? [16000]
+              : null;
+    const timer = window.setTimeout(() => {
+      setLoading(true);
+      setLoadError("");
+      void listJobs(
+        {
+          search: categoryInput.trim() || undefined,
+          category: selectedCategory || undefined,
+          min_budget: budgetRange?.[0],
+          max_budget: budgetRange?.[1],
+          experience_level: filters.experience?.join(","),
+          budget_type: filters.payment?.join(","),
+          page: currentPage,
+          page_size: jobsPerPage,
+        },
+        controller.signal,
+      )
+        .then((page) => {
+          setJobs(page.results.map(mapApiJob));
+          setTotalCount(page.count);
+        })
+        .catch((error: { message?: string }) => {
+          if (!controller.signal.aborted) {
+            setLoadError(error.message || "Unable to load jobs.");
+          }
+        })
+        .finally(() => {
+          if (!controller.signal.aborted) setLoading(false);
+        });
+    }, 250);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [
+    categoryInput,
+    selectedCategory,
+    currentPage,
+    filters.budget,
+    filters.customBudget,
+    filters.experience,
+    filters.payment,
+  ]);
 
   // Collect all categories and subcategories for autocomplete
   const allCategories = useMemo(
@@ -56,83 +114,15 @@ const FindJobs: React.FC = () => {
 
   const filteredJobs = jobs
     .filter((job) => {
-      const searchTerm = search.trim().toLowerCase();
-      const categoryTerm = categoryInput.trim().toLowerCase();
-      // If nothing is searched, show all
-      if (
-        !searchTerm &&
-        !categoryTerm &&
-        !selectedCategory &&
-        !selectedSubcategory
-      )
-        return true;
-      // If searching by category (from input or selected), match jobs with that category
-      if (
-        (selectedCategory || categoryTerm) &&
-        !(selectedSubcategory || searchTerm)
-      ) {
-        const cat = selectedCategory || categoryTerm;
-        return job.category && job.category.toLowerCase() === cat.toLowerCase();
-      }
-      // If searching by subcategory (from input or selected), match jobs where subcategory is used as position
-      if (selectedSubcategory || searchTerm) {
-        const sub = selectedSubcategory || searchTerm;
-        // Subcategory as position
-        if (
-          job.subcategory &&
-          job.subcategory.toLowerCase() === sub.toLowerCase()
-        ) {
-          return true;
-        }
-        // Also allow searching by position
-        if (
-          job.position &&
-          job.position.toLowerCase().includes(sub.toLowerCase())
-        ) {
-          return true;
-        }
-        return false;
-      }
-      return true;
-    })
-    .filter((job) => {
-      // Budget filter
-      if (filters.budget) {
-        const priceNum = Number(job.price.replace(/[^\d]/g, ""));
-        if (filters.budget === "Custom" && filters.customBudget) {
-          if (
-            priceNum < filters.customBudget[0] ||
-            priceNum > filters.customBudget[1]
-          )
-            return false;
-        } else {
-          const opt = {
-            "$10 - $50": [10, 50],
-            "$51 - $100": [51, 100],
-            "$101 - $150": [101, 150],
-          }[filters.budget];
-          if (opt && (priceNum < opt[0] || priceNum > opt[1])) return false;
-        }
-      }
-      // Experience filter
-      if (filters.experience && filters.experience.length > 0) {
-        if (
-          !filters.experience.some((exp: string) =>
-            job.badges.some((b) => b.type === "experience" && b.value === exp)
-          )
-        )
-          return false;
-      }
-      // Payment filter
-      if (filters.payment && filters.payment.length > 0) {
-        if (
-          !filters.payment.some((pay: string) =>
-            job.badges.some((b) => b.type === "jobType" && b.value === pay)
-          )
-        )
-          return false;
-      }
-      return true;
+      const term = categoryInput.trim().toLowerCase();
+      if (selectedCategory && job.category !== selectedCategory) return false;
+      if (selectedSubcategory && job.category !== selectedSubcategory) return false;
+      return (
+        !term ||
+        [job.position, job.description, job.category, ...(job.skills || [])]
+          .filter(Boolean)
+          .some((value) => value!.toLowerCase().includes(term))
+      );
     });
 
   // Always sort first, then filter by date range
@@ -164,9 +154,7 @@ const FindJobs: React.FC = () => {
   const finalJobs = jobsWithDate;
 
   // Use subcategory as position if present
-  const jobsToShow = finalJobs
-    .slice((currentPage - 1) * jobsPerPage, currentPage * jobsPerPage)
-    .map((job) => ({
+  const jobsToShow = finalJobs.map((job) => ({
       ...job,
       position: job.subcategory || job.position,
     }));
@@ -362,7 +350,15 @@ const FindJobs: React.FC = () => {
           {/* Job listings and empty state */}
           {!showApplicationPanel && (
             <>
-              {jobs.length === 0 ? (
+              {loading ? (
+                <div className='text-center text-lg text-gray-500 py-12'>
+                  Loading jobs...
+                </div>
+              ) : loadError ? (
+                <div className='text-center text-lg text-red-600 py-12'>
+                  {loadError}
+                </div>
+              ) : jobs.length === 0 ? (
                 <div className='text-center text-lg text-gray-500 py-12'>
                   No jobs available.
                 </div>
@@ -373,7 +369,7 @@ const FindJobs: React.FC = () => {
               ) : (
                 <>
                   <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8'>
-                    {jobsToShow.map((job, i) => (
+                    {jobsToShow.map((job) => (
                       <div
                         key={job.id}
                         onClick={() => {
@@ -423,5 +419,26 @@ const FindJobs: React.FC = () => {
     </div>
   );
 };
+
+function mapApiJob(job: ApiJob): Job {
+  const postedDate = Date.parse(job.created_at);
+  return {
+    id: job.id,
+    logo: "",
+    company: job.company_name || job.client_name,
+    position: job.title,
+    applicants: job.applications_count,
+    badges: job.category ? [{ type: "category", value: job.category }] : [],
+    description: job.description,
+    price: `${job.currency} ${Number(job.budget).toLocaleString()}`,
+    postedDate: Number.isNaN(postedDate) ? Date.now() : postedDate,
+    posted: "",
+    skills: job.skills,
+    category: job.category,
+    budget: `${job.currency} ${Number(job.budget).toLocaleString()}`,
+    experience: job.experience_level,
+    delivery: job.duration,
+  };
+}
 
 export default FindJobs;

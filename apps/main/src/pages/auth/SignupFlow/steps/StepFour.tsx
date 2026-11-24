@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useCallback } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useSignupStore } from "../../../../store/useSignupStore";
 import {
 	verifySignupToken,
-	signupWithEmail,
+	resendSignupCode,
 } from "../../../../services/auth.service";
+import { getApiErrorMessage } from "../../../../utils/apiError";
 
 interface StepFourProps {
 	onNext: () => void;
@@ -21,9 +21,6 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 
 	const {
 		email,
-		userType,
-		signupToken,
-		setSignupToken,
 		isLoading,
 		setLoading,
 		error,
@@ -90,10 +87,9 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 			// Store the auth token for subsequent authenticated requests
 			localStorage.setItem("auth-token", response.token);
 
-			console.log("Token verified, expires at:", response.expire_at);
 			onNext();
-		} catch (err: any) {
-			setError(err.message || "Invalid verification code. Please try again.");
+		} catch (err) {
+			setError(getApiErrorMessage(err, "Invalid verification code. Please try again."));
 		} finally {
 			setLoading(false);
 		}
@@ -107,13 +103,10 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 		inputRefs.current[0]?.focus();
 
 		try {
-			const response = await signupWithEmail({ email, user_type: userType });
-			if (response.token) {
-				setSignupToken(response.token);
-			}
+			await resendSignupCode(email);
 			setResendMessage("A new code has been sent to your email.");
-		} catch (err: any) {
-			setError(err.message || "Failed to resend code. Please try again.");
+		} catch (err) {
+			setError(getApiErrorMessage(err, "Failed to resend code. Please try again."));
 		} finally {
 			setResendLoading(false);
 		}
@@ -131,13 +124,6 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 				<ArrowLeft size={20} />
 				<span>Back</span>
 			</button>
-
-			{signupToken && (
-				<div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-					<p className="text-sm text-gray-600 mb-2">Temporary verification code:</p>
-					<p className="text-2xl font-bold text-blue-600 font-mono">{signupToken}</p>
-				</div>
-			)}
 
 			<h1 className="text-3xl font-bold mb-2">
 				Great, Let's verify your email

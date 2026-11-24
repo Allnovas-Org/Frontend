@@ -26,7 +26,7 @@ const ConfirmWithdrawModal: React.FC<ConfirmWithdrawModalProps> = ({
       <div className='flex justify-center mb-5'>
         <button
           className='px-4 py-2 rounded bg-primary text-white hover:bg-primary-dark text-sm font-medium'
-          onClick={() => (window.location.href = "/applicants/find-jobs")}
+          onClick={onClose}
         >
           Explore more opportunities
         </button>

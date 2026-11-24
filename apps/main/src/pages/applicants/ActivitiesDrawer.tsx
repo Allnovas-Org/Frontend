@@ -20,10 +20,6 @@ interface ActivitiesDrawerProps {
   activities: ActivitiesByDate;
 }
 
-// Helper to get total activities for "Today"
-const getTodayCount = (activities: ActivitiesByDate) =>
-  activities["Today"] ? activities["Today"].length : 0;
-
 // Helper to get total activities overall
 const getTotalCount = (activities: ActivitiesByDate) =>
   Object.values(activities).reduce((acc, arr) => acc + arr.length, 0);

@@ -32,9 +32,9 @@ const PaymentStep = () => {
 
 	return (
 		<div>
-			<h2 className="text-2xl font-bold mb-2">Payment & Rate Settings</h2>
+			<h2 className="text-2xl font-bold mb-2">Rate & Availability Settings</h2>
 			<p className="text-gray-600 mb-8">
-				Set your rates and payment preferences
+				Set an indicative hourly rate and describe your availability. This does not set up payment processing.
 			</p>
 
 			{/* Your Hourly Rate */}

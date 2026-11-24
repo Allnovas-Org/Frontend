@@ -5,8 +5,8 @@ import { InfoBadge } from "./help";
 import { SectionTitle, DescriptionList } from "./help";
 import Badge from "./Badge";
 import { Job } from "../../types";
-import ReviewStars from "./ReviewStars";
-import JobApplicationPanel from "./JobApplicationPanel";
+import { createConversation } from "../../services/messaging.service";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 import {
   ChevronLeftIcon,
@@ -28,7 +28,8 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
   onApplyNow,
 }) => {
   const [visible, setVisible] = useState(open);
-  const [showApplicationPanel, setShowApplicationPanel] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [startingConversation, setStartingConversation] = useState(false);
   const savedJobsContext = useContext(SavedJobsContext);
   if (!savedJobsContext) {
     throw new Error("SavedJobsContext is not provided");
@@ -52,27 +53,28 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
 
   if (!visible) return null;
 
-  // Example data for right column (replace with real job data as needed)
   const qualifications =
     Array.isArray(job.qualifications) && job.qualifications.length > 0
       ? job.qualifications
-      : [
-          "Bachelor's degree in Computer Science or related field",
-          "2+ years experience in frontend development",
-          "Proficiency in React and JavaScript",
-        ];
-  const responsibilities = job.responsibilities || [
-    "Develop and maintain web applications",
-    "Collaborate with designers and backend developers",
-    "Write clean, scalable code",
-  ];
-  const skills = job.skills || ["React", "JavaScript", "CSS", "HTML", "Git"];
+      : job.skills || [];
+  const responsibilities = job.responsibilities || [];
+  const skills = job.skills || [];
+
+  const handleMessageClient = async () => {
+    setMessageError("");
+    setStartingConversation(true);
+    try {
+      const conversation = await createConversation(job.id);
+      navigate(`/applicants/messages/${conversation.id}`);
+    } catch (error) {
+      setMessageError(getApiErrorMessage(error, "Unable to contact this client."));
+    } finally {
+      setStartingConversation(false);
+    }
+  };
 
   return (
     <div className='fixed inset-0 z-50 flex justify-end items-center'>
-      {showApplicationPanel && (
-        <JobApplicationPanel onClose={() => setShowApplicationPanel(false)} />
-      )}
       {/* Overlay */}
       <div
         className='absolute inset-0 bg-black opacity-0'
@@ -136,6 +138,20 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
               Apply Now
             </button>
             <button
+              className='flex w-1/2 items-center justify-center rounded-lg border border-primary px-5 py-2 text-sm font-semibold text-primary transition disabled:opacity-50'
+              onClick={() => void handleMessageClient()}
+              disabled={startingConversation}
+            >
+              {startingConversation ? "Opening…" : "Message Client"}
+            </button>
+            {messageError ? (
+              <p role='alert' className='basis-full text-sm text-red-600'>
+                {messageError}
+              </p>
+            ) : null}
+          </div>
+          <div className='flex gap-3 mt-3'>
+            <button
               className={`flex items-center justify-center text-center text-sm gap-2 px-5 py-2 rounded-lg border border-primary font-semibold transition w-1/2 ${
                 savedJobs.some((j: Job) => j.id === job.id)
                   ? "bg-primary text-white justify-center"
@@ -191,117 +207,29 @@ const JobSidebar: React.FC<JobSidebarProps> = ({
               className='w-10 h-10 rounded-xl'
             />
           </div>
-          {/* Founded & Location */}
           <div className='mb-2'>
-            <span className='font-medium text-gray-700'>Founded</span>
-            <div className='text-sm text-gray-500 mt-1'>
-              {job.founded || "2012"}
-            </div>
-          </div>
-          <div className='mb-2'>
-            <span className='font-semibold text-gray-700'>Location</span>
-            <div className='text-sm text-gray-500 mt-1'>
-              {job.location || "Remote"}
-            </div>
+            <span className='font-medium text-gray-700'>Client</span>
+            <div className='text-sm text-gray-500 mt-1'>{job.company}</div>
           </div>
           {/* Border demarcation */}
           <div className='border-t border-gray-200 my-3' />
-          {/* Other Information */}
-          <SectionTitle>Other Information</SectionTitle>
-          <div>
-            <div className='flex items-center gap-1 mb-2'>
-              <span
-                className='inline-flex items-center justify-center rounded-full bg-green-100'
-                style={{ width: 16, height: 16 }}
-              >
-                <img
-                  src='/images/applicants/tickcircle.svg'
-                  alt='tick-circle'
-                />
-              </span>
-              <span className='text-sm font-normal text-gray-700'>
-                Payment method verified
-              </span>
-            </div>
-            <div className='flex items-center gap-1 mb-2'>
-              <span
-                className='inline-flex items-center justify-center rounded-full bg-green-100'
-                style={{ width: 16, height: 16 }}
-              >
-                <img
-                  src='/images/applicants/tickcircle.svg'
-                  alt='tick-circle'
-                />
-              </span>
-              <span className='text-sm font-normal text-gray-700'>
-                Phone number/identity verified
-              </span>
-            </div>
-          </div>
-          {/* Reviews */}
-          <div className='mb-3.5'>
-            <div className='flex items-center gap-1 mb-0.5'>
-              <ReviewStars rating={job.rating || 4.5} max={5} />
-              <span className='text-xs text-gray-500'>{job.rating || 4.5}</span>
-            </div>
-            <span className='text-xs text-gray-400'>
-              {job.rating || 4.5} of {job.reviewCount || 10} reviews
-            </span>
-          </div>
-          {/* Jobs posted */}
           <div className='mb-3.5 flex flex-col'>
-            <span className='font-medium mb-0.5 text-gray-700'>
-              15 jobs posted
-            </span>
-            <span className='text-sm text-gray-500 mt-1'>
-              100% hire rate, 1 open job
-            </span>
+            <span className='font-medium mb-0.5 text-gray-700'>Budget</span>
+            <span className='text-sm text-gray-500 mt-1'>{job.budget || job.price}</span>
           </div>
-          {/* Amount spent */}
           <div className='mb-3.5 flex flex-col'>
-            <span className='font-medium mb-0.5 text-gray-700'>
-              $16k+ Spent
-            </span>
-            <span className='text-sm text-gray-500 mt-1'>Payment verified</span>
+            <span className='font-medium mb-0.5 text-gray-700'>Duration</span>
+            <span className='text-sm text-gray-500 mt-1'>{job.delivery || "Not specified"}</span>
           </div>
-          {/* Amount budget */}
-          <div className='mb-3.5 flex flex-col'>
-            <span className='font-medium mb-0.5 text-gray-700'>
-              $1,400 - $2,000
-            </span>
-            <span className='text-sm text-gray-500 mt-1'>
-              {job.amountBudget || "Budget"}
-            </span>
-          </div>
-
-          {/* Delivery period */}
-          <div className='mb-3.5 flex flex-col'>
-            <span className='font-medium mb-0.5 text-gray-700'>2-4 weeks</span>
-            <span className='text-sm text-gray-500 mt-1'>
-              {job.deliveryPeriod || "Delivery Timeline"}
-            </span>
-          </div>
-
-          {/* Services as tabs */}
-          <SectionTitle>Services</SectionTitle>
+          <SectionTitle>Skills</SectionTitle>
           <div className='flex flex-wrap gap-2 mt-2 mb-4'>
-            {(
-              job.services || [
-                "Web Development",
-                "UI/UX Design",
-                "Consulting",
-                "Mobile Apps",
-                "Cloud Solutions",
-                "SEO",
-                "Branding",
-                "E-commerce",
-                "API Integration",
-                "Support & Maintenance",
-              ]
-            ).map((service: string, idx: number) => (
+            {skills.map((service: string, idx: number) => (
               <InfoBadge key={idx}>{service}</InfoBadge>
             ))}
           </div>
+          <p className='text-xs text-gray-500'>
+            Verification and payment-provider details are not available in beta.
+          </p>
         </div>
       </div>
     </div>

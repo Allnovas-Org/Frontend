@@ -10,12 +10,12 @@ interface ForgotPasswordFlowProps {
 }
 
 const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
-  onNext,
   onBack,
   onComplete,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [email, setEmail] = useState("");
+  const [resetToken, setResetToken] = useState("");
 
   const handleNext = () => {
     if (currentStep === 3) {
@@ -49,11 +49,12 @@ const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
           onNext={handleNext}
           onBack={handleBack}
           email={email}
+          setResetToken={setResetToken}
         />
       )}
 
       {currentStep === 3 && (
-        <ForgotPasswordStepThree onNext={handleNext} onBack={handleBack} />
+        <ForgotPasswordStepThree onNext={handleNext} onBack={handleBack} token={resetToken} />
       )}
     </>
   );

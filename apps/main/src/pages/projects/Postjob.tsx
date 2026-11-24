@@ -1,11 +1,12 @@
-import React, { useState, useMemo } from "react";
-import { ProjectCategory } from "../../types";
+import React, { useEffect, useMemo, useState } from "react";
+import { Project, ProjectCategory } from "../../types";
 
 import { useFormik } from "formik";
 import { ArrowLeft, Plus, Minus, CircleCheck, X, Bookmark } from "lucide-react";
 import { postJobSchema } from "./postJobSchema";
 import { useNavigate, useParams, useLocation, Link } from "react-router-dom";
-import { getProjectById, updateProject } from "./store/project.store";
+import { ApiJob, createJob, getJob, updateJob } from "../../services/jobs.service";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 interface PostJobFormValues {
   title: string;
@@ -28,6 +29,9 @@ const FieldError = ({ error }: { error?: string }) => {
 const PostJob = () => {
   const { jobId } = useParams();
   const [showPostSuccessAlert, setShowPostSuccessAlert] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [loadingJob, setLoadingJob] = useState(Boolean(jobId));
+  const [loadedJob, setLoadedJob] = useState<ApiJob | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const [skillInput, setSkillInput] = useState("");
@@ -37,6 +41,26 @@ const PostJob = () => {
   const isEditMode = Boolean(jobId);
   const isReuseMode = Boolean(reuseProject) && !isEditMode;
   const isEditableFlow = isEditMode || isReuseMode;
+
+  useEffect(() => {
+    if (!jobId) return;
+    let active = true;
+    getJob(jobId)
+      .then((job) => {
+        if (active) setLoadedJob(job);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setSubmitError(getApiErrorMessage(error, "Unable to load this job."));
+        }
+      })
+      .finally(() => {
+        if (active) setLoadingJob(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [jobId]);
 
   const addSkill = (skill: string) => {
     if (!skill.trim()) return;
@@ -53,48 +77,91 @@ const PostJob = () => {
   };
 
   const existingJob = useMemo(() => {
-    if (reuseProject) return reuseProject;
-    if (!jobId) return null;
-    return getProjectById(jobId);
-  }, [jobId, reuseProject]);
+    if (loadedJob) {
+      return {
+        title: loadedJob.title,
+        description: loadedJob.description,
+        category: loadedJob.category as ProjectCategory,
+        freelancers: loadedJob.freelancers_needed,
+        budgetType:
+          loadedJob.budget_type === "hourly" ? "Hourly" : "Fixed",
+        duration: loadedJob.duration,
+        totalBudget: loadedJob.budget,
+        skills: loadedJob.skills,
+        experienceLevel: ({
+          junior: "Junior",
+          mid_level: "Mid-level",
+          senior: "Senior",
+        } as Record<string, string>)[loadedJob.experience_level] || "",
+      };
+    }
+    if (reuseProject) {
+      const project = reuseProject as Project;
+      return {
+        title: project.title,
+        description: project.description,
+        category: project.categories?.[0] ?? "",
+        freelancers: project.freelancersNeeded ?? 1,
+        budgetType: project.budgetType ?? "",
+        duration: project.duration ?? "",
+        totalBudget: String(project.budget ?? ""),
+        skills: project.skills ?? [],
+        experienceLevel: project.experienceLevel ?? "",
+      };
+    }
+    return null;
+  }, [loadedJob, reuseProject]);
+
+  const initialValues = useMemo<PostJobFormValues>(
+    () => ({
+      title: existingJob?.title ?? "",
+      description: existingJob?.description ?? "",
+      category: existingJob?.category ?? "",
+      freelancers: existingJob?.freelancers ?? 1,
+      budgetType: existingJob?.budgetType ?? "",
+      duration: existingJob?.duration ?? "",
+      totalBudget: String(existingJob?.totalBudget ?? ""),
+      skills: existingJob?.skills ?? [],
+      experienceLevel: existingJob?.experienceLevel ?? "",
+    }),
+    [existingJob],
+  );
 
   const formik = useFormik<PostJobFormValues>({
     enableReinitialize: true,
-
-    initialValues: {
-      title: existingJob?.title ?? "",
-      description: existingJob?.description ?? "",
-      category: existingJob?.categories?.[0] ?? "",
-      freelancers: 1,
-      budgetType: "",
-      duration: existingJob?.duration ?? "",
-      totalBudget: existingJob?.budget?.toString() ?? "",
-      skills: existingJob?.skills ?? [],
-      experienceLevel: "",
-    },
+    initialValues,
 
     validationSchema: isEditableFlow ? undefined : postJobSchema,
 
-    onSubmit: (values) => {
-      if (isEditMode && jobId) {
-        updateProject(jobId, {
-          title: values.title,
-          description: values.description,
-          categories: values.category ? [values.category] : [],
-          skills: values.skills,
-          budget: Number(values.totalBudget),
-          duration: values.duration,
-        });
+    onSubmit: async (values) => {
+      setSubmitError("");
+      const experienceLevel = {
+        Junior: "junior",
+        "Mid-level": "mid_level",
+        Senior: "senior",
+      }[values.experienceLevel];
+      const payload = {
+        title: values.title.trim(),
+        description: values.description.trim(),
+        budget: values.totalBudget,
+        currency: loadedJob?.currency || "USD",
+        budget_type: values.budgetType.toLowerCase() as "fixed" | "hourly",
+        duration: values.duration,
+        experience_level: experienceLevel || "",
+        freelancers_needed: values.freelancers,
+        category: values.category,
+        skills: values.skills,
+      };
+      try {
+        if (isEditMode && jobId) {
+          await updateJob(jobId, payload);
+        } else {
+          await createJob(payload);
+        }
         setShowPostSuccessAlert(true);
-        return;
+      } catch (error) {
+        setSubmitError(getApiErrorMessage(error, "Unable to save this job."));
       }
-
-      if (isReuseMode && formik.dirty) {
-        setShowPostSuccessAlert(true);
-        return;
-      }
-
-      navigate("/applicants/projects", { state: { newJob: values } });
     },
   });
 
@@ -157,6 +224,12 @@ const PostJob = () => {
           </button>
         </div>
       )}
+      {submitError ? (
+        <p role='alert' className='mb-4 text-sm text-red-600'>
+          {submitError}
+        </p>
+      ) : null}
+      {loadingJob ? <p className='mb-4 text-sm text-gray-500'>Loading job…</p> : null}
 
       {/* Form */}
       <form
@@ -403,9 +476,10 @@ const PostJob = () => {
           <button
             type='submit'
             disabled={
-              isEditableFlow && hasStartedEditing
+              loadingJob ||
+              (isEditableFlow && hasStartedEditing
                 ? formik.isSubmitting
-                : !formik.isValid || formik.isSubmitting
+                : !formik.isValid || formik.isSubmitting)
             }
             className='rounded-lg bg-primary px-4 py-2 text-sm text-white disabled:opacity-50'
           >

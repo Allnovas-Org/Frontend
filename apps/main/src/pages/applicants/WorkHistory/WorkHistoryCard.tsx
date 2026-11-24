@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Star } from 'lucide-react';
 
 interface WorkHistoryCardProps {
-  id: number;
+  id: string;
   title: string;
   category: string;
   status: 'Completed' | 'Active' | 'Pending';
   price: string;
   client: string;
-  rating: number;
+  rating: number | null;
   description: string;
   tools: string[];
   duration: string;
@@ -103,8 +103,14 @@ const WorkHistoryCard: React.FC<WorkHistoryCardProps> = ({
             <span className="text-sm text-gray-600">{client}</span>
           </div>
           <div className="flex items-center gap-1">
-            {renderStars(rating)}
-            <span className="text-sm text-amber-500 ml-1">{rating}/5</span>
+            {rating === null ? (
+              <span className="text-sm text-gray-500">No review yet</span>
+            ) : (
+              <>
+                {renderStars(rating)}
+                <span className="text-sm text-amber-500 ml-1">{rating}/5</span>
+              </>
+            )}
           </div>
         </div>
 

@@ -73,8 +73,11 @@ export interface LoginResponse {
 // Signup
 export interface SignupEmailResponse {
 	message: string;
-	token: number;
-	info: string;
+	info: {
+		expires_in_seconds: number;
+		resend_after_seconds: number;
+		username: string;
+	};
 }
 
 export interface VerifyTokenResponse {
@@ -90,6 +93,27 @@ export interface CreatePasswordResponse {
 export interface AddProfileResponse {
 	message: string;
 }
+
+export const requestPasswordReset = async (email: string): Promise<void> => {
+	await api.post("/auth/password/send-email-token/", { email });
+};
+
+export const verifyPasswordResetCode = async (code: string): Promise<string> => {
+	const response = await api.post<{ token: string }>("/auth/password/verify-email-token/", { code });
+	return response.data.token;
+};
+
+export const resetPassword = async (
+	token: string,
+	password: string,
+	confirmPassword: string,
+): Promise<void> => {
+	await api.post("/auth/password/reset-password/", {
+		token,
+		password,
+		confirm_password: confirmPassword,
+	});
+};
 
 // ─── API Calls ───
 
@@ -130,6 +154,10 @@ export const signupWithEmail = async (
 		payload,
 	);
 	return response.data;
+};
+
+export const resendSignupCode = async (email: string): Promise<void> => {
+	await api.post("/auth/signup/resend-code/", { email });
 };
 
 /**

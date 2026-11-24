@@ -1,17 +1,16 @@
 import React, { useState } from "react";
-// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { ExpandMore } from "@mui/icons-material";
 
 import { faqs } from "../../innerpages/data/faqs";
 
 const FAQTabs = () => {
-	const [activeTab, setActiveTab] = useState("General");
-	const [openQuestion, setOpenQuestion] = useState(null);
+	const [activeTab, setActiveTab] = useState<keyof typeof faqs>("General");
+	const [openQuestion, setOpenQuestion] = useState<number | null>(null);
 
-	const tabs = ["General", "Freelancing", "Account", "Transfer"];
+	const tabs: (keyof typeof faqs)[] = ["General", "Freelancing", "Account", "Transfer"];
 
-	const toggleQuestion = (index) => {
+	const toggleQuestion = (index: number) => {
 		setOpenQuestion(openQuestion === index ? null : index);
 	};
 

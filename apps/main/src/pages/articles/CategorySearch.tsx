@@ -11,7 +11,7 @@ const CategorySearch: React.FC<CategorySearchProps> = ({
   placeholder = "Search",
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [timeoutId, setTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * Debounced search handler for better performance

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { Memory, Settings, VerifiedUser } from "@mui/icons-material";
 import CustomButton from "../components/ui/CustomButton";

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Dropdown from "./Dropdown";
 import ProjectCard from "./ProjectCard";
 import StatsCard from "./StatsCard";
@@ -7,16 +7,36 @@ import { useDebounce } from "./hook/useDebounce";
 import { BriefcaseBusiness, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EmptyState from "./EmptyState";
-import { getProjects } from "./store/project.store";
+import { ApiJob, listJobs } from "../../services/jobs.service";
+import { Project } from "../../types";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 const Projects = () => {
   const [status, setStatus] = useState<string>("All Status");
   const [category, setCategory] = useState<string>("All Categories");
   const [search, setSearch] = useState("");
-  const [projectList, setProjectList] = useState(getProjects());
+  const [projectList, setProjectList] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const debouncedSearch = useDebounce(search, 300);
 
   const navigate = useNavigate();
+  const loadProjects = useCallback(async () => {
+    setLoading(true);
+    setLoadError("");
+    try {
+      const page = await listJobs({ page_size: 100 });
+      setProjectList(page.results.map(mapJobToProject));
+    } catch (error) {
+      setLoadError(getApiErrorMessage(error, "Unable to load your jobs."));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadProjects();
+  }, [loadProjects]);
 
   const filteredProjects = useMemo(() => {
     const normalizedSearch = debouncedSearch.toLowerCase().trim();
@@ -27,8 +47,7 @@ const Projects = () => {
         project.title.toLowerCase().includes(normalizedSearch) ||
         project.description.toLowerCase().includes(normalizedSearch);
 
-      const matchesStatus =
-        status === "All Status" || project.status === status;
+      const matchesStatus = status === "All Status" || project.status === status;
 
       const matchesCategory =
         category === "All Categories" ||
@@ -37,10 +56,6 @@ const Projects = () => {
       return matchesSearch && matchesStatus && matchesCategory;
     });
   }, [debouncedSearch, status, category, projectList]);
-
-  const handleProjectDeleted = () => {
-    setProjectList(getProjects());
-  };
 
   return (
     <section className='max-w-6xl mx-auto min-h-screen bg-white py-20 md:py-20 lg:py-32 px-4 md:px-6'>
@@ -76,9 +91,12 @@ const Projects = () => {
             onChange={setStatus}
             options={[
               { label: "All Status", value: "All Status" },
+              { label: "Open", value: "Open" },
+              { label: "In Progress", value: "In Progress" },
               { label: "Active", value: "Active" },
               { label: "On hold", value: "On hold" },
               { label: "Completed", value: "Completed" },
+              { label: "Cancelled", value: "Cancelled" },
             ]}
           />
         </div>
@@ -117,17 +135,32 @@ const Projects = () => {
         <StatsCard label='Total Jobs' value={projectList.length} />
         <StatsCard
           label='Active'
-          value={projectList.filter((p) => p.status === "Active").length}
+          value={
+            projectList.filter((p) =>
+              ["Open", "In Progress", "Active"].includes(p.status),
+            ).length
+          }
         />
         <StatsCard
           label='Total Applications'
           value={projectList.reduce((a, b) => a + b.applications, 0)}
         />
-        <StatsCard label='Total Budget' value='$16.5K' />
+        <StatsCard
+          label='Total Budget'
+          value={`$${projectList
+            .reduce((sum, project) => sum + project.budget, 0)
+            .toLocaleString()}`}
+        />
       </div>
 
       <div className='space-y-4'>
-        {filteredProjects.length === 0 ? (
+        {loading ? (
+          <p className='py-8 text-center text-sm text-gray-500'>Loading jobs…</p>
+        ) : loadError ? (
+          <p role='alert' className='py-8 text-center text-sm text-red-600'>
+            {loadError}
+          </p>
+        ) : filteredProjects.length === 0 ? (
           <EmptyState
             icon={<BriefcaseBusiness />}
             title='Oops! you don’t have a job post relating to this category.'
@@ -140,7 +173,7 @@ const Projects = () => {
             <ProjectCard
               key={project.id}
               project={project}
-              onDeleted={handleProjectDeleted}
+              onDeleted={() => void loadProjects()}
             />
           ))
         )}
@@ -148,6 +181,32 @@ const Projects = () => {
     </section>
   );
 };
+
+function mapJobToProject(job: ApiJob): Project {
+  const statusByApiValue: Record<string, Project["status"]> = {
+    open: "Open",
+    in_progress: "In Progress",
+    completed: "Completed",
+    cancelled: "Cancelled",
+  };
+  return {
+    id: job.id,
+    title: job.title,
+    description: job.description,
+    budget: Number(job.budget),
+    budgetType: job.budget_type,
+    experienceLevel: job.experience_level,
+    freelancersNeeded: job.freelancers_needed,
+    duration: job.duration,
+    applications: job.applications_count,
+    status: statusByApiValue[job.status] || "Open",
+    categories: job.category ? [job.category as ProjectCategory] : [],
+    postedAt: job.created_at,
+    skills: job.skills,
+    qualifications: job.skills,
+    client: {},
+  };
+}
 
 export default Projects;
 

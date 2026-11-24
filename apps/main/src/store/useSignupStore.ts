@@ -7,7 +7,6 @@ interface SignupState {
 	userType: "Freelancer" | "Client" | null;
 	userName: string;
 	currentStep: number;
-	signupToken: number | null;
 
 	// Loading & error state
 	isLoading: boolean;
@@ -18,7 +17,6 @@ interface SignupState {
 	setUserType: (type: "Freelancer" | "Client" | null) => void;
 	setUserName: (name: string) => void;
 	setCurrentStep: (step: number) => void;
-	setSignupToken: (token: number | null) => void;
 	setLoading: (loading: boolean) => void;
 	setError: (error: string) => void;
 	clearError: () => void;
@@ -32,7 +30,6 @@ export const useSignupStore = create<SignupState>()(
 			userType: null,
 			userName: "",
 			currentStep: 1,
-			signupToken: null,
 			isLoading: false,
 			error: "",
 
@@ -40,7 +37,6 @@ export const useSignupStore = create<SignupState>()(
 			setUserType: (type) => set({ userType: type }),
 			setUserName: (name) => set({ userName: name }),
 			setCurrentStep: (step) => set({ currentStep: step }),
-			setSignupToken: (token) => set({ signupToken: token }),
 			setLoading: (loading) => set({ isLoading: loading }),
 			setError: (error) => set({ error }),
 			clearError: () => set({ error: "" }),
@@ -50,13 +46,18 @@ export const useSignupStore = create<SignupState>()(
 					userType: null,
 					userName: "",
 					currentStep: 1,
-					signupToken: null,
 					isLoading: false,
 					error: "",
 				}),
 		}),
 		{
 			name: "signup-storage", // localStorage key
+			version: 1,
+			migrate: (persisted) => {
+				if (typeof persisted !== "object" || persisted === null) return {};
+				const { signupToken: _oldCode, ...safeState } = persisted as Partial<SignupState> & { signupToken?: unknown };
+				return safeState;
+			},
 		},
 	),
 );

@@ -29,7 +29,7 @@ const HelpPage: React.FC = () => {
   });
 
   // Debounce timer for search optimization
-  const [searchTimeoutId, setSearchTimeoutId] = useState<NodeJS.Timeout | null>(
+  const [searchTimeoutId, setSearchTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(
     null,
   );
 

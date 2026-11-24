@@ -45,13 +45,14 @@ export default function AllNovaSections() {
       }
     );
 
-    if (resourcesRef.current) {
-      observer.observe(resourcesRef.current);
+    const resources = resourcesRef.current;
+    if (resources) {
+      observer.observe(resources);
     }
 
     return () => {
-      if (resourcesRef.current) {
-        observer.unobserve(resourcesRef.current);
+      if (resources) {
+        observer.unobserve(resources);
       }
     };
   }, []);

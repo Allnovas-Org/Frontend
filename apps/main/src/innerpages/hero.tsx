@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Transition } from "framer-motion";
 import scribble from "../assets/images/misc-06.png";
 
 function HeroSection() {
@@ -76,7 +76,7 @@ function HeroSection() {
 	}, [testimonials.length, testimonials2.length]);
 
 	// --- NEW CLEAN VERTICAL VARIANTS ---
-	const verticalTransition = {
+	const verticalTransition: Transition = {
 		y: { duration: 0.5, ease: "easeInOut" },
 		opacity: { duration: 0.5, ease: "easeInOut" },
 		scale: { duration: 0.5, ease: "easeInOut" },

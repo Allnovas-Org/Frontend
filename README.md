@@ -42,6 +42,19 @@ npm run build:main
 npm run build:learning
 ```
 
+### Validation
+
+```bash
+npm run typecheck
+npm run lint
+```
+
+The main app uses the body-based password reset API: users receive a
+six-digit email code, then submit their new password through the reset flow.
+Reset tokens are kept in component memory and are not placed in URLs or
+browser storage. The Learning app's existing reset screens are placeholders;
+they are not connected to this API.
+
 ---
 
 ## Structure

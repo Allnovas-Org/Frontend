@@ -2,7 +2,8 @@
 import axios from "axios";
 import { activateMockAPI } from "./mock-api";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+const configuredBaseURL = import.meta.env.VITE_API_BASE_URL?.trim();
+const baseURL = (configuredBaseURL || "https://backend.allnovas.com/api/v1").replace(/\/+$/, "");
 
 export const api = axios.create({
   baseURL,
@@ -28,7 +29,9 @@ if (MOCK_MODE) {
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("auth-token");
-    if (token) {
+    if (config.url?.startsWith("/auth/password/")) {
+      config.headers.delete("Authorization");
+    } else if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -43,7 +46,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Handle 401 Unauthorized - logout user
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config?.url?.startsWith("/auth/password/")) {
       localStorage.removeItem("auth-token");
       // Don't redirect during signup flow
       const isSignupRoute =

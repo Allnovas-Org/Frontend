@@ -1,7 +1,15 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Search, Apps } from "@mui/icons-material";
 import { InputAdornment, TextField } from "@mui/material";
 import NotificationItem from "./modals/NotificationItem";
+import {
+	ApiNotification,
+	archiveNotification,
+	deleteNotification,
+	listNotifications,
+	markNotificationRead,
+} from "../../../services/notifications.service";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 interface Notification {
 	id: string;
@@ -19,122 +27,65 @@ const Notifications = () => {
 	const [activeFilter, setActiveFilter] = useState<
 		"all" | "unread" | "archived"
 	>("all");
-	const [notifications, setNotifications] = useState<Notification[]>([
-		{
-			id: "1",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isNew: true,
-			isRead: false,
-			category: "all",
-		},
-		{
-			id: "2",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isRead: true,
-			category: "all",
-		},
-		{
-			id: "3",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isRead: true,
-			category: "all",
-		},
-		{
-			id: "4",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isRead: true,
-			category: "all",
-		},
-		{
-			id: "5",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isNew: true,
-			isRead: false,
-			category: "all",
-		},
-		{
-			id: "6",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isNew: true,
-			isRead: false,
-			category: "all",
-		},
-		{
-			id: "7",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isNew: true,
-			isRead: false,
-			category: "all",
-		},
-		{
-			id: "8",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isRead: true,
-			category: "all",
-		},
-		{
-			id: "9",
-			type: "job_alert",
-			title: "Job Alert",
-			message:
-				'A job proposal was submitted for your job posting "UI/UX Designer Needed for Simple Design Task".',
-			timestamp: "12 hours ago",
-			isNew: true,
-			isRead: false,
-			category: "all",
-		},
-	]);
+	const [notifications, setNotifications] = useState<Notification[]>([]);
+	const [loadError, setLoadError] = useState("");
+	const [loading, setLoading] = useState(true);
+	const [actionError, setActionError] = useState("");
 
-	const handleMarkAsRead = (id: string) => {
-		setNotifications((prev) =>
-			prev.map((notif) =>
-				notif.id === id ? { ...notif, isRead: true, isNew: false } : notif,
-			),
-		);
+	const loadNotifications = useCallback(async () => {
+		setLoading(true);
+		setLoadError("");
+		try {
+			const page = await listNotifications();
+			setNotifications(page.results.map(mapNotification));
+		} catch (error) {
+			setLoadError(
+				getApiErrorMessage(error, "Unable to load notifications."),
+			);
+		} finally {
+			setLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		void loadNotifications();
+	}, [loadNotifications]);
+
+	const handleMarkAsRead = async (id: string) => {
+		try {
+			const updated = await markNotificationRead(id);
+			setNotifications((current) =>
+				current.map((notification) =>
+					notification.id === id ? mapNotification(updated) : notification,
+				),
+			);
+		} catch (error) {
+			setActionError(getApiErrorMessage(error, "Unable to mark as read."));
+		}
 	};
 
-	const handleArchive = (id: string) => {
-		setNotifications((prev) =>
-			prev.map((notif) =>
-				notif.id === id ? { ...notif, category: "archived" } : notif,
-			),
-		);
+	const handleArchive = async (id: string) => {
+		try {
+			const updated = await archiveNotification(id);
+			setNotifications((current) =>
+				current.map((notification) =>
+					notification.id === id ? mapNotification(updated) : notification,
+				),
+			);
+		} catch (error) {
+			setActionError(getApiErrorMessage(error, "Unable to archive notification."));
+		}
 	};
 
-	const handleDelete = (id: string) => {
-		setNotifications((prev) => prev.filter((notif) => notif.id !== id));
+	const handleDelete = async (id: string) => {
+		try {
+			await deleteNotification(id);
+			setNotifications((current) =>
+				current.filter((notification) => notification.id !== id),
+			);
+		} catch (error) {
+			setActionError(getApiErrorMessage(error, "Unable to delete notification."));
+		}
 	};
 
 	const filteredNotifications = notifications.filter((notif) => {
@@ -228,9 +179,19 @@ const Notifications = () => {
 				{/* Notifications List */}
 				<div>
 					{filteredNotifications.length === 0 ? (
+						loading ? (
+							<div className="text-center py-12">
+								<p className="text-gray-500">Loading notifications…</p>
+							</div>
+						) : loadError ? (
+							<div role="alert" className="text-center py-12 text-red-600">
+								{loadError}
+							</div>
+						) : (
 						<div className="text-center py-12">
 							<p className="text-gray-500">No notifications found</p>
 						</div>
+						)
 					) : (
 						filteredNotifications.map((notification) => (
 							<NotificationItem
@@ -242,10 +203,28 @@ const Notifications = () => {
 							/>
 						))
 					)}
+					{actionError ? (
+						<p role="alert" className="mt-4 text-sm text-red-600">
+							{actionError}
+						</p>
+					) : null}
 				</div>
 			</div>
 		</div>
 	);
 };
+
+function mapNotification(notification: ApiNotification): Notification {
+	return {
+		id: notification.id,
+		type: notification.kind.includes("job") ? "job_alert" : "system_alert",
+		title: notification.title,
+		message: notification.body,
+		timestamp: new Date(notification.created_at).toLocaleString(),
+		isNew: !notification.read_at,
+		isRead: Boolean(notification.read_at),
+		category: notification.archived_at ? "archived" : "all",
+	};
+}
 
 export default Notifications;

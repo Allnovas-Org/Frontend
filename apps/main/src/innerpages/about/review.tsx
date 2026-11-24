@@ -135,7 +135,7 @@ const ReviewsSection = () => {
         <div className="relative">
           {/* Reviews Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {visibleReviews.map((review, index) => (
+            {visibleReviews.map((review) => (
               <div
                 key={review.id}
                 className="transition-all duration-300 ease-in-out"

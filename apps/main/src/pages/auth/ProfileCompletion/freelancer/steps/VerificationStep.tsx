@@ -21,60 +21,6 @@ const VerificationStep = () => {
 		}
 	};
 
-	const verificationItems = [
-		{
-			id: "profilePhoto",
-			icon: User,
-			title: "Profile Photo",
-			description: "Upload a professional photo of yourself",
-			buttonText: "Upload Photo",
-			buttonAction: () =>
-				document.getElementById("profile-photo-upload")?.click(),
-			fileInputId: "profile-photo-upload",
-			note: "JPG, PNG up to 5MB",
-			isCompleted: verificationStatus.profilePhoto,
-		},
-		{
-			id: "governmentId",
-			icon: User,
-			title: "Government ID",
-			description: "Upload a government-issued ID",
-			buttonText: "Upload ID",
-			buttonAction: () =>
-				setVerificationStatus({ ...verificationStatus, governmentId: true }),
-			note: null,
-			isCompleted: verificationStatus.governmentId,
-		},
-		{
-			id: "addressVerification",
-			icon: MapPin,
-			title: "Address Verification",
-			description: "Verify your address with a utility bill",
-			buttonText: "Upload Document",
-			buttonAction: () =>
-				setVerificationStatus({
-					...verificationStatus,
-					addressVerification: true,
-				}),
-			note: null,
-			isCompleted: verificationStatus.addressVerification,
-		},
-		{
-			id: "phoneVerification",
-			icon: Phone,
-			title: "Phone Verification",
-			description: "Verify your phone number via SMS",
-			buttonText: "Verify Phone",
-			buttonAction: () =>
-				setVerificationStatus({
-					...verificationStatus,
-					phoneVerification: true,
-				}),
-			note: null,
-			isCompleted: verificationStatus.phoneVerification,
-		},
-	];
-
 	return (
 		<div>
 			<h2 className="text-2xl font-bold mb-2">Verify your identity</h2>

@@ -5,7 +5,7 @@ import {
   Wrench,
   GraduationCap,
   Globe,
-  CreditCard,
+  DollarSign,
   ShieldCheck,
 } from "lucide-react";
 import SkillsStep from "./steps/SkillsStep";
@@ -24,7 +24,7 @@ const FreelancerProfileCompletion = () => {
     { id: 2, icon: Wrench, label: "Tools" },
     { id: 3, icon: GraduationCap, label: "Education" },
     { id: 4, icon: Globe, label: "Language" },
-    { id: 5, icon: CreditCard, label: "Payment" },
+    { id: 5, icon: DollarSign, label: "Rates" },
     { id: 6, icon: ShieldCheck, label: "Verification" },
   ];
 

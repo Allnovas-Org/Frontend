@@ -148,7 +148,7 @@ export const HELP_ARTICLES_BY_CATEGORY: Record<string, Article[]> = {
       image: "/images/art-banner2.png",
       publishedDate: new Date("2024-01-22"),
       content:
-        "If you forget your password:\n\n1. Click 'Forgot Password' on login page\n2. Enter your email address\n3. Check your email for reset link\n4. Click the link (valid for 24 hours)\n5. Create a new password\n6. Login with new password\n\nPassword must be at least 8 characters with uppercase, lowercase, numbers, and symbols.",
+        "If you forget your password:\n\n1. Click 'Forgot Password' on the login page\n2. Enter your email address\n3. Check your email for a six-digit verification code (valid for 5 minutes)\n4. Enter the code and create a new password\n5. Log in with your new password.",
     },
     {
       id: "auth-3",
@@ -184,7 +184,7 @@ export const HELP_ARTICLES_BY_CATEGORY: Record<string, Article[]> = {
       image: "/images/art-banner2.png",
       publishedDate: new Date("2024-01-22"),
       content:
-        "If you forget your password:\n\n1. Click 'Forgot Password' on login page\n2. Enter your email address\n3. Check your email for reset link\n4. Click the link (valid for 24 hours)\n5. Create a new password\n6. Login with new password\n\nPassword must be at least 8 characters with uppercase, lowercase, numbers, and symbols.",
+        "If you forget your password:\n\n1. Click 'Forgot Password' on the login page\n2. Enter your email address\n3. Check your email for a six-digit verification code (valid for 5 minutes)\n4. Enter the code and create a new password\n5. Log in with your new password.",
     },
     {
       id: "auth-7",

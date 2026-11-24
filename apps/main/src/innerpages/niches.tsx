@@ -1,5 +1,4 @@
 import scribble from "../assets/images/misc-06.png";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import React from "react";
 import NichesSlider from "../components/ui/NichesSlider";

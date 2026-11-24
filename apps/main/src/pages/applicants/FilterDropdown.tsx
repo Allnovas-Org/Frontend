@@ -1,10 +1,8 @@
-import React, { useState, RefObject } from "react";
+import React, { useState } from "react";
 import { FrontArrowIcon } from "../../assets/applicants/customIcons";
 
 interface BudgetOption {
   label: string;
-  min?: number;
-  max?: number;
   custom?: boolean;
 }
 
@@ -18,7 +16,6 @@ interface FilterDropdownProps {
     payment: string[];
   }) => void;
   onReset?: () => void;
-  anchorRef?: RefObject<HTMLElement>;
   initialFilters?: {
     budget?: string;
     customBudget?: [number, number] | null;
@@ -28,26 +25,28 @@ interface FilterDropdownProps {
 }
 
 const BUDGET_OPTIONS: BudgetOption[] = [
-  { label: "Less than $1,000", min: 10, max: 50 },
-  { label: "$1,000 - 16,000", min: 51, max: 100 },
-  { label: "More than $16,000", min: 101, max: 150 },
+  { label: "Less than $1,000" },
+  { label: "$1,000 - $16,000" },
+  { label: "More than $16,000" },
   { label: "Custom", custom: true },
 ];
 
 const EXPERIENCE_OPTIONS = [
-  { label: "Entry level" },
-  { label: "Intermediate" },
-  { label: "Expert" },
+  { label: "Junior", value: "junior" },
+  { label: "Mid-level", value: "mid_level" },
+  { label: "Senior", value: "senior" },
 ];
 
-const PAYMENT_OPTIONS = [{ label: "Fixed" }, { label: "Milestones" }];
+const PAYMENT_OPTIONS = [
+  { label: "Fixed", value: "fixed" },
+  { label: "Hourly", value: "hourly" },
+];
 
 const FilterDropdown: React.FC<FilterDropdownProps> = ({
   open,
   onClose,
   onApply,
   onReset,
-  anchorRef,
   initialFilters = {},
 }) => {
   const [budget, setBudget] = useState<string>(initialFilters.budget || "");
@@ -64,7 +63,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
   const handleCheckbox = (group: string, value: string) => {
     if (group === "budget") {
       setBudget(value);
-      if (value !== "Custom") setCustomBudget([10, 200]);
+      if (value !== "Custom") setCustomBudget([20000, 120000]);
     } else if (group === "experience") {
       setExperience((prev) =>
         prev.includes(value)
@@ -98,7 +97,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
   const handleReset = () => {
     setBudget("");
-    setCustomBudget([10, 200]);
+    setCustomBudget([20000, 120000]);
     setExperience([]);
     setPayment([]);
     if (onReset) onReset();
@@ -179,8 +178,8 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           <div key={opt.label} className='flex items-center mb-2'>
             <input
               type='checkbox'
-              checked={experience.includes(opt.label)}
-              onChange={() => handleCheckbox("experience", opt.label)}
+              checked={experience.includes(opt.value)}
+              onChange={() => handleCheckbox("experience", opt.value)}
               id={`exp-${opt.label}`}
               className='accent-primary w-4 h-4 rounded border border-primary outline-primary mr-2'
             />
@@ -190,15 +189,15 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
           </div>
         ))}
       </div>
-      {/* Payment Type */}
+      {/* Budget Type */}
       <div className='mb-4'>
-        <div className='font-medium text-base mb-2'>Payment type</div>
+        <div className='font-medium text-base mb-2'>Budget type</div>
         {PAYMENT_OPTIONS.map((opt) => (
           <div key={opt.label} className='flex items-center mb-2'>
             <input
               type='checkbox'
-              checked={payment.includes(opt.label)}
-              onChange={() => handleCheckbox("payment", opt.label)}
+              checked={payment.includes(opt.value)}
+              onChange={() => handleCheckbox("payment", opt.value)}
               id={`pay-${opt.label}`}
               className='accent-primary w-4 h-4 rounded border border-primary outline-primary mr-2'
             />

@@ -6,7 +6,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from './lib/react-query';
-import "@fontsource/mali"; // defaults to weight 400
+import "@fontsource/mali/index.css"; // defaults to weight 400
 import "@fontsource/mali/600.css"; // optional extra weights
 
 const rootElement = document.getElementById('root');
