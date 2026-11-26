@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
 import user from "../../assets/applicants/user.png";
@@ -13,8 +13,10 @@ import {
 
 interface UserDropdownProps {
 	open: boolean;
-	anchorRef: React.RefObject<HTMLButtonElement>;
+	anchorRef: React.RefObject<HTMLButtonElement | null>;
 	onClose: () => void;
+	avatarSrc?: string | null;
+	avatarFallback?: string;
 }
 
 const DropdownButton = ({
@@ -39,6 +41,8 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 	open,
 	anchorRef,
 	onClose,
+	avatarSrc,
+	avatarFallback,
 }) => {
 	const dropdownRef = useRef<HTMLDivElement>(null);
 	const navigate = useNavigate();
@@ -49,6 +53,8 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 		? `${currentUser.firstName} ${currentUser.lastName}`
 		: "User";
 	const userType = currentUser?.userType ?? "Client";
+	const resolvedAvatarSrc =
+		avatarSrc === undefined ? currentUser?.avatar || user : avatarSrc;
 	// Use fadeIn when open, fadeOut when closed
 	const dropdownClass = open
 		? "animate-fadeIn absolute right-0 top-12 w-72 bg-white shadow-xl rounded-lg border border-gray-200 z-10 transition-all duration-300"
@@ -79,11 +85,21 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 			key: "user",
 			content: (
 				<div className="flex items-center gap-3 px-5 py-4 border-b border-input">
-					<img
-						src={currentUser?.avatar || user}
-						alt={userName}
-						className="w-9 h-9 rounded-full object-cover border border-gray-300"
-					/>
+					{resolvedAvatarSrc ? (
+						<img
+							src={resolvedAvatarSrc}
+							alt={userName}
+							className="w-9 h-9 rounded-full object-cover border border-gray-300"
+						/>
+					) : (
+						<span
+							className="w-9 h-9 rounded-full border border-gray-300 flex items-center justify-center bg-gray-100 text-gray-600 text-xs font-semibold"
+							role="img"
+							aria-label="Profile photo unavailable"
+						>
+							{avatarFallback}
+						</span>
+					)}
 					<div className="flex flex-col">
 						<span className="font-semibold text-gray-900 text-base">
 							{userName}
@@ -101,7 +117,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 						icon={<UserRound className="w-5 h-5 text-gray-dark" />}
 						label="Personal Information"
 						onClick={() => {
-							navigate("/profile");
+							navigate(
+								currentUser?.userType === "Client"
+									? "/clients/profile"
+									: "/profile",
+							);
 							onClose();
 						}}
 					/>
@@ -143,8 +163,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
 						icon={<LogOut className="w-5 h-5 text-gray-dark" />}
 						label="Logout"
 						onClick={() => {
-							logout();
-							navigate("/");
+							void logout().finally(() => navigate("/"));
 							onClose();
 						}}
 					/>

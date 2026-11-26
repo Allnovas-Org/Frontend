@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Upload, User } from "lucide-react";
 
 interface VerificationData {
@@ -11,27 +11,70 @@ interface VerificationData {
 interface VerificationStepProps {
 	data: VerificationData;
 	setData: React.Dispatch<React.SetStateAction<VerificationData>>;
+	existingProfilePhotoPreview: string | null;
+	hasGovernmentId: boolean;
+	hasAddressDocument: boolean;
+	disabled: boolean;
+	onError: (message: string) => void;
 }
 
-const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) => {
+const VerificationStep: React.FC<VerificationStepProps> = ({
+	data,
+	setData,
+	existingProfilePhotoPreview,
+	hasGovernmentId,
+	hasAddressDocument,
+	disabled,
+	onError,
+}) => {
 	const photoInputRef = useRef<HTMLInputElement>(null);
 	const govIdInputRef = useRef<HTMLInputElement>(null);
 	const addressVerInputRef = useRef<HTMLInputElement>(null);
+	const [localPhotoPreview, setLocalPhotoPreview] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!data.profilePhoto) {
+			setLocalPhotoPreview(null);
+			return;
+		}
+
+		const previewUrl = URL.createObjectURL(data.profilePhoto);
+		setLocalPhotoPreview(previewUrl);
+		return () => URL.revokeObjectURL(previewUrl);
+	}, [data.profilePhoto]);
 
 	const handleFileUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
-		field: "profilePhoto" | "govId" | "addressVerification"
+		field: "profilePhoto" | "govId" | "addressVerification",
 	) => {
+		const input = e.currentTarget;
 		const file = e.target.files?.[0];
-		if (file) {
-			// Check file size (max 5MB)
-			if (file.size > 5 * 1024 * 1024) {
-				alert("File size must be less than 5MB");
-				return;
-			}
+		if (!file) return;
 
-			setData((prev) => ({ ...prev, [field]: file }));
+		const allowedTypes =
+			field === "profilePhoto"
+				? ["image/jpeg", "image/png"]
+				: ["image/jpeg", "image/png", "application/pdf"];
+
+		if (!allowedTypes.includes(file.type)) {
+			onError(
+				field === "profilePhoto"
+					? "Profile photos must be JPEG or PNG files."
+					: "Documents must be JPEG, PNG, or PDF files.",
+			);
+			input.value = "";
+			return;
 		}
+
+		if (file.size > 5 * 1024 * 1024) {
+			onError("Files must be no larger than 5 MiB.");
+			input.value = "";
+			return;
+		}
+
+		setData((prev) => ({ ...prev, [field]: file }));
+		onError("");
+		input.value = "";
 	};
 
 	const handlePhotoClick = () => {
@@ -46,12 +89,7 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 		addressVerInputRef.current?.click();
 	};
 
-	const getProfilePhotoPreview = () => {
-		if (data.profilePhoto) {
-			return URL.createObjectURL(data.profilePhoto);
-		}
-		return null;
-	};
+	const profilePhotoPreview = localPhotoPreview || existingProfilePhotoPreview;
 
 	return (
 		<div className="space-y-6">
@@ -83,11 +121,12 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 						<button
 							onClick={handlePhotoClick}
 							type="button"
+							disabled={disabled}
 							className="w-20 h-20 rounded-full bg-gray-100 hover:bg-gray-200 transition flex items-center justify-center overflow-hidden relative group"
 						>
-							{getProfilePhotoPreview() ? (
+							{profilePhotoPreview ? (
 								<img
-									src={getProfilePhotoPreview()!}
+									src={profilePhotoPreview}
 									alt="Profile"
 									className="w-full h-full object-cover"
 								/>
@@ -103,6 +142,7 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 							<button
 								onClick={handlePhotoClick}
 								type="button"
+								disabled={disabled}
 								className="px-3 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition text-xs flex items-center gap-2"
 							>
 								<Upload className="w-3.5 h-3.5" />
@@ -117,7 +157,8 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 						<input
 							ref={photoInputRef}
 							type="file"
-							accept="image/*"
+							accept="image/jpeg,image/png"
+							disabled={disabled}
 							onChange={(e) => handleFileUpload(e, "profilePhoto")}
 							className="hidden"
 						/>
@@ -136,11 +177,11 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 					<div className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl hover:border-gray-300 transition">
 						<div className="flex items-start gap-3">
 							<div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mt-0.5 flex-shrink-0 ${
-								data.govId
+								data.govId || hasGovernmentId
 									? "border-[#A78BFA] bg-[#A78BFA]"
 									: "border-gray-300"
 							}`}>
-								{data.govId && (
+								{(data.govId || hasGovernmentId) && (
 									<svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
 										<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
 									</svg>
@@ -151,21 +192,27 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 									Government ID <span className="text-gray-400">(optional)</span>
 								</h4>
 								<p className="text-[0.65rem] text-gray-600">
-									{data.govId ? data.govId.name : "Upload a government-issued ID"}
+									{data.govId
+										? data.govId.name
+										: hasGovernmentId
+											? "Document already uploaded"
+											: "Upload a government-issued ID"}
 								</p>
 							</div>
 						</div>
 						<button
 							type="button"
 							onClick={handleGovIdClick}
+							disabled={disabled}
 							className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 transition"
 						>
-							{data.govId ? "Change" : "Upload ID"}
+							{data.govId || hasGovernmentId ? "Change" : "Upload ID"}
 						</button>
 						<input
 							ref={govIdInputRef}
 							type="file"
-							accept="image/*,.pdf"
+							accept="image/jpeg,image/png,application/pdf"
+							disabled={disabled}
 							onChange={(e) => handleFileUpload(e, "govId")}
 							className="hidden"
 						/>
@@ -175,11 +222,11 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 					<div className="flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl hover:border-gray-300 transition">
 						<div className="flex items-start gap-3">
 							<div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mt-0.5 flex-shrink-0 ${
-								data.addressVerification
+								data.addressVerification || hasAddressDocument
 									? "border-[#A78BFA] bg-[#A78BFA]"
 									: "border-gray-300"
 							}`}>
-								{data.addressVerification && (
+								{(data.addressVerification || hasAddressDocument) && (
 									<svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
 										<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
 									</svg>
@@ -190,21 +237,29 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 									Address Verification <span className="text-gray-400">(optional)</span>
 								</h4>
 								<p className="text-[0.65rem] text-gray-600">
-									{data.addressVerification ? data.addressVerification.name : "Utility bill or bank statement"}
+									{data.addressVerification
+										? data.addressVerification.name
+										: hasAddressDocument
+											? "Document already uploaded"
+											: "Utility bill or bank statement"}
 								</p>
 							</div>
 						</div>
 						<button
 							type="button"
 							onClick={handleAddressVerClick}
+							disabled={disabled}
 							className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-lg text-xs font-medium hover:bg-gray-50 transition"
 						>
-							{data.addressVerification ? "Change" : "Upload Doc"}
+							{data.addressVerification || hasAddressDocument
+								? "Change"
+								: "Upload Doc"}
 						</button>
 						<input
 							ref={addressVerInputRef}
 							type="file"
-							accept="image/*,.pdf"
+							accept="image/jpeg,image/png,application/pdf"
+							disabled={disabled}
 							onChange={(e) => handleFileUpload(e, "addressVerification")}
 							className="hidden"
 						/>
@@ -225,7 +280,11 @@ const VerificationStep: React.FC<VerificationStepProps> = ({ data, setData }) =>
 					<input
 						type="tel"
 						value={data.phone}
-						onChange={(e) => setData((prev) => ({ ...prev, phone: e.target.value }))}
+						onChange={(e) => {
+							setData((prev) => ({ ...prev, phone: e.target.value }));
+							onError("");
+						}}
+						disabled={disabled}
 						placeholder="+1 (555) 123-4567"
 						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
 					/>

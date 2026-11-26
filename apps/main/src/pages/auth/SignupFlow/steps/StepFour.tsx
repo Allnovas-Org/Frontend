@@ -1,35 +1,61 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useSignupStore } from "../../../../store/useSignupStore";
 import {
 	verifySignupToken,
 	signupWithEmail,
 } from "../../../../services/auth.service";
+import { getGenericAuthErrorMessage } from "../../../../utils/apiError";
+import {
+	getSignupResendCooldown,
+	storeSignupResendCooldown,
+	storeSignupSession,
+} from "../../../../utils/signupSession";
 
 interface StepFourProps {
 	onNext: () => void;
 	onBack: () => void;
-	onResend?: () => void;
+	initialCooldownSeconds: number;
+	onCooldownChange: (seconds: number) => void;
 }
 
-const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
+const StepFour: React.FC<StepFourProps> = ({
+	onNext,
+	onBack,
+	initialCooldownSeconds,
+	onCooldownChange,
+}) => {
 	const [code, setCode] = useState(["", "", "", "", "", ""]);
 	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 	const [resendLoading, setResendLoading] = useState(false);
 	const [resendMessage, setResendMessage] = useState("");
+	const [resendCooldown, setResendCooldown] = useState(
+		getSignupResendCooldown() ?? initialCooldownSeconds,
+	);
 
 	const {
 		email,
 		userType,
-		signupToken,
-		setSignupToken,
 		isLoading,
 		setLoading,
 		error,
 		setError,
 		clearError,
 	} = useSignupStore();
+
+	useEffect(() => {
+		setResendCooldown(
+			getSignupResendCooldown() ?? initialCooldownSeconds,
+		);
+	}, [initialCooldownSeconds]);
+
+	useEffect(() => {
+		if (resendCooldown <= 0) return;
+		const timer = window.setInterval(() => {
+			setResendCooldown((seconds) => Math.max(0, seconds - 1));
+		}, 1000);
+		return () => window.clearInterval(timer);
+	}, [resendCooldown]);
 
 	const handleChange = useCallback(
 		(index: number, value: string) => {
@@ -87,33 +113,45 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 				token: verificationCode,
 			});
 
-			// Store the auth token for subsequent authenticated requests
-			localStorage.setItem("auth-token", response.token);
-
-			console.log("Token verified, expires at:", response.expire_at);
+			storeSignupSession({
+				token: response.token,
+				expiresAt: response.expire_at,
+			});
 			onNext();
-		} catch (err: any) {
-			setError(err.message || "Invalid verification code. Please try again.");
+		} catch (err) {
+			setError(
+				getGenericAuthErrorMessage(
+					err,
+					"Unable to verify this code. It may be invalid, expired, or locked.",
+				),
+			);
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	const handleResend = async () => {
+		if (!userType || resendCooldown > 0 || resendLoading) return;
 		setResendLoading(true);
 		setResendMessage("");
 		clearError();
-		setCode(["", "", "", "", "", ""]);
-		inputRefs.current[0]?.focus();
 
 		try {
 			const response = await signupWithEmail({ email, user_type: userType });
-			if (response.token) {
-				setSignupToken(response.token);
-			}
-			setResendMessage("A new code has been sent to your email.");
-		} catch (err: any) {
-			setError(err.message || "Failed to resend code. Please try again.");
+			const cooldown = Math.max(0, response.info.resend_after_seconds);
+			storeSignupResendCooldown(cooldown);
+			setResendCooldown(cooldown);
+			onCooldownChange(cooldown);
+			setCode(["", "", "", "", "", ""]);
+			inputRefs.current[0]?.focus();
+			setResendMessage("If the request is valid, a new code will be sent.");
+		} catch (err) {
+			setError(
+				getGenericAuthErrorMessage(
+					err,
+					"Unable to resend the verification code. Please try again.",
+				),
+			);
 		} finally {
 			setResendLoading(false);
 		}
@@ -131,13 +169,6 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 				<ArrowLeft size={20} />
 				<span>Back</span>
 			</button>
-
-			{signupToken && (
-				<div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-					<p className="text-sm text-gray-600 mb-2">Temporary verification code:</p>
-					<p className="text-2xl font-bold text-blue-600 font-mono">{signupToken}</p>
-				</div>
-			)}
 
 			<h1 className="text-3xl font-bold mb-2">
 				Great, Let's verify your email
@@ -199,10 +230,14 @@ const StepFour: React.FC<StepFourProps> = ({ onNext, onBack }) => {
 				Did not receive code?{" "}
 				<button
 					onClick={handleResend}
-					disabled={resendLoading}
+					disabled={resendLoading || resendCooldown > 0}
 					className="text-[#6A0DAD] font-semibold hover:underline disabled:opacity-50"
 				>
-					{resendLoading ? "Sending..." : "Resend"}
+					{resendLoading
+						? "Sending..."
+						: resendCooldown > 0
+							? `Resend in ${resendCooldown}s`
+							: "Resend"}
 				</button>
 			</p>
 		</div>

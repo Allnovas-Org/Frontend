@@ -2,16 +2,34 @@ import { api } from "../lib/axios";
 
 // ─── Request Types ───
 
+export type UserRole = "Freelancer" | "Client";
+
+export interface AuthUser {
+	id: string;
+	username: string;
+	email: string;
+	first_name: string;
+	last_name: string;
+	created_at: string;
+	user_role: UserRole;
+	country_code?: string;
+	phone_number?: string;
+	date_of_birth?: string;
+	gender?: string;
+	country?: string;
+	profile_picture?: string | null;
+}
+
 // Login
 export interface LoginPayload {
-	username: string;
+	email: string;
 	password: string;
 }
 
 // Signup
 export interface SignupEmailPayload {
 	email: string;
-	user_type: string; // "Freelancer" | "Client"
+	user_type: UserRole;
 }
 
 export interface VerifyTokenPayload {
@@ -27,7 +45,7 @@ export interface CreatePasswordPayload {
 export interface AddProfilePayload {
 	first_name: string;
 	last_name: string;
-	gender: string;
+	gender: "male" | "female" | "other" | "non-binary" | "prefer-not-to-say";
 	date_of_birth: string;
 	country: string;
 	code: string;
@@ -38,15 +56,7 @@ export interface AddProfilePayload {
 // ─── Response Types ───
 
 // Current User
-export interface CurrentUserResponse {
-	id: string;
-	username: string;
-	email: string;
-	first_name: string;
-	last_name: string;
-	created_at: string;
-	user_role: "Freelancer" | "Client";
-}
+export type CurrentUserResponse = AuthUser;
 
 // Logout
 export interface LogoutResponse {
@@ -56,25 +66,19 @@ export interface LogoutResponse {
 // Login
 export interface LoginResponse {
 	message: string;
-	user: {
-		id: string;
-		username: string;
-		email: string;
-		first_name: string;
-		last_name: string;
-		created_at: string;
-		user_role: "Freelancer" | "Client";
-	};
+	user: AuthUser;
 	token: string;
 	expires_at: string;
-	user_role: "Freelancer" | "Client";
+	user_role: UserRole;
 }
 
 // Signup
 export interface SignupEmailResponse {
 	message: string;
-	token: number;
-	info: string;
+	info: {
+		expires_in_seconds: number;
+		resend_after_seconds: number;
+	};
 }
 
 export interface VerifyTokenResponse {
@@ -91,13 +95,43 @@ export interface AddProfileResponse {
 	message: string;
 }
 
+export interface PasswordResetVerificationResponse {
+	message: string;
+	reset_url: string;
+}
+
+export interface PasswordResetPayload {
+	password: string;
+	confirm_password: string;
+}
+
+export interface CurrentUserUpdatePayload {
+	first_name?: string;
+	last_name?: string;
+	country_code?: string;
+	phone_number?: string;
+	date_of_birth?: string;
+	gender?: AddProfilePayload["gender"];
+	country?: string;
+	profile_picture?: string | null;
+}
+
 // ─── API Calls ───
 
 /**
  * Get current authenticated user
  */
-export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
-	const response = await api.get<CurrentUserResponse>("/auth/me/");
+export const getCurrentUser = async (token?: string): Promise<CurrentUserResponse> => {
+	const response = await api.get<CurrentUserResponse>("/auth/me/", {
+		headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+	});
+	return response.data;
+};
+
+export const updateCurrentUser = async (
+	payload: CurrentUserUpdatePayload,
+): Promise<CurrentUserResponse> => {
+	const response = await api.patch<CurrentUserResponse>("/auth/me/", payload);
 	return response.data;
 };
 
@@ -105,7 +139,7 @@ export const getCurrentUser = async (): Promise<CurrentUserResponse> => {
  * Logout current user
  */
 export const logoutUser = async (): Promise<LogoutResponse> => {
-	const response = await api.post<LogoutResponse>("/auth/logoutall/");
+	const response = await api.post<LogoutResponse>("/auth/logout/");
 	return response.data;
 };
 
@@ -150,10 +184,12 @@ export const verifySignupToken = async (
  */
 export const createPassword = async (
 	payload: CreatePasswordPayload,
+	token: string,
 ): Promise<CreatePasswordResponse> => {
 	const response = await api.post<CreatePasswordResponse>(
 		"/auth/signup/create-password/",
 		payload,
+		{ headers: { Authorization: `Bearer ${token}` } },
 	);
 	return response.data;
 };
@@ -163,6 +199,7 @@ export const createPassword = async (
  */
 export const addProfile = async (
 	payload: AddProfilePayload,
+	token: string,
 ): Promise<AddProfileResponse> => {
 	const formData = new FormData();
 
@@ -181,11 +218,62 @@ export const addProfile = async (
 	const response = await api.post<AddProfileResponse>(
 		"/auth/signup/add-profile/",
 		formData,
-		{
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-		},
+		{ headers: { Authorization: `Bearer ${token}` } },
 	);
 	return response.data;
 };
+
+export const requestPasswordReset = async (email: string): Promise<void> => {
+	await api.post("/auth/password/send-email-token/", { email });
+};
+
+export const verifyPasswordResetCode = async (
+	email: string,
+	code: string,
+): Promise<string> => {
+	const response = await api.post<PasswordResetVerificationResponse>(
+		"/auth/password/verify-email-token/",
+		{ email, code },
+	);
+
+	if (!response.data.reset_url || !api.defaults.baseURL) {
+		throw new Error("The password-reset response was incomplete.");
+	}
+
+	const trustedOrigin = new URL(api.defaults.baseURL);
+	const resetUrl = new URL(response.data.reset_url, trustedOrigin);
+	if (
+		resetUrl.origin !== trustedOrigin.origin ||
+		resetUrl.username ||
+		resetUrl.password
+	) {
+		throw new Error("The password-reset URL is outside the configured backend origin.");
+	}
+
+	return resetUrl.toString();
+};
+
+export const resetPassword = async (
+	resetUrl: string,
+	payload: PasswordResetPayload,
+): Promise<void> => {
+	await api.post(resetUrl, payload, {
+		headers: { Authorization: "" },
+	});
+};
+
+export const toAuthUser = (user: CurrentUserResponse) => ({
+	id: user.id,
+	username: user.username,
+	firstName: user.first_name,
+	lastName: user.last_name,
+	email: user.email,
+	userType: user.user_role,
+	avatar: user.profile_picture || undefined,
+	createdAt: user.created_at,
+	countryCode: user.country_code,
+	phoneNumber: user.phone_number,
+	dateOfBirth: user.date_of_birth,
+	gender: user.gender,
+	country: user.country,
+});

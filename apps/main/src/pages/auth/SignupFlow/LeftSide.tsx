@@ -10,8 +10,10 @@ interface LeftSideProps {
 	currentStep: number;
 	userType: "Freelancer" | "Client" | null;
 	setUserType: (type: "Freelancer" | "Client" | null) => void;
-	onNext: () => void;
+	onNext: (method?: "email" | "google" | "linkedin") => void;
 	onBack: () => void;
+	resendAfterSeconds: number;
+	onCodeSent: (seconds: number) => void;
 }
 
 const LeftSide: React.FC<LeftSideProps> = ({
@@ -20,6 +22,8 @@ const LeftSide: React.FC<LeftSideProps> = ({
 	setUserType,
 	onNext,
 	onBack,
+	resendAfterSeconds,
+	onCodeSent,
 }) => {
 	return (
 		<div className="w-full h-full flex flex-col">
@@ -33,9 +37,22 @@ const LeftSide: React.FC<LeftSideProps> = ({
 
 			{currentStep === 2 && <StepTwo onNext={onNext} onBack={onBack} />}
 
-			{currentStep === 3 && <StepThree onNext={onNext} onBack={onBack} />}
+			{currentStep === 3 && (
+				<StepThree
+					onNext={() => onNext()}
+					onBack={onBack}
+					onCodeSent={onCodeSent}
+				/>
+			)}
 
-			{currentStep === 4 && <StepFour onNext={onNext} onBack={onBack} />}
+			{currentStep === 4 && (
+				<StepFour
+					onNext={() => onNext()}
+					onBack={onBack}
+					initialCooldownSeconds={resendAfterSeconds}
+					onCooldownChange={onCodeSent}
+				/>
+			)}
 
 			{currentStep === 5 && <StepFive onNext={onNext} onBack={onBack} />}
 

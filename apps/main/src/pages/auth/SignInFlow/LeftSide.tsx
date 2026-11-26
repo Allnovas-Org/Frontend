@@ -27,7 +27,6 @@ const LeftSide: React.FC<LeftSideProps> = ({
   if (showForgotPassword) {
     return (
       <ForgotPasswordFlow
-        onNext={onNext}
         onBack={onForgotPasswordBack || onBack}
         onComplete={onForgotPasswordComplete || onNext}
       />

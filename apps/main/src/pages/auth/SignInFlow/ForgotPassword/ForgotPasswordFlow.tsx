@@ -4,18 +4,17 @@ import ForgotPasswordStepTwo from "./steps/ForgotPasswordStepTwo";
 import ForgotPasswordStepThree from "./steps/ForgotPasswordStepThree";
 
 interface ForgotPasswordFlowProps {
-  onNext: () => void;
   onBack: () => void;
   onComplete: () => void;
 }
 
 const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
-  onNext,
   onBack,
   onComplete,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [email, setEmail] = useState("");
+  const [resetUrl, setResetUrl] = useState("");
 
   const handleNext = () => {
     if (currentStep === 3) {
@@ -49,11 +48,16 @@ const ForgotPasswordFlow: React.FC<ForgotPasswordFlowProps> = ({
           onNext={handleNext}
           onBack={handleBack}
           email={email}
+          setResetUrl={setResetUrl}
         />
       )}
 
       {currentStep === 3 && (
-        <ForgotPasswordStepThree onNext={handleNext} onBack={handleBack} />
+        <ForgotPasswordStepThree
+          onNext={handleNext}
+          onBack={handleBack}
+          resetUrl={resetUrl}
+        />
       )}
     </>
   );

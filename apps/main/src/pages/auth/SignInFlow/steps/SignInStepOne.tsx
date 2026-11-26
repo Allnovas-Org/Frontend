@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ArrowLeft, Mail } from "lucide-react";
 
 interface SignInStepOneProps {
@@ -7,19 +7,19 @@ interface SignInStepOneProps {
 }
 
 const SignInStepOne: React.FC<SignInStepOneProps> = ({ onNext, onBack }) => {
+  const [socialAuthError, setSocialAuthError] = useState("");
+
   const handleEmailSignIn = () => {
-    // Proceed to email sign in form
+    setSocialAuthError("");
     onNext();
   };
 
   const handleGoogleSignIn = () => {
-    // Handle Google OAuth
-    console.log("Google sign in");
+    setSocialAuthError("Google sign-in is not available yet.");
   };
 
   const handleLinkedInSignIn = () => {
-    // Handle LinkedIn OAuth
-    console.log("LinkedIn sign in");
+    setSocialAuthError("LinkedIn sign-in is not available yet.");
   };
 
   return (
@@ -40,6 +40,11 @@ const SignInStepOne: React.FC<SignInStepOneProps> = ({ onNext, onBack }) => {
         </h1>
         <p className="text-gray-600 text-base">Please lets sign you in</p>
       </div>
+      {socialAuthError && (
+        <div role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {socialAuthError}
+        </div>
+      )}
 
       {/* Sign-in Options */}
       <div className="flex-1 flex flex-col">

@@ -5,6 +5,7 @@ import LeftSide from "./LeftSide";
 import RightSide from "./RightSide";
 import SuccessPopup from "./SuccessPopup";
 import { useSignupStore } from "../../../store/useSignupStore";
+import { clearSignupSession } from "../../../utils/signupSession";
 
 interface SignupModalProps {
 	isOpen: boolean;
@@ -21,11 +22,19 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
 	const resetSignupStore = useSignupStore((s) => s.reset);
 
 	const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+	const [resendAfterSeconds, setResendAfterSeconds] = useState(60);
 	const navigate = useNavigate();
 
 	if (!isOpen) return null;
 
-	const handleNext = () => {
+	const handleNext = (method?: "email" | "google" | "linkedin") => {
+		if (method && method !== "email") {
+			useSignupStore
+				.getState()
+				.setError("Google and LinkedIn sign-up are not available yet.");
+			return;
+		}
+		if (method === "email") useSignupStore.getState().clearError();
 		if (currentStep === 6) {
 			setShowSuccessPopup(true);
 		} else {
@@ -42,11 +51,12 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
 	const handleClose = () => {
 		setShowSuccessPopup(false);
 		resetSignupStore();
-		sessionStorage.removeItem("signup_password");
+		clearSignupSession();
 		onClose();
 	};
 
 	const handleContinueToProfile = () => {
+		clearSignupSession();
 		navigate("/profile-completion", {
 			state: { userType },
 		});
@@ -75,6 +85,8 @@ const SignupModal: React.FC<SignupModalProps> = ({ isOpen, onClose }) => {
 								setUserType={setUserType}
 								onNext={handleNext}
 								onBack={handleBack}
+								resendAfterSeconds={resendAfterSeconds}
+								onCodeSent={setResendAfterSeconds}
 							/>
 						</div>
 						<RightSide />

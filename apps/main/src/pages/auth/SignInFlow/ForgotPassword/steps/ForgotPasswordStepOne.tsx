@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft } from "lucide-react";
+import { requestPasswordReset } from "../../../../../services/auth.service";
+import { getGenericAuthErrorMessage } from "../../../../../utils/apiError";
 
 interface ForgotPasswordStepOneProps {
   onNext: () => void;
@@ -13,17 +15,29 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
   setEmail,
 }) => {
   const [emailInput, setEmailInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Send reset email
-    console.log("Reset password for:", emailInput);
-    
-    if (setEmail) {
-      setEmail(emailInput);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const email = emailInput.trim();
+      await requestPasswordReset(email);
+      setEmail?.(email);
+      onNext();
+    } catch (requestError) {
+      setError(
+        getGenericAuthErrorMessage(
+          requestError,
+          "If the email can be verified, instructions will be sent.",
+        ),
+      );
+    } finally {
+      setIsLoading(false);
     }
-    
-    onNext();
   };
 
   const isFormValid = emailInput !== "" && emailInput.includes("@");
@@ -48,6 +62,7 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
           Please enter your registered email ID
         </p>
       </div>
+      {error && <p role="alert" className="mb-4 text-sm text-red-600">{error}</p>}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex-1 flex flex-col">
@@ -63,6 +78,7 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
               onChange={(e) => setEmailInput(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400"
               placeholder="Enter your Email"
+              disabled={isLoading}
               required
             />
           </div>
@@ -72,14 +88,14 @@ const ForgotPasswordStepOne: React.FC<ForgotPasswordStepOneProps> = ({
         <div className="mt-8">
           <button
             type="submit"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             className={`w-full py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
               isFormValid
                 ? "bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                 : "bg-gray-300 cursor-not-allowed"
             }`}
           >
-            Continue
+            {isLoading ? "Sending..." : "Continue"}
           </button>
         </div>
       </form>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../../../services/auth.service";
+import { getCurrentUser, login, toAuthUser } from "../../../../services/auth.service";
 import { useAuthStore } from "../../../../store/useAuthStore";
 import { useUIStore } from "../../../../store/useUIStore";
+import { getGenericAuthErrorMessage } from "../../../../utils/apiError";
 
 interface LoginStepTwoProps {
 	onNext: () => void;
@@ -38,37 +39,34 @@ const SignInStepTwo: React.FC<LoginStepTwoProps> = ({
 
 		try {
 			const response = await login({
-				username: formData.email,
+				email: formData.email.trim(),
 				password: formData.password,
 			});
 
-			// Create user object for auth store
-			const user = {
-				id: response.user.id,
-				username: response.user.username,
-				firstName: response.user.first_name,
-				lastName: response.user.last_name,
-				email: response.user.email,
-				userType: response.user_role as "Client" | "Freelancer",
-				createdAt: response.user.created_at,
-			};
-
-			setAuth(user, response.token);
+			const currentUser = await getCurrentUser(response.token);
+			const authenticatedUser = toAuthUser(currentUser);
+			setAuth(
+				authenticatedUser,
+				response.token,
+				response.expires_at,
+			);
 
 			// Close the signin modal
 			closeSigninModal();
 
 			// Redirect to appropriate dashboard
 			const dashboardRoute =
-				response.user_role === "Freelancer" ? "/applicants" : "/clients";
+				authenticatedUser.userType === "Freelancer"
+					? "/applicants"
+					: "/clients";
 			navigate(dashboardRoute);
 		} catch (err) {
-			const errorMessage =
-				(err as { response?: { data?: { message?: string } }; message?: string })
-					?.response?.data?.message ||
-				(err as { message?: string })?.message ||
-				"Login failed. Please check your credentials and try again.";
-			setError(errorMessage);
+			setError(
+				getGenericAuthErrorMessage(
+					err,
+					"Unable to sign in with those credentials. Please try again.",
+				),
+			);
 		} finally {
 			setIsLoading(false);
 		}
