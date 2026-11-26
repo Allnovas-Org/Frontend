@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import logo from "../assets/allnova-logo-black.png";
 import { Drawer } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -10,6 +10,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import UserDropdown from "../pages/applicants/UserDropdown";
 import NotificationModal from "../pages/clients/Notifications/modals/NotificationModal";
 import user from "../assets/applicants/user.png";
+import { useClientProfilePhoto } from "../hooks/useClientProfilePhoto";
 
 const clientHeaderLinks = [
 	{ title: "Messages", url: "/clients/messages" },
@@ -24,6 +25,64 @@ const ClientNavbar: React.FC = () => {
 	const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 	const userBtnRef = useRef<HTMLButtonElement>(null);
 	const currentUser = useAuthStore((s) => s.user);
+	const currentUserId = currentUser?.id;
+	const currentUserType = currentUser?.userType;
+	const currentUserAvatar = currentUser?.avatar;
+	const clientUserId =
+		currentUserType === "Client" ? currentUserId : undefined;
+	const { verification, photo } = useClientProfilePhoto(
+		clientUserId,
+		currentUserAvatar,
+	);
+	const [clientPhoto, setClientPhoto] = useState<string | null>(null);
+	const photoBlob = photo.data;
+
+	useEffect(() => {
+		if (!photoBlob) {
+			setClientPhoto(null);
+			return;
+		}
+		const objectUrl = URL.createObjectURL(photoBlob);
+		setClientPhoto(objectUrl);
+		return () => URL.revokeObjectURL(objectUrl);
+	}, [photoBlob]);
+
+	useEffect(() => {
+		const error = verification.error || photo.error;
+		if (!error) return;
+		const failure = error as { status?: number };
+		console.error("Could not load the saved client profile photo.", {
+			status: failure.status,
+		});
+	}, [photo.error, verification.error]);
+
+	const avatarFallback = [
+		currentUser?.firstName?.[0],
+		currentUser?.lastName?.[0],
+	]
+		.filter(Boolean)
+		.join("")
+		.toUpperCase();
+
+	const avatarSrc =
+		currentUserType === "Client"
+			? clientPhoto
+			: currentUser?.avatar || user;
+	const avatarAlt = currentUser
+		? `${currentUser.firstName} ${currentUser.lastName}`
+		: "User";
+	const renderAvatar = (className: string) =>
+		avatarSrc ? (
+			<img src={avatarSrc} alt={avatarAlt} className={className} />
+		) : (
+			<span
+				className={`${className} flex items-center justify-center bg-gray-100 text-gray-600 text-xs font-semibold`}
+				role="img"
+				aria-label="Profile photo unavailable"
+			>
+				{avatarFallback}
+			</span>
+		);
 
 	const toggleMobileNav = () => {
 		setOpenMobileNav(!openMobileNav);
@@ -67,20 +126,16 @@ const ClientNavbar: React.FC = () => {
 							onClick={() => setIsDropdownOpen((v) => !v)}
 							aria-label="Open user menu"
 						>
-							<img
-								src={currentUser?.avatar || user}
-								alt={
-									currentUser
-										? `${currentUser.firstName} ${currentUser.lastName}`
-										: "User"
-								}
-								className="w-8 h-8 rounded-full object-cover border border-gray-300"
-							/>
+							{renderAvatar(
+								"w-8 h-8 rounded-full object-cover border border-gray-300",
+							)}
 						</button>
 						<UserDropdown
 							open={isDropdownOpen}
 							anchorRef={userBtnRef}
 							onClose={() => setIsDropdownOpen(false)}
+							avatarSrc={avatarSrc}
+							avatarFallback={avatarFallback}
 						/>
 					</div>
 				</nav>
@@ -115,15 +170,9 @@ const ClientNavbar: React.FC = () => {
 							onClick={() => setIsDropdownOpen((v) => !v)}
 							aria-label="Open user menu"
 						>
-							<img
-								src={currentUser?.avatar || user}
-								alt={
-									currentUser
-										? `${currentUser.firstName} ${currentUser.lastName}`
-										: "User"
-								}
-								className="w-8 h-8 rounded-full object-cover border border-gray-300"
-							/>
+							{renderAvatar(
+								"w-8 h-8 rounded-full object-cover border border-gray-300",
+							)}
 						</button>
 					</div>
 				</nav>

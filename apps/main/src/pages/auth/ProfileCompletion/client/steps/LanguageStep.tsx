@@ -1,20 +1,21 @@
 import React from "react";
 import { Plus, X } from "lucide-react";
-import { LanguageItem } from "../../../../../services/client-profile.service";
+import {
+	clientLanguageProficiencyLevels,
+	type LanguageItem,
+} from "../../../../../services/client-profile.service";
 
 interface LanguageStepProps {
 	languages: LanguageItem[];
 	setLanguages: React.Dispatch<React.SetStateAction<LanguageItem[]>>;
+	disabled: boolean;
 }
 
-const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) => {
-	const proficiencyLevels = [
-		"Basic",
-		"Conversational",
-		"Fluent",
-		"Native/Bilingual",
-	];
-
+const LanguageStep: React.FC<LanguageStepProps> = ({
+	languages,
+	setLanguages,
+	disabled,
+}) => {
 	const commonLanguages = [
 		"English",
 		"Spanish",
@@ -37,20 +38,28 @@ const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) 
 			language: "",
 			proficiency_level: "",
 		};
-		setLanguages([...languages, newLanguage]);
+		setLanguages((currentLanguages) => [...currentLanguages, newLanguage]);
 	};
 
 	const handleRemoveLanguage = (index: number) => {
-		if (languages.length > 1) {
-			setLanguages(languages.filter((_, i) => i !== index));
-		}
+		setLanguages((currentLanguages) => {
+			const remainingLanguages = currentLanguages.filter((_, i) => i !== index);
+			return remainingLanguages.length > 0
+				? remainingLanguages
+				: [{ language: "", proficiency_level: "" }];
+		});
 	};
 
-	const handleLanguageChange = (index: number, field: keyof LanguageItem, value: string) => {
+	const handleLanguageChange = (
+		index: number,
+		field: keyof LanguageItem,
+		value: string,
+	) => {
 		setLanguages(
-			languages.map((lang, i) =>
-				i === index ? { ...lang, [field]: value } : lang
-			)
+			(currentLanguages) =>
+				currentLanguages.map((lang, i) =>
+					i === index ? { ...lang, [field]: value } : lang,
+				),
 		);
 	};
 
@@ -70,6 +79,7 @@ const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) 
 					<h3 className="text-base font-semibold text-gray-900">Language</h3>
 					<button
 						onClick={handleAddLanguage}
+						disabled={disabled}
 						className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition"
 					>
 						<Plus className="w-4 h-4" />
@@ -90,6 +100,7 @@ const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) 
 								<select
 									value={lang.language}
 									onChange={(e) => handleLanguageChange(index, "language", e.target.value)}
+									disabled={disabled}
 									className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white appearance-none cursor-pointer"
 									style={{
 										backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
@@ -99,8 +110,21 @@ const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) 
 									}}
 								>
 									<option value="">Search & Select</option>
+									{lang.language &&
+										!commonLanguages.includes(lang.language) && (
+											<option value={lang.language}>{lang.language}</option>
+										)}
 									{commonLanguages.map((language) => (
-										<option key={language} value={language}>
+										<option
+											key={language}
+											value={language}
+											disabled={languages.some(
+												(item, itemIndex) =>
+													itemIndex !== index &&
+													item.language.toLocaleLowerCase() ===
+														language.toLocaleLowerCase(),
+											)}
+										>
 											{language}
 										</option>
 									))}
@@ -119,6 +143,7 @@ const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) 
 								<select
 									value={lang.proficiency_level}
 									onChange={(e) => handleLanguageChange(index, "proficiency_level", e.target.value)}
+									disabled={disabled}
 									className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent bg-white appearance-none cursor-pointer"
 									style={{
 										backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
@@ -128,15 +153,18 @@ const LanguageStep: React.FC<LanguageStepProps> = ({ languages, setLanguages }) 
 									}}
 								>
 									<option value="">My level is</option>
-									{proficiencyLevels.map((level) => (
+									{clientLanguageProficiencyLevels.map((level) => (
 										<option key={level} value={level}>
 											{level}
 										</option>
 									))}
 								</select>
-								{languages.length > 1 && (
+								{(languages.length > 1 ||
+									lang.language ||
+									lang.proficiency_level) && (
 									<button
 										onClick={() => handleRemoveLanguage(index)}
+										disabled={disabled}
 										className="p-3 text-gray-400 hover:text-red-500 transition"
 										aria-label="Remove language"
 									>

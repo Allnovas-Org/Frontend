@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   User,
   Wrench,
@@ -17,7 +16,7 @@ import VerificationStep from "./steps/VerificationStep";
 
 const FreelancerProfileCompletion = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const steps = [
     { id: 1, icon: User, label: "Skills" },
@@ -41,11 +40,15 @@ const FreelancerProfileCompletion = () => {
   };
 
   const handleSaveAndContinueLater = () => {
-    navigate("/applicants");
+    setError(
+      "Freelancer profile fields cannot be saved yet because their backend contracts are not available.",
+    );
   };
 
   const handleComplete = () => {
-    navigate("/applicants");
+    setError(
+      "Profile completion is blocked: the backend requires a title, short bio, and bio, which this wizard does not collect. Contracts for skills, tools, education, language, rates, and verification are also unavailable.",
+    );
   };
 
   const progressPercentage = (currentStep / steps.length) * 100;
@@ -100,6 +103,15 @@ const FreelancerProfileCompletion = () => {
             })}
           </div>
         </div>
+
+        {error && (
+          <div
+            role="alert"
+            className="mb-6 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          >
+            {error}
+          </div>
+        )}
 
         {/* Step Content */}
         <div className="mb-8">

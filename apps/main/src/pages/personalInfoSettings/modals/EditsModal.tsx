@@ -6,6 +6,7 @@ interface EditModalProps {
   title: string;
   subtitle?: string;
   onSave?: () => void;
+  saveDisabled?: boolean;
   children: ReactNode;
 }
 
@@ -15,6 +16,7 @@ const EditModal: React.FC<EditModalProps> = ({
   title,
   subtitle,
   onSave,
+  saveDisabled = false,
   children,
 }) => {
   if (!isOpen) return null;
@@ -41,6 +43,7 @@ const EditModal: React.FC<EditModalProps> = ({
               <button
                 className='bg-purple text-white px-6 py-2 rounded-lg font-semibold hover:bg-purple-800 transition'
                 onClick={onSave}
+                disabled={saveDisabled}
               >
                 Save
               </button>

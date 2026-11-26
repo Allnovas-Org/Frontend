@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { getCurrentUser, logoutUser } from '../services/auth.service';
+import { getCurrentUser, logoutUser, toAuthUser } from '../services/auth.service';
 
-interface User {
+let inFlightUserFetch: { token: string; promise: Promise<void> } | null = null;
+
+export interface User {
   id: string;
   username: string;
   firstName: string;
@@ -11,17 +13,23 @@ interface User {
   userType: 'Client' | 'Freelancer';
   avatar?: string;
   createdAt?: string;
+  countryCode?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  country?: string;
 }
 
 interface AuthState {
   // State
   user: User | null;
   token: string | null;
+  tokenExpiresAt: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
 
   // Actions
-  setAuth: (user: User, token: string) => void;
+  setAuth: (user: User, token: string, expiresAt?: string) => void;
   updateUser: (user: Partial<User>) => void;
   fetchUser: () => Promise<void>;
   logout: () => Promise<void>;
@@ -34,15 +42,22 @@ export const useAuthStore = create<AuthState>()(
       // Initial state
       user: null,
       token: null,
+      tokenExpiresAt: null,
       isAuthenticated: false,
       isLoading: false,
 
       // Set user and token after login/signup
-      setAuth: (user, token) => {
+      setAuth: (user, token, expiresAt) => {
         localStorage.setItem('auth-token', token);
+        if (expiresAt) {
+          localStorage.setItem('auth-token-expires-at', expiresAt);
+        } else {
+          localStorage.removeItem('auth-token-expires-at');
+        }
         set({
           user,
           token,
+          tokenExpiresAt: expiresAt || null,
           isAuthenticated: true,
         });
       },
@@ -50,40 +65,59 @@ export const useAuthStore = create<AuthState>()(
       // Fetch current user from API
       fetchUser: async () => {
         const token = get().token || localStorage.getItem('auth-token');
+        const expiresAt =
+          get().tokenExpiresAt || localStorage.getItem('auth-token-expires-at');
 
         if (!token) {
-          set({ isAuthenticated: false, user: null });
+          set({ isAuthenticated: false, user: null, isLoading: false });
           return;
+        }
+
+        if (expiresAt && Date.parse(expiresAt) <= Date.now()) {
+          get().clearAuth();
+          return;
+        }
+
+        if (inFlightUserFetch?.token === token) {
+          return inFlightUserFetch.promise;
         }
 
         set({ isLoading: true });
 
-        try {
-          const userData = await getCurrentUser();
+        const request = (async () => {
+          try {
+            const userData = await getCurrentUser(token);
+            if (localStorage.getItem('auth-token') !== token) return;
 
-          set({
-            user: {
-              id: userData.id,
-              username: userData.username,
-              firstName: userData.first_name,
-              lastName: userData.last_name,
-              email: userData.email,
-              userType: userData.user_role,
-              createdAt: userData.created_at,
-            },
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error) {
-          console.error('Failed to fetch user:', error);
-          // If fetch fails (e.g., invalid token), clear auth
-          localStorage.removeItem('auth-token');
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
+            set({
+              user: toAuthUser(userData),
+              token,
+              tokenExpiresAt: expiresAt,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } catch (error) {
+            const failure = error as {
+              response?: { status?: number };
+              status?: number;
+            };
+            const status = failure.response?.status ?? failure.status;
+            if (status === 401 || status === 403) {
+              get().clearAuth();
+            } else {
+              set({ isLoading: false });
+              throw error;
+            }
+          }
+        })();
+        inFlightUserFetch = { token, promise: request };
+
+        try {
+          await request;
+        } finally {
+          if (inFlightUserFetch?.promise === request) {
+            inFlightUserFetch = null;
+          }
         }
       },
 
@@ -96,34 +130,41 @@ export const useAuthStore = create<AuthState>()(
       // Logout user
       logout: async () => {
         try {
-          // Call logout API endpoint
           await logoutUser();
         } catch (error) {
-          // Even if API call fails, still clear local data
-          console.error('Logout API call failed:', error);
-        } finally {
-          // Always clear auth data locally
-          localStorage.removeItem('auth-token');
-          set({
-            user: null,
-            token: null,
-            isAuthenticated: false,
+          const failure = error as {
+            response?: { status?: number };
+            status?: number;
+          };
+          console.error('Logout request failed; local credentials were cleared.', {
+            status: failure.response?.status ?? failure.status,
           });
+        } finally {
+          get().clearAuth();
         }
       },
 
       // Clear all auth data
       clearAuth: () => {
         localStorage.removeItem('auth-token');
+        localStorage.removeItem('auth-token-expires-at');
         set({
           user: null,
           token: null,
+          tokenExpiresAt: null,
           isAuthenticated: false,
+          isLoading: false,
         });
       },
     }),
     {
       name: 'auth-storage', // localStorage key
+      partialize: ({ user, token, tokenExpiresAt, isAuthenticated }) => ({
+        user,
+        token,
+        tokenExpiresAt,
+        isAuthenticated,
+      }),
     }
   )
 );

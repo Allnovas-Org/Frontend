@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowLeft, Mail } from "lucide-react";
+import { useSignupStore } from "../../../../store/useSignupStore";
 
 interface StepTwoProps {
 	onNext: (method: "email" | "google" | "linkedin") => void;
@@ -7,6 +8,8 @@ interface StepTwoProps {
 }
 
 const StepTwo: React.FC<StepTwoProps> = ({ onNext, onBack }) => {
+	const error = useSignupStore((state) => state.error);
+
 	return (
 		<div className="flex flex-col h-full">
 			<button
@@ -21,6 +24,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ onNext, onBack }) => {
 			<h1 className="text-3xl font-bold mb-2">
 				Welcome! How would you like to join?
 			</h1>
+			{error && (
+				<div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+					{error}
+				</div>
+			)}
 
 			<div className="space-y-4 mt-8">
 				{/* Email Option */}

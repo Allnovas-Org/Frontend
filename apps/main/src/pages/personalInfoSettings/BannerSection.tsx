@@ -1,7 +1,19 @@
 import React from "react";
 import { Pencil, ArrowRight } from "lucide-react";
 
-const BannerSection: React.FC = () => (
+interface BannerSectionProps {
+  profilePhotoSrc?: string | null;
+  showVerifiedBadge?: boolean;
+  profilePhotoAlt?: string;
+  profilePhotoFallback?: string;
+}
+
+const BannerSection: React.FC<BannerSectionProps> = ({
+  profilePhotoSrc = "/images/applicants/profile.png",
+  showVerifiedBadge = true,
+  profilePhotoAlt = "Profile",
+  profilePhotoFallback,
+}) => (
   <div className='w-full'>
     {/* Banner */}
     <div className='relative w-full'>
@@ -19,18 +31,30 @@ const BannerSection: React.FC = () => (
     <div className='flex flex-col md:flex-row gap-6 md:gap-8 px-4 md:px-20 -mt-16'>
       <div className='flex flex-col items-center w-full md:w-1/5 min-w-[8rem] mb-4 md:mb-0'>
         <div className='relative'>
-          <img
-            src='/images/applicants/profile.png'
-            alt='Profile'
-            className='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white object-cover shadow'
-          />
-          <span className='absolute bottom-2 right-2'>
+          {profilePhotoSrc ? (
             <img
-              src='/images/applicants/verified.svg'
-              alt='Verified'
-              className='w-6 h-6 sm:w-7 sm:h-7'
+              src={profilePhotoSrc}
+              alt={profilePhotoAlt}
+              className='w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white object-cover shadow'
             />
-          </span>
+          ) : (
+            <span
+              className='flex items-center justify-center w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white bg-white shadow text-gray-600 font-semibold'
+              role='img'
+              aria-label='Profile photo unavailable'
+            >
+              {profilePhotoFallback}
+            </span>
+          )}
+          {showVerifiedBadge && (
+            <span className='absolute bottom-2 right-2'>
+              <img
+                src='/images/applicants/verified.svg'
+                alt='Verified'
+                className='w-6 h-6 sm:w-7 sm:h-7'
+              />
+            </span>
+          )}
         </div>
       </div>
     </div>

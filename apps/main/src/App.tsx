@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import MainLayout from "./layout/MainLayout";
 import ApplicantsLayout from "./layout/ApplicantsLayout";
@@ -41,6 +42,7 @@ import PaymentMethods from "./pages/settings/PaymentMethods";
 import SpotlightTalents from "./pages/clients/SpotlightTalents/SpotlightTalents";
 import Notifications from "./pages/clients/Notifications/Notifications";
 import SavedTalents from "./pages/clients/SpotlightTalents/SavedTalents";
+import ClientPersonalInformation from "./pages/clients/ClientPersonalInformation";
 
 // Client pages
 import Projects from "./pages/projects";
@@ -51,14 +53,44 @@ import OfferFlow from "./pages/projects/projectDetails/hire";
 
 function App() {
 	const fetchUser = useAuthStore((s) => s.fetchUser);
+	const clearAuth = useAuthStore((s) => s.clearAuth);
+	const [authReady, setAuthReady] = useState(false);
 
 	// Fetch user data on app initialization if token exists
 	useEffect(() => {
+		let isMounted = true;
 		const token = localStorage.getItem("auth-token");
-		if (token) {
-			fetchUser();
+		if (!token) {
+			clearAuth();
+			setAuthReady(true);
+			return () => {
+				isMounted = false;
+			};
 		}
-	}, [fetchUser]);
+
+		fetchUser()
+			.catch((error) => {
+				const failure = error as {
+					response?: { status?: number };
+					status?: number;
+				};
+				console.error("Could not validate the current session.", {
+					status: failure.response?.status ?? failure.status,
+				});
+			})
+			.finally(() => {
+				if (isMounted) setAuthReady(true);
+			});
+
+		return () => {
+			isMounted = false;
+		};
+	}, [clearAuth, fetchUser]);
+
+	useEffect(() => {
+		window.addEventListener("auth:session-expired", clearAuth);
+		return () => window.removeEventListener("auth:session-expired", clearAuth);
+	}, [clearAuth]);
 
 	return (
 		<Routes>
@@ -68,46 +100,66 @@ function App() {
 				<Route path="about" element={<About />} />
 				<Route path="privacy-policy" element={<PrivacyPolicy />} />
 				<Route path="terms-of-service" element={<TermsOfService />} />
-				<Route path="profile-completion" element={<ProfileCompletion />} />
+				<Route
+					path="profile-completion"
+					element={
+						<ProtectedRoute isReady={authReady}>
+							<ProfileCompletion />
+						</ProtectedRoute>
+					}
+				/>
 				<Route path="find-jobs" element={<FindJobs />} />
-				<Route path="saved-jobs" element={<SavedJobs />} />
-				<Route path="work-history/*" element={<WorkHistory />} />
-				<Route path="jobs" element={<FindJobs />} />
-				<Route path="messages/*" element={<Messages />} />
-				<Route path="profile" element={<EditProfile />} />
-
-				<Route path="settings" element={<SettingsLayout />}>
-					<Route index element={<ProfileSettings />} />
-					<Route path="notifications" element={<NotificationsSettings />} />
-					<Route path="security" element={<SecuritySettings />} />
-					<Route path="billing" element={<BillingSettings />} />
-					<Route path="billing/payment-methods" element={<PaymentMethods />} />
-					<Route path="preferences" element={<PreferencesSettings />} />
-					<Route path="withdraw" element={<div>Withdraw Settings Page</div>} />
+				<Route
+					path="profile"
+					element={
+						<ProtectedRoute isReady={authReady} allowedRole="Freelancer">
+							<EditProfile />
+						</ProtectedRoute>
+					}
+				/>
+				<Route element={<ProtectedRoute isReady={authReady} />}>
+					<Route path="saved-jobs" element={<SavedJobs />} />
+					<Route path="work-history/*" element={<WorkHistory />} />
+					<Route path="messages/*" element={<Messages />} />
+					<Route path="settings" element={<SettingsLayout />}>
+						<Route index element={<ProfileSettings />} />
+						<Route path="notifications" element={<NotificationsSettings />} />
+						<Route path="security" element={<SecuritySettings />} />
+						<Route path="billing" element={<BillingSettings />} />
+						<Route path="billing/payment-methods" element={<PaymentMethods />} />
+						<Route path="preferences" element={<PreferencesSettings />} />
+						<Route path="withdraw" element={<div>Withdraw Settings Page</div>} />
+					</Route>
 				</Route>
+				<Route path="jobs" element={<FindJobs />} />
 			</Route>
 
 			{/* ================= APPLICANTS DASHBOARD ================= */}
 			<Route path="applicants" element={<ApplicantsLayout />}>
-				<Route index element={<FindJobs />} />
-				<Route path="saved-jobs" element={<SavedJobs />} />
-				<Route path="work-history/*" element={<WorkHistory />} />
-				<Route path="messages/*" element={<Messages />} />
-				<Route path="articles" element={<ArticlesPage />} />
-				<Route path="help" element={<HelpPage />} />
+				<Route element={<ProtectedRoute isReady={authReady} allowedRole="Freelancer" />}>
+					<Route index element={<FindJobs />} />
+					<Route path="saved-jobs" element={<SavedJobs />} />
+					<Route path="work-history/*" element={<WorkHistory />} />
+					<Route path="messages/*" element={<Messages />} />
+					<Route path="articles" element={<ArticlesPage />} />
+					<Route path="help" element={<HelpPage />} />
+				</Route>
 				<Route path="community/*" element={<>Community</>} />
 			</Route>
 			{/* ================= CLIENTS DASHBOARD ================= */}
 			<Route path="clients" element={<ClientsLayout />}>
-				<Route index element={<SpotlightTalents />} />
-				<Route path="notifications" element={<Notifications />} />
-				<Route path="saved-talents" element={<SavedTalents />} />
-				<Route path="messages/*" element={<Messages />} />
-				<Route path="projects" element={<Projects />} />
-				<Route path="post-a-job" element={<PostJob />} />
-				<Route path="edit-job/:jobId" element={<PostJob />} />
-				<Route path="projects/:projectId" element={<ProjectDetails />} />
-				<Route path="hire/:candidateId" element={<OfferFlow />} />
+				<Route element={<ProtectedRoute isReady={authReady} allowedRole="Client" />}>
+					<Route index element={<SpotlightTalents />} />
+					<Route path="profile" element={<ClientPersonalInformation />} />
+					<Route path="notifications" element={<Notifications />} />
+					<Route path="saved-talents" element={<SavedTalents />} />
+					<Route path="messages/*" element={<Messages />} />
+					<Route path="projects" element={<Projects />} />
+					<Route path="post-a-job" element={<PostJob />} />
+					<Route path="edit-job/:jobId" element={<PostJob />} />
+					<Route path="projects/:projectId" element={<ProjectDetails />} />
+					<Route path="hire/:candidateId" element={<OfferFlow />} />
+				</Route>
 			</Route>
 
 			{/* ================= OFFSHORE PAGES ================= */}

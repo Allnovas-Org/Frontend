@@ -2,6 +2,8 @@ import React, { useState, useCallback } from "react";
 import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useSignupStore } from "../../../../store/useSignupStore";
 import { createPassword } from "../../../../services/auth.service";
+import { getApiErrorMessage } from "../../../../utils/apiError";
+import { getSignupSession } from "../../../../utils/signupSession";
 
 interface StepFiveProps {
 	onNext: () => void;
@@ -9,11 +11,8 @@ interface StepFiveProps {
 }
 
 const StepFive: React.FC<StepFiveProps> = ({ onNext, onBack }) => {
-	// Pre-fill with password from StepThree if available
-	const storedPassword = sessionStorage.getItem("signup_password") || "";
-
-	const [password, setPassword] = useState(storedPassword);
-	const [confirmPassword, setConfirmPassword] = useState(storedPassword);
+	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -22,23 +21,28 @@ const StepFive: React.FC<StepFiveProps> = ({ onNext, onBack }) => {
 
 	const handleContinue = useCallback(async () => {
 		if (!password || !confirmPassword || password !== confirmPassword) return;
+		const signupSession = getSignupSession();
+		if (!signupSession) {
+			setError("Your verification session expired. Please verify your email again.");
+			useSignupStore.getState().setCurrentStep(4);
+			return;
+		}
 
 		clearError();
 		setLoading(true);
 
 		try {
-			await createPassword({
-				password,
-				confirm_password: confirmPassword,
-			});
-
-			// Clean up temporary password storage
-			sessionStorage.removeItem("signup_password");
+			await createPassword(
+				{
+					password,
+					confirm_password: confirmPassword,
+				},
+				signupSession.token,
+			);
 
 			onNext();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (err: any) {
-			setError(err.message || "Failed to set password. Please try again.");
+		} catch (err) {
+			setError(getApiErrorMessage(err, "Failed to set password. Please try again."));
 		} finally {
 			setLoading(false);
 		}

@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { resetPassword } from "../../../../../services/auth.service";
+import { getApiErrorMessage } from "../../../../../utils/apiError";
 
 interface ForgotPasswordStepThreeProps {
   onNext: () => void;
   onBack: () => void;
+  resetUrl: string;
 }
 
 const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
   onNext,
   onBack,
+  resetUrl,
 }) => {
   const [formData, setFormData] = useState({
     password: "",
@@ -17,8 +21,9 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password.length < 8) {
@@ -32,8 +37,18 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
     }
     
     setError("");
-    console.log("Password reset successfully");
-    onNext();
+    setIsLoading(true);
+    try {
+      await resetPassword(resetUrl, {
+        password: formData.password,
+        confirm_password: formData.confirmPassword,
+      });
+      onNext();
+    } catch (resetError) {
+      setError(getApiErrorMessage(resetError, "Unable to reset the password."));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -53,6 +68,7 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
       {/* Back Button */}
       <button
         onClick={onBack}
+        disabled={isLoading}
         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8 transition-colors w-fit"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -88,6 +104,7 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400 pr-12"
                 placeholder="Enter new password"
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
@@ -119,6 +136,7 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent text-gray-700 placeholder:text-gray-400 pr-12"
                 placeholder="Re-enter new password"
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
@@ -144,14 +162,14 @@ const ForgotPasswordStepThree: React.FC<ForgotPasswordStepThreeProps> = ({
         <div className="mt-8">
           <button
             type="submit"
-            disabled={!isFormValid}
+            disabled={!isFormValid || isLoading}
             className={`w-full py-4 rounded-2xl font-semibold text-white transition-all shadow-lg ${
               isFormValid
                 ? "bg-linear-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                 : "bg-gray-300 cursor-not-allowed"
             }`}
           >
-            Reset Password
+            {isLoading ? "Resetting..." : "Reset Password"}
           </button>
         </div>
       </form>

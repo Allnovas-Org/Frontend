@@ -1,8 +1,15 @@
 import React, { useState, useCallback, useRef } from "react";
 import { ArrowLeft, Camera, Loader2, ChevronDown } from "lucide-react";
 import { useSignupStore } from "../../../../store/useSignupStore";
-import { addProfile } from "../../../../services/auth.service";
+import {
+	addProfile,
+	getCurrentUser,
+	toAuthUser,
+} from "../../../../services/auth.service";
+import { useAuthStore } from "../../../../store/useAuthStore";
 import { countries } from "../../../../utils/countries";
+import { getApiErrorMessage } from "../../../../utils/apiError";
+import { getSignupSession } from "../../../../utils/signupSession";
 
 interface StepSixProps {
 	onNext: () => void;
@@ -12,7 +19,9 @@ interface StepSixProps {
 const StepSix: React.FC<StepSixProps> = ({ onNext, onBack }) => {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [gender, setGender] = useState("");
+	const [gender, setGender] = useState<
+		"male" | "female" | "other" | "non-binary" | "prefer-not-to-say" | ""
+	>("");
 	const [dateOfBirth, setDateOfBirth] = useState("");
 	const [country, setCountry] = useState("");
 	const [phoneCode, setPhoneCode] = useState("");
@@ -23,6 +32,7 @@ const StepSix: React.FC<StepSixProps> = ({ onNext, onBack }) => {
 
 	const { isLoading, setLoading, error, setError, clearError } =
 		useSignupStore();
+	const setAuth = useAuthStore((state) => state.setAuth);
 
 	// When country changes, auto-select the phone code
 	const handleCountryChange = (selectedCountry: string) => {
@@ -68,25 +78,37 @@ const StepSix: React.FC<StepSixProps> = ({ onNext, onBack }) => {
 		)
 			return;
 
+			const signupSession = getSignupSession();
+			if (!signupSession) {
+				setError("Your verification session expired. Please verify your email again.");
+				useSignupStore.getState().setCurrentStep(4);
+				return;
+			}
+
 		clearError();
 		setLoading(true);
 
 		try {
-			await addProfile({
-				first_name: firstName,
-				last_name: lastName,
-				gender,
-				date_of_birth: dateOfBirth,
-				country,
-				code: phoneCode,
-				phone_number: phoneNumber,
-				profile_picture: profileFile,
-			});
+			await addProfile(
+				{
+					first_name: firstName,
+					last_name: lastName,
+					gender,
+					date_of_birth: dateOfBirth,
+					country,
+					code: phoneCode,
+					phone_number: phoneNumber,
+					profile_picture: profileFile,
+				},
+				signupSession.token,
+			);
+
+			const user = await getCurrentUser(signupSession.token);
+			setAuth(toAuthUser(user), signupSession.token, signupSession.expiresAt);
 
 			onNext();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (err: any) {
-			setError(err.message || "Failed to save profile. Please try again.");
+		} catch (err) {
+			setError(getApiErrorMessage(err, "Failed to save profile. Please try again."));
 		} finally {
 			setLoading(false);
 		}
@@ -103,6 +125,7 @@ const StepSix: React.FC<StepSixProps> = ({ onNext, onBack }) => {
 		clearError,
 		setLoading,
 		setError,
+		setAuth,
 	]);
 
 	const isValid =
@@ -211,7 +234,16 @@ const StepSix: React.FC<StepSixProps> = ({ onNext, onBack }) => {
 					</label>
 					<select
 						value={gender}
-						onChange={(e) => setGender(e.target.value)}
+						onChange={(e) =>
+							setGender(
+								e.target.value as
+									| "male"
+									| "female"
+									| "other"
+									| "non-binary"
+									| "prefer-not-to-say",
+							)
+						}
 						className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent appearance-none bg-white cursor-pointer"
 						style={{
 							backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
@@ -226,6 +258,7 @@ const StepSix: React.FC<StepSixProps> = ({ onNext, onBack }) => {
 						</option>
 						<option value="male">Male</option>
 						<option value="female">Female</option>
+						<option value="other">Other</option>
 						<option value="non-binary">Non-binary</option>
 						<option value="prefer-not-to-say">Prefer not to say</option>
 					</select>

@@ -1,19 +1,25 @@
 import React, { useState } from "react";
-import { ArrowLeft, Eye, EyeOff, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useSignupStore } from "../../../../store/useSignupStore";
 import { signupWithEmail } from "../../../../services/auth.service";
+import { getGenericAuthErrorMessage } from "../../../../utils/apiError";
+import { storeSignupResendCooldown } from "../../../../utils/signupSession";
 
 interface StepThreeProps {
 	onNext: () => void;
 	onBack: () => void;
+	onCodeSent: (seconds: number) => void;
 }
 
-const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
+const StepThree: React.FC<StepThreeProps> = ({
+	onNext,
+	onBack,
+	onCodeSent,
+}) => {
 	const {
 		email: storedEmail,
 		userType,
 		setEmail: storeEmail,
-		setSignupToken,
 		isLoading,
 		setLoading,
 		error,
@@ -27,42 +33,33 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 	// const [showPassword, setShowPassword] = useState(false);
 
 	const handleContinue = async () => {
-		if (!email || !userType) return;
+		const normalizedEmail = email.trim();
+		if (!normalizedEmail || !userType) return;
 
 		clearError();
 		setLoading(true);
 
 		try {
 			const response = await signupWithEmail({
-				email,
+				email: normalizedEmail,
 				user_type: userType,
 			});
 
-			// Store email for the verify step
-			storeEmail(email);
-
-			// Store the numeric token for display in StepFour
-			if (response.token) {
-				setSignupToken(response.token);
-			}
-
-			// Password is held locally — will be sent in StepFive
-			// Store it temporarily in sessionStorage so StepFive can use it
-			// sessionStorage.setItem("signup_password", password);
-
-			console.log("Signup email response:", response.message);
+			storeEmail(normalizedEmail);
+			storeSignupResendCooldown(response.info.resend_after_seconds);
+			onCodeSent(response.info.resend_after_seconds);
 			onNext();
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		} catch (err: any) {
+		} catch (err) {
 			setError(
-				err.message || "Failed to send verification email. Please try again.",
+				getGenericAuthErrorMessage(
+					err,
+					"Unable to process sign-up. Please check the email and try again.",
+				),
 			);
 		} finally {
 			setLoading(false);
 		}
 	};
-
-	// const isValid = email.length > 0 && password.length > 0;
 
 	return (
 		<div className="flex flex-col h-full">
@@ -98,6 +95,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 						placeholder="Enter your Email"
 						className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#6A0DAD] focus:border-transparent"
 						disabled={isLoading}
+						required
 					/>
 				</div>
 
@@ -142,7 +140,7 @@ const StepThree: React.FC<StepThreeProps> = ({ onNext, onBack }) => {
 
 			<p className="text-center text-sm text-gray-600">
 				Already have an account?{" "}
-				<button className="text-[#6A0DAD] font-semibold hover:underline">
+				<button type="button" className="text-[#6A0DAD] font-semibold hover:underline">
 					Sign in
 				</button>
 			</p>
